@@ -87,7 +87,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>be.unamur.info.Main</mainClass>
+              <mainClass>uk.kcl.info.Main</mainClass>
             </manifest>
             <manifestEntries>
               <Multi-Release>true</Multi-Release>
@@ -115,7 +115,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>be.unamur.info.Main</mainClass>
+              <mainClass>uk.kcl.info.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
