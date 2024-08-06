@@ -3,7 +3,6 @@ package uk.kcl.info.bfm;
 import be.vibes.fexpression.DimacsModel;
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
-import be.vibes.solver.FeatureModel;
 import be.vibes.solver.Sat4JSolverFacade;
 import be.vibes.solver.exception.SolverInitializationException;
 import com.google.common.base.Preconditions;
@@ -106,10 +105,6 @@ public class DefaultBehavioralFeatureModel extends Sat4JSolverFacade implements 
     }
 
     @Override
-    public Event getInitialEvent() {
-        return initialEvent;
-    }
-
     public Feature getFeature(String featureName){
 
         Feature feature = new Feature(featureName);
@@ -120,6 +115,7 @@ public class DefaultBehavioralFeatureModel extends Sat4JSolverFacade implements 
         }
     }
 
+    @Override
     public List<Feature> getFeatures() {
         return features;
     }

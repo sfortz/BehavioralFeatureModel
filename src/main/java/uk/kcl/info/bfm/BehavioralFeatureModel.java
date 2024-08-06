@@ -1,15 +1,19 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
 
 import java.util.Iterator;
+import java.util.List;
 
 public interface BehavioralFeatureModel extends FeatureModel {
 
     Event getEvent(String var1);
 
-    Event getInitialEvent();
+    Feature getFeature(String featureName);
+
+    List<Feature> getFeatures();
 
     Iterator<Event> events();
     Iterator<CausalityRelation> causalities();
