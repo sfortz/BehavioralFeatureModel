@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts xmlns:fts="http://www.unamur.be/xml/fts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <start>state1</start>
+    <states>
+        <state id="state1">
+            <transition action="choose_pseudo" fexpression="Anonymous" target="state3" />
+            <transition action="enter_credential" fexpression="RegisteredUser" target="state2" />
+        </state>
+        <state id="state2">
+            <transition action="log_in" fexpression="RegisteredUser" target="state3" />
+        </state>
+        <state id="state3">
+            <transition action="abort" fexpression="Cancellation" target="state1" />
+            <transition action="send_msg" target="state1" />
+        </state>
+    </states>
+</fts>
