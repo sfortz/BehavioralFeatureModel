@@ -1,0 +1,23 @@
+namespace CleaningRobot
+
+features
+    Robot
+
+        optional
+            Mapping
+
+        mandatory
+            ObstacleDetection
+                alternative
+                    Lidar
+                    Camera
+
+        mandatory
+            Cleaning
+
+
+constraints
+    Identification | ! CreditCard
+    ! PrepaidCard | Chip | NFC
+    ! DebitCard | PIN
+    ! EPurse | Chip | NFC

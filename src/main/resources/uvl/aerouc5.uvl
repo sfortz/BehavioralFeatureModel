@@ -1,0 +1,62 @@
+namespace AeroUc5
+
+features
+    AeroUc5 
+
+        mandatory
+            Display_reference_objects_in_landing_zone 
+                mandatory
+                    Display_visual_3D_cues
+                optional
+                    Display_real_reference_objects
+
+        mandatory
+            Mark_landing_position 
+                mandatory
+                    Check_for_no_ground
+                mandatory
+                    Mark_LP 
+                        alternative
+                            Mark_LP_by_handling_pilot_only
+                            Mark_LP_by_both_pilots
+                optional
+                    Check_for_obstacles
+
+        mandatory
+            Database 
+                alternative
+                    DB_provided_by_customer
+                    DB_provided_by_Cassidian
+                
+        mandatory
+            HOCAS 
+                alternative
+                    HOCAS_GE_Aviation_Systems
+                    HOCAS_Honeywell
+                
+        mandatory
+            HMS_D 
+                alternative
+                    HMS_D_Thales
+                    HMS_D_Elbit
+                
+        mandatory
+            OWS 
+                alternative
+                    ELOP
+                    HELLAS
+                
+        mandatory
+            Provide_slope_indication_for_LP 
+                alternative
+                    SI_sensor_based
+                    SI_from_DB
+        
+constraints
+    Mark_landing_position | ! Provide_slope_indication_for_LP
+    OWS | ! SI_sensor_based
+    Database | ! SI_from_DB
+    ! Mark_landing_position | HMS_D
+    ! OWS | Check_for_obstacles
+    ! Mark_landing_position | HOCAS
+    ! OWS | Display_real_reference_objects

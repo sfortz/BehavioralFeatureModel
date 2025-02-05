@@ -1,0 +1,117 @@
+namespace Claroline
+
+features
+    Claroline
+        mandatory
+            User
+                alternative
+                    UnregistredUser
+                    RegisteredUser
+                        alternative
+                            Admin
+                            Teacher
+                            Student
+
+        mandatory
+            Course
+                mandatory
+                    Access
+                        alternative
+                            FreeAccess
+                            IdentifiedAccess
+                            MemberAccess
+
+                mandatory
+                    Registration
+                        alternative
+                            AllowedRegistration
+                                alternative
+                                    WithValidationRegistration
+                                    WithKeyRegistration
+
+                            RegistrationDenied
+
+                mandatory
+                    Visibility
+                        alternative
+                            PublicVisibility
+                            MembersVisibility
+
+                mandatory
+                    Tools
+                        mandatory
+                            CourseIndex
+                        optional
+                            CourseDescription
+                        optional
+                            CourseAgenda
+                        optional
+                            CourseAnnoucements
+                        optional
+                            CourseDocument
+                        optional
+                            CourseExercise
+                        optional
+                            CourseLearnPath
+                        optional
+                            CourseWork
+                        optional
+                            CourseForum
+                        optional
+                            CourseGroup
+                        optional
+                            CourseUser
+                        optional
+                            CourseWiki
+                        optional
+                            CourseDiscussion
+
+
+                mandatory
+                    Status
+                        alternative
+                            Available
+                            AvailableFromTo
+                            Unavailable
+                                alternative
+                                    ReactivableByOwner
+                                    ReactivableByAdmin
+                                    Deleted
+
+        mandatory
+            Subscription
+                optional
+                    LostPassword
+                optional
+                    OpenSubscription
+
+constraints
+    ! CourseAgenda | Available | AvailableFromTo | MembersVisibility | Admin | ReactivableByOwner
+    ! CourseAgenda | Available | AvailableFromTo | MembersVisibility | Admin | Teacher
+    ! CourseAgenda | PublicVisibility | Available | AvailableFromTo | Admin | ReactivableByOwner
+    ! CourseAgenda | PublicVisibility | MembersVisibility | Admin | Teacher
+
+    ! CourseAnnoucements | Available | AvailableFromTo | MembersVisibility | Admin | ReactivableByOwner
+    ! CourseAnnoucements | Available | AvailableFromTo | MembersVisibility | Admin | Teacher
+    ! CourseAnnoucements | PublicVisibility | Available | AvailableFromTo | Admin | ReactivableByOwner
+    ! CourseAnnoucements | PublicVisibility | MembersVisibility | Admin | Teacher
+
+    ! CourseDescription | Available | AvailableFromTo | MembersVisibility | Admin | ReactivableByOwner
+    ! CourseDescription | Available | AvailableFromTo | MembersVisibility | Admin | Teacher
+    ! CourseDescription | PublicVisibility | Available | AvailableFromTo | Admin | ReactivableByOwner
+    ! CourseDescription | PublicVisibility | MembersVisibility | Admin | Teacher
+
+    ! CourseDiscussion | Available | AvailableFromTo | MembersVisibility | Admin | ReactivableByOwner
+    ! CourseDiscussion | Available | AvailableFromTo | MembersVisibility | Admin | Teacher
+    ! CourseDiscussion | PublicVisibility | Available | AvailableFromTo | Admin | ReactivableByOwner
+    ! CourseDiscussion | PublicVisibility | MembersVisibility | Admin | Teacher
+
+    ! CourseDocument | Available | AvailableFromTo | MembersVisibility | Admin | ReactivableByOwner
+    ! CourseDocument | Available | AvailableFromTo | MembersVisibility | Admin | Teacher
+    ! CourseDocument | PublicVisibility | Available | AvailableFromTo | Admin | ReactivableByOwner
+    ! CourseDocument | PublicVisibility | MembersVisibility | Admin | Teacher
+
+    ! CourseExercise | Available | AvailableFromTo | MembersVisibility | Admin | ReactivableByOwner
+    ! CourseExercise | Available | AvailableFromTo | MembersVisibility | Admin | Teacher
+    ! CourseExercise | PublicVisibility | Available | AvailableFromTo | Admin | ReactivableByOwner
+    ! CourseExercise | PublicVisibility | MembersVisibility | Admin | Teacher

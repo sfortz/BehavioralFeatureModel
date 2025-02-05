@@ -1,0 +1,23 @@
+namespace VendingMachineModel
+
+features
+    VendingMachine 
+
+        mandatory
+            Beverages 
+                or 
+                    Soda
+                    Tea
+        
+        mandatory
+            Currency 
+                alternative
+                    Euro
+                    Dollar
+
+        optional
+            FreeDrinks
+
+        optional
+            CancelPurchase
+
