@@ -59,6 +59,7 @@
     <guava.version>31.1-jre</guava.version>
     <neo4j.version>4.4.6</neo4j.version>
     <javabdd.version>5.0.0</javabdd.version>
+    <uvl_fm.version>1.0</uvl_fm.version>
   </properties>
 
   <reporting>
@@ -190,6 +191,12 @@
       <groupId>com.bpodgursky</groupId>
       <artifactId>jbool_expressions</artifactId>
       <version>${jbool_expressions.version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/io.github.universal-variability-language/fm-metamodel -->
+    <dependency>
+      <groupId>io.github.universal-variability-language</groupId>
+      <artifactId>fm-metamodel</artifactId>
+      <version>${uvl_fm.version}</version>
     </dependency>
   </dependencies>
 
