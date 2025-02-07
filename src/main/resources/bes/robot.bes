@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<bundles>
+
+		<bundle event="map">
+		</bundle>
+		
+		<bundle event="liDet0">
+			<causality source="map"/>
+		</bundle>
+		<bundle event="caDet0">
+			<causality source="map"/>
+		</bundle>
+		<bundle event="move0">
+			<causality source="map"/>
+		</bundle>
+
+		<bundle event="liDet1">
+		</bundle>
+		<bundle event="caDet1">
+		</bundle>
+		<bundle event="move1">
+		</bundle>
+
+		<bundle event="goAround">
+			<causality source="liDet"/>
+			<causality source="caDet"/>
+		</bundle>
+		<bundle event="clean">
+			<causality source="move"/>
+			<causality source="goAround"/>
+		</bundle>
+		<bundle event="charge">
+			<causality source="clean"/>
+		</bundle>
+	</bundles>
+
+	<conflicts>
+		<conflict>
+			<event id="liDet0" />
+			<event id="caDet0" />
+		</conflict>
+		<conflict>
+			<event id="liDet0" />
+			<event id="caDet1" />
+		</conflict>
+		<conflict>
+			<event id="liDet1" />
+			<event id="caDet0" />
+		</conflict>
+		<conflict>
+			<event id="liDet1" />
+			<event id="caDet1" />
+		</conflict>
+
+		<conflict>
+			<event id="liDet0"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="liDet0"/>
+			<event id="move1" />
+		</conflict>
+		<conflict>
+			<event id="liDet1"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="liDet1"/>
+			<event id="move1" />
+		</conflict>
+
+		<conflict>
+			<event id="caDet0"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="caDet0"/>
+			<event id="move1" />
+		</conflict>
+		<conflict>
+			<event id="caDet1"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="caDet1"/>
+			<event id="move1" />
+		</conflict>
+
+		<conflict>
+			<event id="map" />
+			<event id="liDet1"/>
+		</conflict>
+		<conflict>
+			<event id="map" />
+			<event id="caDet1" />
+		</conflict>
+		<conflict>
+			<event id="map"/>
+			<event id="move1" />
+		</conflict>
+
+		<conflict>
+			<event id="move0"/>
+			<event id="move1" />
+		</conflict>
+		<conflict>
+			<event id="liDet0" />
+			<event id="liDet1" />
+		</conflict>
+		<conflict>
+			<event id="caDet0" />
+			<event id="caDet1" />
+		</conflict>
+
+		<conflict>
+			<event id="goAround"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="goAround"/>
+			<event id="move1" />
+		</conflict>
+	</conflicts>
+</bes>
