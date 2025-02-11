@@ -1,0 +1,165 @@
+package uk.kcl.info.bfm;
+
+import java.util.*;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Table;
+
+public class DefaultBundleEventStructure implements BundleEventStructure{
+
+    private final Map<String, Event> events;
+    private final Set<CausalityRelation> allCausalities;
+    private final Set<ConflictRelation> allConflicts;
+    private final Table<Set<Event>, Event, CausalityRelation> causalities;
+
+    DefaultBundleEventStructure() {
+        //Preconditions.checkNotNull(initialState, "InitialState may not be null!");
+        //this.initialState = new State(initialState);
+        this.events = new HashMap<>();
+        //this.states.put(initialState, this.initialState);
+        this.allCausalities = new HashSet<>();
+        this.allConflicts = new HashSet<>();
+        this.causalities = HashBasedTable.create();
+    }
+
+    Event addEvent(String eventName) {
+        return this.events.computeIfAbsent(eventName, Event::new);
+    }
+
+    CausalityRelation addCausality(Set<Event> bundle, Event target) {
+        Preconditions.checkNotNull(bundle, "Bundle may not be null!");
+        Preconditions.checkNotNull(target, "Targeted event may not be null!");
+        Preconditions.checkArgument(this.events.containsValue(target), "Event does not belong to this bundle event structure!");
+        Preconditions.checkArgument(this.events.values().containsAll(bundle), "Some events in the bundle do not belong to this event structure!");
+
+        CausalityRelation causality = this.getCausality(bundle, target);
+
+        if (causality == null) {
+            causality = new CausalityRelation(bundle, target);
+            if (!this.causalities.contains(bundle, target)) {
+                this.causalities.put(bundle, target, causality);
+            }
+            this.allCausalities.add(causality);
+        }
+
+        return causality;
+    }
+
+    ConflictRelation addConflict(Event event1, Event event2) {
+        Preconditions.checkNotNull(event1, "Event may not be null!");
+        Preconditions.checkNotNull(event2, "Event may not be null!");
+        Preconditions.checkArgument(this.events.containsValue(event1), "Event does not belong to this bundle event structure!");
+        Preconditions.checkArgument(this.events.containsValue(event2), "Event does not belong to this bundle event structure!");
+
+        ConflictRelation conflict = new ConflictRelation(event1, event2);
+        this.allConflicts.add(conflict);
+
+        return conflict;
+    }
+
+    @Override
+    public Iterator<Event> events() {
+        return this.events.values().iterator();
+    }
+
+    @Override
+    public Event getEvent(String name) {
+        return this.events.get(name);
+    }
+
+    @Override
+    public Iterator<CausalityRelation> causalities() {
+        return this.allCausalities.iterator();
+    }
+
+    @Override
+    public CausalityRelation getCausality(Set<Event> bundle, Event event) {
+        return this.causalities.row(bundle).get(event);
+    }
+
+    @Override
+    public Iterator<CausalityRelation> getOutgoingCausalities(Event event) {
+
+        Set<CausalityRelation> causalities = new HashSet<>();
+
+        for(CausalityRelation causality: this.allCausalities){
+            if(causality.getBundle().contains(event)){
+                causalities.add(causality);
+            }
+        }
+
+        return Iterables.concat(causalities).iterator();
+    }
+
+    @Override
+    public int getOutgoingCausalityCount(Event event) {
+
+        Set<CausalityRelation> causalities = new HashSet<>();
+
+        for(CausalityRelation causality: this.allCausalities){
+            if(causality.getBundle().contains(event)){
+                causalities.add(causality);
+            }
+        }
+
+        return causalities.size();
+    }
+
+    @Override
+    public Iterator<CausalityRelation> getIncomingCausalities(Event target) {
+        return Iterables.concat(this.causalities.column(target).values()).iterator();
+    }
+
+    @Override
+    public int getIncomingCausalityCount(Event target) {
+        return this.causalities.column(target).size();
+    }
+
+    @Override
+    public ConflictRelation getConflict(Event var1, Event var2) {
+
+        ConflictRelation conflict = new ConflictRelation(var1, var2);
+        if(this.allConflicts.contains(conflict)){
+            return conflict;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public Set<ConflictRelation> getConflicts(Event event) {
+
+        Set<ConflictRelation> conflicts = new HashSet<>();
+
+        for(ConflictRelation conflict: this.allConflicts){
+            if(conflict.getEvent1().equals(event) || conflict.getEvent2().equals(event)){
+                conflicts.add(conflict);
+            }
+        }
+
+        return conflicts;
+    }
+
+    @Override
+    public Set<Event> getInitialEvents() {
+
+        Set<Event> events = new HashSet<>();
+        for(Event event: this.events.values()){
+            if(this.causalities.containsColumn(event)){
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
+    @Override
+    public int getEventsCount() {
+        return this.events.size();
+    }
+
+    @Override
+    public int getCausalitiesCount() {
+        return this.causalities.size();
+    }
+}

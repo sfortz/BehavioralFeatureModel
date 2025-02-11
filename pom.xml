@@ -192,6 +192,12 @@
       <artifactId>jbool_expressions</artifactId>
       <version>${jbool_expressions.version}</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/txw2 -->
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>txw2</artifactId>
+      <version>${txw2.version}</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/io.github.universal-variability-language/fm-metamodel -->
     <dependency>
       <groupId>io.github.universal-variability-language</groupId>

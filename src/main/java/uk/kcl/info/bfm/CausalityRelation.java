@@ -1,31 +1,37 @@
 package uk.kcl.info.bfm;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CausalityRelation {
-    private final Event source;
+    private final Set<Event> bundle;
     private final Event target;
 
-    CausalityRelation(Event source, Event target) {
-        this.source = source;
+    CausalityRelation(Set<Event> bundle, Event target) {
+        this.bundle = bundle;
         this.target = target;
     }
 
-    public Event getSource() {
-        return this.source;
+    public Set<Event> getBundle() {
+        return this.bundle;
     }
 
     public Event getTarget() {
         return this.target;
     }
 
+    @Override
     public String toString() {
-        return "Transition{source=" + this.source + ", target=" + this.target + '}';
+        String bundleStr = "{" + this.bundle.stream()
+                .map(Event::getName)
+                .collect(Collectors.joining(", ")) + "}";
+        return "Causality{bundle=" + bundleStr + ", target=" + this.target + '}';
     }
 
     public int hashCode() {
         int hash = 3;
-        hash = 23 * hash + Objects.hashCode(this.source);
+        hash = 23 * hash + Objects.hashCode(this.bundle);
         hash = 23 * hash + Objects.hashCode(this.target);
         return hash;
     }
@@ -39,7 +45,7 @@ public class CausalityRelation {
             return false;
         } else {
             CausalityRelation other = (CausalityRelation)obj;
-            return Objects.equals(this.source, other.source) && Objects.equals(this.target, other.target);
+            return Objects.equals(this.bundle, other.bundle) && Objects.equals(this.target, other.target);
         }
     }
 }

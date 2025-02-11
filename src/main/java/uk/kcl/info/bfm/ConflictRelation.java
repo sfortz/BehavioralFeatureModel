@@ -20,7 +20,7 @@ public class ConflictRelation {
     }
 
     public String toString() {
-        return "Transition{event1=" + this.event1 + ", event2=" + this.event2 + '}';
+        return "Conflict{" + this.event1 + ", " + this.event2 + '}';
     }
 
     public int hashCode() {
@@ -39,7 +39,8 @@ public class ConflictRelation {
             return false;
         } else {
             ConflictRelation other = (ConflictRelation)obj;
-            return Objects.equals(this.event1, other.event1) && Objects.equals(this.event2, other.event2);
+            return (Objects.equals(this.event1, other.event1) && Objects.equals(this.event2, other.event2))
+                    || (Objects.equals(this.event1, other.event2) && Objects.equals(this.event2, other.event1));
         }
     }
 }
