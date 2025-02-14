@@ -2,7 +2,6 @@ namespace CleaningRobot
 
 features
     Robot
-
         optional
             Mapping
 
@@ -14,10 +13,3 @@ features
 
         mandatory
             Cleaning
-
-
-constraints
-    Identification | ! CreditCard
-    ! PrepaidCard | Chip | NFC
-    ! DebitCard | PIN
-    ! EPurse | Chip | NFC
