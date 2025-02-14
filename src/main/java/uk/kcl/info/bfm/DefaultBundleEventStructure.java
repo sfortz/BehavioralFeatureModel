@@ -64,6 +64,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
+    public List<Event> getAllEvents() {
+        return this.events.values().stream().toList();
+    }
+
+    @Override
     public Event getEvent(String name) {
         return this.events.get(name);
     }
@@ -153,6 +158,95 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return events;
     }
 
+    private boolean isConflictFree(Event e, List<Event> config) {
+        for (Event other : config) {
+            if (this.allConflicts.contains(new ConflictRelation(e, other))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean respectsCausality(Event e, List<Event> config) {
+        Set<Set<Event>> causes = this.causalities.column(e).keySet(); // All X such as X ↦ e
+        for (Set<Event> bundle : causes) {
+            if (Collections.disjoint(config, bundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Set<List<Event>> getAllConfigurations() {
+        Set<List<Event>> allConfigs = new HashSet<>();
+        Set<Event> allEvents = new HashSet<>(this.getAllEvents());
+        buildConfigurations(new ArrayList<>(), allEvents, allConfigs);
+        return allConfigs;
+    }
+
+    private void buildConfigurations(List<Event> currentConfig, Set<Event> remainingEvents, Set<List<Event>> allConfigs) {
+        // Add the current configuration to the allConfigs set. A new list is created to avoid modifying the original configuration.
+        allConfigs.add(new ArrayList<>(currentConfig));
+
+        // Iterate over a copy of remaining events to prevent concurrent modification issues.
+        for (Event e : new HashSet<>(remainingEvents)) {
+            if (isConflictFree(e, currentConfig) && respectsCausality(e, currentConfig)) {
+                // If both conditions are satisfied, add the event to the current configuration.
+                currentConfig.add(e);
+                // Remove event 'e' from remaining events to prevent re-selection in this configuration.
+                remainingEvents.remove(e);
+                // Recursively build configurations with the updated current configuration and remaining events.
+                buildConfigurations(currentConfig, remainingEvents, allConfigs);
+                // Backtrack: Remove event 'e' from the current configuration to explore other possible configurations.
+                currentConfig.remove(e);
+                // Add event 'e' back to the remaining events for further exploration.
+                remainingEvents.add(e);
+            }
+        }
+    }
+
+    /*
+    public Set<List<Event>> getAllConfigurations() {
+        Set<Event> allEvents = new HashSet<>(this.getAllEvents());
+        Set<List<Event>> allConfigs = new HashSet<>();
+
+        for (Set<Event> candidateConfig : powerSet(allEvents)) {
+            List<Event> orderedConfig = new ArrayList<>(candidateConfig);
+            if (isConflictFree(orderedConfig) && respectsCausality(orderedConfig)) {
+                allConfigs.add(orderedConfig);
+            }
+        }
+
+        return allConfigs;
+    }
+
+    private boolean isConflictFree(List<Event> config) {
+        for (Event e1 : config) {
+            for (Event e2 : config) {
+                if (isInConflict(e1, e2)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean respectsCausality(List<Event> config) {
+
+        for (Event e : config) {
+            Set<Set<Event>> causes = getCauses(e);  // All X such as X ↦ e
+            int index = config.indexOf(e);
+            List<Event> subConfig = config.subList(0, index);
+            for(Set<Event> bundle: causes){
+                return !Collections.disjoint(subConfig, bundle); // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
+            }
+        }
+        return true;
+    }
+
+    */
+
     @Override
     public int getEventsCount() {
         return this.events.size();
@@ -160,6 +254,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
     @Override
     public int getCausalitiesCount() {
-        return this.causalities.size();
+        return this.allCausalities.size();
+    }
+
+    @Override
+    public int getConflictsCount() {
+        return this.allConflicts.size();
     }
 }

@@ -1,10 +1,13 @@
 package uk.kcl.info.bfm;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public interface BundleEventStructure {
     Iterator<Event> events();
+
+    List<Event> getAllEvents();
 
     Event getEvent(String var1);
 
@@ -26,8 +29,10 @@ public interface BundleEventStructure {
 
     Set<Event> getInitialEvents();
 
+    Set<List<Event>> getAllConfigurations();
+
     int getEventsCount();
 
     int getCausalitiesCount();
-
+    int getConflictsCount();
 }
