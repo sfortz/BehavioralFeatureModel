@@ -12,6 +12,7 @@ public interface BundleEventStructure {
     Event getEvent(String var1);
 
     Iterator<CausalityRelation> causalities();
+    Iterator<ConflictRelation> conflicts();
 
     CausalityRelation getCausality(Set<Event> bundle, Event event);
 
@@ -35,4 +36,5 @@ public interface BundleEventStructure {
 
     int getCausalitiesCount();
     int getConflictsCount();
+
 }

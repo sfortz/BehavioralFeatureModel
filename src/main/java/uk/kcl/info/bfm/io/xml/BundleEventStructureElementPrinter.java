@@ -11,15 +11,11 @@ import javax.xml.stream.XMLStreamWriter;
 public interface BundleEventStructureElementPrinter {
     void printElement(XMLStreamWriter writer, BundleEventStructure bes) throws XMLStreamException;
 
-    void printEvents(XMLStreamWriter writer, Iterator<Event> events) throws XMLStreamException;
+    void printElement(XMLStreamWriter writer, Iterator<?> iterator) throws XMLStreamException;
 
     void printElement(XMLStreamWriter writer, Event event) throws XMLStreamException;
 
-    void printCausalities(XMLStreamWriter writer, Iterator<CausalityRelation> causalities) throws XMLStreamException;
-
     void printElement(XMLStreamWriter writer, CausalityRelation causality) throws XMLStreamException;
-
-    void printConflicts(XMLStreamWriter writer, Iterator<ConflictRelation> conflicts) throws XMLStreamException;
 
     void printElement(XMLStreamWriter writer, ConflictRelation conflict) throws XMLStreamException;
 

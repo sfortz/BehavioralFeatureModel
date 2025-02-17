@@ -79,6 +79,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
+    public Iterator<ConflictRelation> conflicts() {
+        return this.allConflicts.iterator();
+    }
+
+    @Override
     public CausalityRelation getCausality(Set<Event> bundle, Event event) {
         return this.causalities.row(bundle).get(event);
     }
