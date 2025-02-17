@@ -1,5 +1,8 @@
 package uk.kcl.info.bfm.io.xml;
 
+import be.vibes.ts.TransitionSystem;
+import be.vibes.ts.exception.TransitionSystemDefinitionException;
+import be.vibes.ts.io.xml.TransitionSystemPrinter;
 import be.vibes.ts.io.xml.XmlSavers;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
@@ -13,6 +16,30 @@ import java.io.OutputStream;
 public class XmlSaverUtility extends XmlSavers {
 
     public XmlSaverUtility() {}
+
+    public static void save(TransitionSystem ts, OutputStream out) throws TransitionSystemDefinitionException {
+        TransitionSystemPrinter printer = new TransitionSystemPrinter();
+        TransitionSystemXmlPrinter xmlOut = new TransitionSystemXmlPrinter(out, printer);
+
+        try {
+            xmlOut.print(ts);
+        } catch (XMLStreamException e) {
+            throw new TransitionSystemDefinitionException("Exception while printing XML!", e);
+        }
+    }
+
+
+    public static void save(TransitionSystem ts, File out) throws TransitionSystemDefinitionException {
+        try {
+            save(ts, new FileOutputStream(out));
+        } catch (FileNotFoundException e) {
+            throw new TransitionSystemDefinitionException("Output file not found!", e);
+        }
+    }
+
+    public static void save(TransitionSystem ts, String outputFileName) throws TransitionSystemDefinitionException {
+        save(ts, new File(outputFileName));
+    }
 
     /*
     public static void save(FeaturedTransitionSystem fts, OutputStream out) throws BundleEventStructureDefinitionException {

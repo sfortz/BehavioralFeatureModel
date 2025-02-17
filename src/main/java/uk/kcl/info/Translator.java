@@ -5,10 +5,10 @@ import com.google.common.collect.Lists;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.BundleEventStructureFactory;
 import uk.kcl.info.bfm.Event;
-import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.utilities.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Translator {
 
@@ -26,27 +26,33 @@ public class Translator {
 
     public static TransitionSystem bes2ts(BundleEventStructure bes) {
 
-        TransitionSystemFactory factory = new TransitionSystemFactory("initial_State");
+        Set<List<Event>> configurations = bes.getAllConfigurations();
+        Map<List<Event>, String> mapping = getConfigStateMapping(configurations);
+
+
+        String initialState = mapping.get(new ArrayList<>());
+
+        TransitionSystemFactory factory = new TransitionSystemFactory(initialState);
+
 
         for (Event ev : bes.getAllEvents()) {
             factory.addAction(ev.getName());
         }
 
-        Set<List<Event>> configurations = bes.getAllConfigurations();
-        Map<List<Event>, String> mapping = getConfigStateMapping(configurations);
         factory.addStates(mapping.values().toArray(new String[0]));
 
         for (List<Event> c1 : configurations) {
             for (List<Event> c2 : configurations) {
 
+                String s1 = mapping.get(c1);
+                String s2 = mapping.get(c2);
+
                 // If c2 is c1 with exactly one more event at the end
                 if (c2.size() == c1.size() + 1) {
-                    Event e = c2.remove(c2.size() - 1);
+                    Event e = c2.removeLast();
 
                     // Check if the remaining part of c2 is equal to c1
                     if (c1.equals(c2)) {
-                        String s1 = mapping.get(c1);
-                        String s2 = mapping.get(c2);
                         factory.addTransition(s1, e.getName(), s2);
                     }
 
@@ -69,7 +75,7 @@ public class Translator {
             Transition t = it.next();
             if (t.getAction().equals(destination)) {
                 return true;
-            }
+            } else
             if (isReachable(ts, t.getTarget(), destination, visited)) {
                 return true;
             }
@@ -81,11 +87,12 @@ public class Translator {
         Set<State> visited = new HashSet<>();
 
         List<Transition> transitions = Lists.newArrayList(ts.getTransitions(a1));
+        Set<State> targets = transitions.stream().map(Transition::getTarget).collect(Collectors.toSet());
 
         boolean acc = false;
 
-        for (Transition t:transitions){
-            acc = acc || isReachable(ts, t.getTarget(), a2, visited);
+        for (State t:targets){
+            acc = acc || isReachable(ts, t, a2, visited);
         }
 
         return acc;
@@ -105,29 +112,31 @@ public class Translator {
 
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
         Set<Pair<Event, Event>> conflicts = new HashSet<>();
-        Map<Set<Event>, Event> candidateBundles = new HashMap<>();
+        Set<Pair<Set<Event>, Event>> candidateBundles = new HashSet<>();
 
         for (Action a1 : actions) {
             Event e1 = new Event(a1.getName());
             Set<Event> bundle = new HashSet<>();
 
             for (Action a2 : actions) {
-                Event e2 = new Event(a2.getName());
+                if(!a1.equals(a2)) {
+                    Event e2 = new Event(a2.getName());
 
-                // Conflict relation
-                if (!reachable(ts, a1, a2) && !reachable(ts, a2, a1)) {
-                    factory.addConflict(e1, e2);
-                    conflicts.add(new Pair<>(e1, e2));
-                }
+                    // Conflict relation
+                    if (!reachable(ts, a1, a2) && !reachable(ts, a2, a1)) {
+                        factory.addConflict(e1, e2);
+                        conflicts.add(new Pair<>(e1, e2));
+                    }
 
-                // Causality relation (candidate)
-                if (reachable(ts, a2, a1) && !reachable(ts, a1, a2)) {
-                    bundle.add(e2);
+                    // Causality relation (candidate)
+                    if (reachable(ts, a2, a1) && !reachable(ts, a1, a2)) {
+                        bundle.add(e2);
+                    }
                 }
             }
 
             if (!bundle.isEmpty()) {
-                candidateBundles.put(bundle, e1);
+                candidateBundles.add(new Pair<>(bundle, e1));
             }
         }
 
@@ -136,11 +145,13 @@ public class Translator {
 
 
         // Step 4: Optimize non-conflicting bundle splitting
-        Queue<Map.Entry<Set<Event>, Event>> queue = new LinkedList<>(candidateBundles.entrySet());
+        Queue<Pair<Set<Event>, Event>> queue = new LinkedList<>(candidateBundles);
+        candidateBundles = new HashSet<>();
+
         while (!queue.isEmpty()) {
-            Map.Entry<Set<Event>, Event> entry = queue.poll();
-            Set<Event> bundle = entry.getKey();
-            Event event = entry.getValue();
+            Pair<Set<Event>, Event> pair = queue.poll();
+            Set<Event> bundle = pair.getFirst();
+            Event event = pair.getSecond();
 
             boolean split = false;
             for (Event e1 : bundle) {
@@ -151,8 +162,8 @@ public class Translator {
                         bundle1.remove(e1);
                         bundle2.remove(e2);
 
-                        queue.add(new AbstractMap.SimpleEntry<>(bundle1, event));
-                        queue.add(new AbstractMap.SimpleEntry<>(bundle2, event));
+                        queue.add(new Pair<>(bundle1, event));
+                        queue.add(new Pair<>(bundle2, event));
                         split = true;
                         break;
                     }
@@ -161,10 +172,14 @@ public class Translator {
             }
 
             if (!split) {
-                factory.addCausality(bundle, event);
+                candidateBundles.add(new Pair<>(bundle, event));
+                //factory.addCausality(bundle, event);
             }
         }
 
+        for (Pair<Set<Event>, Event> pair: candidateBundles){
+            factory.addCausality(pair.getFirst(), pair.getSecond());
+        }
         return factory.build();
     }
 

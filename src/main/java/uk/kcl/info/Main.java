@@ -42,18 +42,8 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException {
-
-        String dirPath = "src/main/resources/";
-        File file = new File(dirPath + "bes/robot.bes");
-        BundleEventStructure bes = XmlLoaderUtility.loadBundleEventStructure(file);
-
-        System.out.println("Event Count: " + bes.getEventsCount());
-        System.out.println("Causality Count: " + bes.getCausalitiesCount());
-        System.out.println("Conflict Count: " + bes.getConflictsCount());
-        XmlSaverUtility.save(bes, dirPath + "bes/newTest.bes");
-
-        //testts2bes();
-        //testbes2ts();
+        testts2bes();
+        testbes2ts();
     }
 
     public static void oldmain(String[] args) throws IOException {
