@@ -30,10 +30,7 @@ public class CausalityRelation {
     }
 
     public int hashCode() {
-        int hash = 3;
-        hash = 23 * hash + Objects.hashCode(this.bundle);
-        hash = 23 * hash + Objects.hashCode(this.target);
-        return hash;
+        return Objects.hashCode(this.bundle) + Objects.hashCode(this.target);
     }
 
     public boolean equals(Object obj) {

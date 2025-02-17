@@ -23,13 +23,13 @@ public class ConflictRelation {
         return "Conflict{" + this.event1 + ", " + this.event2 + '}';
     }
 
+    @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 23 * hash + Objects.hashCode(this.event1);
-        hash = 23 * hash + Objects.hashCode(this.event2);
-        return hash;
+        return Objects.hash(event1, event2) + Objects.hash(event2, event1);
     }
 
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
