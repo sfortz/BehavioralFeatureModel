@@ -5,7 +5,6 @@ import uk.kcl.info.bfm.CausalityRelation;
 import uk.kcl.info.bfm.ConflictRelation;
 import uk.kcl.info.bfm.Event;
 import java.util.Iterator;
-import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     @Override
     public void printElement(XMLStreamWriter xtw, BundleEventStructure bes) throws XMLStreamException {
         LOG.trace("Printing BES element");
-        xtw.writeStartElement("bundleEventStructure");
+        xtw.writeStartElement("bes");
         this.bes = bes;
         xtw.writeStartElement("events");
         this.printElement(xtw, bes.events());
@@ -43,13 +42,19 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
 
             switch (object) {
                 case Event event:
+                    LOG.trace("Starting Events");
                     this.printElement(xtw, event);
+                    LOG.trace("End Events");
                     break;
                 case CausalityRelation causality:
+                    LOG.trace("Starting Causalities");
                     this.printElement(xtw, causality);
+                    LOG.trace("End Causalities");
                     break;
                 case ConflictRelation conflict:
+                    LOG.trace("Starting Conflicts");
                     this.printElement(xtw, conflict);
+                    LOG.trace("End Conflicts");
                     break;
                 default:
                     // Handle other cases or throw an exception if needed
@@ -79,6 +84,7 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
             xtw.writeStartElement("event");
             xtw.writeAttribute("id", ev.getName());
             xtw.writeCharacters(" ");
+            xtw.writeEndElement();
         }
         xtw.writeEndElement();
         xtw.writeEndElement();
@@ -92,9 +98,11 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
         xtw.writeStartElement("event");
         xtw.writeAttribute("id", conflict.getEvent1().getName());
         xtw.writeCharacters(" ");
+        xtw.writeEndElement();
         xtw.writeStartElement("event");
         xtw.writeAttribute("id", conflict.getEvent2().getName());
         xtw.writeCharacters(" ");
+        xtw.writeEndElement();
         xtw.writeEndElement();
     }
 }

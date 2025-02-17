@@ -107,7 +107,6 @@ public class BundleEventStructureHandler implements XmlEventHandler {
         LOG.trace("Processing event");
         String id = element.getAttributeByName(QName.valueOf(ID_ATTR)).getValue();
         if (!bundleStack.isEmpty()) {
-            LOG.trace("BUNDLE");
             // If inside a bundle, add to the current bundle
             bundleStack.peek().add(id);
         } else if (!conflictStack.isEmpty()) {
@@ -115,7 +114,6 @@ public class BundleEventStructureHandler implements XmlEventHandler {
             conflictStack.peek().add(id);
         } else {
             // Otherwise, it's a standalone event declaration
-            LOG.trace("HELP");
             factory.addEvent(id);
         }
     }
