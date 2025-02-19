@@ -2,12 +2,18 @@ package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
+import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 
 import java.util.Set;
 
 public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
     public FeaturedEventStructureFactory() {
         super(new DefaultFeaturedEventStructure());
+    }
+
+    @Override
+    public void addEvent(String event) {
+        throw new UnsupportedOperationException("FES doesn't allow to add an event if not associated with a feature.");
     }
 
     public void addEvent(String event, Feature feature) {
@@ -17,8 +23,7 @@ public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
     public void addEvent(String event, Feature feature, FExpression fexpr) {
         DefaultFeaturedEventStructure fes = (DefaultFeaturedEventStructure)this.bes;
         Event ev = fes.addEvent(event);
-        fes.setFeature(ev,feature);
-        fes.setFExpression(ev,fexpr);
+        fes.addFeature(ev,feature,fexpr);
     }
 
     public FeaturedEventStructure build() {

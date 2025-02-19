@@ -1,10 +1,12 @@
 package uk.kcl.info.bfm.io.xml;
 
+import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.TransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.io.xml.TransitionSystemPrinter;
 import be.vibes.ts.io.xml.XmlSavers;
 import uk.kcl.info.bfm.BundleEventStructure;
+import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 
 import javax.xml.stream.XMLStreamException;
@@ -28,7 +30,6 @@ public class XmlSaverUtility extends XmlSavers {
         }
     }
 
-
     public static void save(TransitionSystem ts, File out) throws TransitionSystemDefinitionException {
         try {
             save(ts, new FileOutputStream(out));
@@ -41,30 +42,28 @@ public class XmlSaverUtility extends XmlSavers {
         save(ts, new File(outputFileName));
     }
 
-    /*
-    public static void save(FeaturedTransitionSystem fts, OutputStream out) throws BundleEventStructureDefinitionException {
+    public static void save(FeaturedTransitionSystem fts, OutputStream out) throws TransitionSystemDefinitionException {
         FeaturedTransitionSystemPrinter printer = new FeaturedTransitionSystemPrinter();
         TransitionSystemXmlPrinter xmlOut = new TransitionSystemXmlPrinter(out, printer);
 
         try {
             xmlOut.print(fts);
         } catch (XMLStreamException var5) {
-            throw new BundleEventStructureDefinitionException("Exception while printing XML!", var5);
+            throw new TransitionSystemDefinitionException("Exception while printing XML!", var5);
         }
     }
 
-    public static void save(FeaturedTransitionSystem fts, File out) throws BundleEventStructureDefinitionException {
+    public static void save(FeaturedTransitionSystem fts, File out) throws TransitionSystemDefinitionException {
         try {
             save(fts, new FileOutputStream(out));
         } catch (FileNotFoundException var3) {
-            throw new BundleEventStructureDefinitionException("Output file not found!", var3);
+            throw new TransitionSystemDefinitionException("Output file not found!", var3);
         }
     }
 
-    public static void save(FeaturedTransitionSystem fts, String outputFileName) throws BundleEventStructureDefinitionException {
+    public static void save(FeaturedTransitionSystem fts, String outputFileName) throws TransitionSystemDefinitionException {
         save(fts, new File(outputFileName));
-    }*/
-
+    }
 
     public static void save(BundleEventStructure bes, OutputStream out) throws BundleEventStructureDefinitionException {
         BundleEventStructurePrinter printer = new BundleEventStructurePrinter();
@@ -89,4 +88,26 @@ public class XmlSaverUtility extends XmlSavers {
         save(bes, new File(outputFileName));
     }
 
+    public static void save(FeaturedEventStructure fes, OutputStream out) throws BundleEventStructureDefinitionException {
+        FeaturedEventStructurePrinter printer = new FeaturedEventStructurePrinter();
+        BundleEventStructureXmlPrinter xmlOut = new BundleEventStructureXmlPrinter(out, printer);
+
+        try {
+            xmlOut.print(fes);
+        } catch (XMLStreamException var5) {
+            throw new BundleEventStructureDefinitionException("Exception while printing XML!", var5);
+        }
+    }
+
+    public static void save(FeaturedEventStructure fes, File out) throws BundleEventStructureDefinitionException {
+        try {
+            save(fes, new FileOutputStream(out));
+        } catch (FileNotFoundException var3) {
+            throw new BundleEventStructureDefinitionException("Output file not found!", var3);
+        }
+    }
+
+    public static void save(FeaturedEventStructure fes, String outputFileName) throws BundleEventStructureDefinitionException {
+        save(fes, new File(outputFileName));
+    }
 }

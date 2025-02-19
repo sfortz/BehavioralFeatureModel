@@ -84,6 +84,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
+    public Iterator<CausalityRelation> getCausalities(Event event) {
+        return this.causalities.column(event).values().iterator();
+    }
+
+    @Override
     public CausalityRelation getCausality(Set<Event> bundle, Event event) {
         return this.causalities.row(bundle).get(event);
     }
@@ -210,47 +215,6 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
             }
         }
     }
-
-    /*
-    public Set<List<Event>> getAllConfigurations() {
-        Set<Event> allEvents = new HashSet<>(this.getAllEvents());
-        Set<List<Event>> allConfigs = new HashSet<>();
-
-        for (Set<Event> candidateConfig : powerSet(allEvents)) {
-            List<Event> orderedConfig = new ArrayList<>(candidateConfig);
-            if (isConflictFree(orderedConfig) && respectsCausality(orderedConfig)) {
-                allConfigs.add(orderedConfig);
-            }
-        }
-
-        return allConfigs;
-    }
-
-    private boolean isConflictFree(List<Event> config) {
-        for (Event e1 : config) {
-            for (Event e2 : config) {
-                if (isInConflict(e1, e2)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean respectsCausality(List<Event> config) {
-
-        for (Event e : config) {
-            Set<Set<Event>> causes = getCauses(e);  // All X such as X ↦ e
-            int index = config.indexOf(e);
-            List<Event> subConfig = config.subList(0, index);
-            for(Set<Event> bundle: causes){
-                return !Collections.disjoint(subConfig, bundle); // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
-            }
-        }
-        return true;
-    }
-
-    */
 
     @Override
     public int getEventsCount() {

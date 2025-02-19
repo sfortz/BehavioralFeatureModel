@@ -35,9 +35,9 @@ public class BundleEventStructureHandler implements XmlEventHandler {
     protected String charValue;
 
     // Stack to track nested bundles
-    private Stack<Set<String>> bundleStack = new Stack<>();
-    private String currentCausalityTarget = null;
-    private Stack<Set<String>> conflictStack = new Stack<>();
+    protected Stack<Set<String>> bundleStack = new Stack<>();
+    protected String currentCausalityTarget = null;
+    protected Stack<Set<String>> conflictStack = new Stack<>();
 
     public BundleEventStructureHandler() {
         this.factory = new BundleEventStructureFactory();
@@ -87,23 +87,23 @@ public class BundleEventStructureHandler implements XmlEventHandler {
         }
     }
 
-    private void handleStartConflictsTag() {
+    protected void handleStartConflictsTag() throws XMLStreamException {
         LOG.trace("Starting Conflicts");
     }
 
-    private void handleStartCausalitiesTag() {
+    protected void handleStartCausalitiesTag() throws XMLStreamException {
         LOG.trace("Starting Causalities");
     }
 
-    private void handleStartEventsTag() {
+    protected void handleStartEventsTag() throws XMLStreamException {
         LOG.trace("Starting Events");
     }
 
-    private void handleStartBesTag() {
+    protected void handleStartBesTag() throws XMLStreamException {
         LOG.trace("Starting BES");
     }
 
-    private void handleStartEventTag(StartElement element) {
+    protected void handleStartEventTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing event");
         String id = element.getAttributeByName(QName.valueOf(ID_ATTR)).getValue();
         if (!bundleStack.isEmpty()) {
@@ -118,22 +118,22 @@ public class BundleEventStructureHandler implements XmlEventHandler {
         }
     }
 
-    private void handleStartCausalityTag(StartElement element) {
+    protected void handleStartCausalityTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing causality");
         currentCausalityTarget = element.getAttributeByName(QName.valueOf(TARGET_ATTR)).getValue();
     }
 
-    private void handleStartBundleTag() {
+    protected void handleStartBundleTag() throws XMLStreamException {
         LOG.trace("Processing bundle");
         bundleStack.push(new HashSet<>()); // Create new bundle set
     }
 
-    private void handleStartConflictTag() {
+    protected void handleStartConflictTag() throws XMLStreamException {
         LOG.trace("Processing conflict");
         conflictStack.push(new HashSet<>()); // Create new Conflict set
     }
 
-    public void handleEndElement(EndElement element) {
+    public void handleEndElement(EndElement element) throws XMLStreamException {
         String tag = element.getName().getLocalPart();
         switch (tag) {
             case EVENT_TAG:
@@ -167,7 +167,7 @@ public class BundleEventStructureHandler implements XmlEventHandler {
         }
     }
 
-    public void handleCharacters(Characters element) {
+    public void handleCharacters(Characters element) throws XMLStreamException {
         this.charValue = element.asCharacters().getData().trim();
     }
 }

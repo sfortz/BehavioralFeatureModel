@@ -12,7 +12,10 @@ public interface BundleEventStructure {
     Event getEvent(String var1);
 
     Iterator<CausalityRelation> causalities();
+
     Iterator<ConflictRelation> conflicts();
+
+    Iterator<CausalityRelation> getCausalities(Event event);
 
     CausalityRelation getCausality(Set<Event> bundle, Event event);
 

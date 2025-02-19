@@ -6,6 +6,7 @@ import be.vibes.fexpression.Feature;
 import java.util.Iterator;
 
 public interface FeaturedEventStructure extends BundleEventStructure {
+
     Feature getFeature(Event var1);
     FExpression getFExpression(Event var1);
 }

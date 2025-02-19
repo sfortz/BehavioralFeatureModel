@@ -39,16 +39,10 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
         return fexpr;
     }
 
-    void setFeature(Event event, Feature feature) {
+    void addFeature(Event event, Feature feature, FExpression fexpr) {
         Preconditions.checkNotNull(event, "Event may not be null!");
         Preconditions.checkNotNull(feature, "Feature may not be null!");
         this.feature.put(event, feature);
+        this.fexpression.put(event,fexpr);
     }
-
-    void setFExpression(Event event, FExpression fexpr) {
-        Preconditions.checkNotNull(event, "Event may not be null!");
-        Preconditions.checkNotNull(fexpr, "Fexpr may not be null!");
-        this.fexpression.put(event, fexpr);
-    }
-
 }
