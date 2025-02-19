@@ -22,5 +22,6 @@
 		<state id="state4">
 			<transition action="charge" target="state5" />
 		</state>
+		<state id="state5"/>
 	</states>
 </fts>

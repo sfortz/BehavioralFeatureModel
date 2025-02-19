@@ -14,7 +14,7 @@
 			<transition action="move" target="state3" />
 		</state>
 		<state id="state2">
-			<transition action="goAround" target="state2" />
+			<transition action="goAround" target="state3" />
 		</state>
 		<state id="state3">
 			<transition action="clean" target="state4" />

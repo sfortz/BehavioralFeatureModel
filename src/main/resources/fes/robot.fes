@@ -1,124 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<bundles>
-		<bundle event="map" feature="mapping" fexpression="mapping">
-		</bundle>
 
-		<bundle event="liDet0" feature="lidar" fexpression="mapping &amp;&amp; lidar">
-			<causality source="map"/>
-		</bundle>
-		<bundle event="caDet0" feature="camera" fexpression="mapping &amp;&amp; camera">
-			<causality source="map"/>
-		</bundle>
-		<bundle event="move0" feature="cleaning" fexpression="mapping">
-			<causality source="map"/>
-		</bundle>
+	<events>
+		<event id="map" feature="mapping" fexpression="mapping"/>
+		<event id="liDet" feature="lidar" fexpression="mapping &amp;&amp; lidar"/>
+		<event id="caDet" feature="camera" fexpression="mapping &amp;&amp; camera"/>
+		<event id="move" feature="cleaning" fexpression="mapping"/>
+		<event id="goAround" feature="cleaning"/>
+		<event id="clean" feature="cleaning"/>
+		<event id="charge" feature="robot"/>
+	</events>
 
-		<bundle event="liDet1" feature="lidar" fexpression="!mapping &amp;&amp; lidar">
-		</bundle>
-		<bundle event="caDet1" feature="camera" fexpression="!mapping &amp;&amp; camera">
-		</bundle>
-		<bundle event="move1" feature="cleaning" fexpression="!mapping">
-		</bundle>
+	<causalities>
+		<causality target="move">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
 
-		<bundle event="goAround" feature="cleaning">
-			<causality source="liDet"/>
-			<causality source="caDet"/>
-		</bundle>
-		<bundle event="clean" feature="cleaning">
-			<causality source="move"/>
-			<causality source="goAround"/>
-		</bundle>
-		<bundle event="charge" feature="robot">
-			<causality source="clean"/>
-		</bundle>
-	</bundles>
+		<causality target="liDet">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="caDet">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="goAround">
+			<bundle>
+				<event id="liDet"/>
+			</bundle>
+			<bundle>
+				<event id="caDet"/>
+			</bundle>
+		</causality>
+
+		<causality target="clean">
+			<bundle>
+				<event id="goAround"/>
+				<event id="move"/>
+			</bundle>
+		</causality>
+
+		<causality target="charge">
+			<bundle>
+				<event id="clean"/>
+			</bundle>
+		</causality>
+	</causalities>
 
 	<conflicts>
 		<conflict>
-			<event id="liDet0" />
-			<event id="caDet0" />
+			<event id="liDet"/>
+			<event id="move" />
 		</conflict>
 		<conflict>
-			<event id="liDet0" />
-			<event id="caDet1" />
-		</conflict>
-		<conflict>
-			<event id="liDet1" />
-			<event id="caDet0" />
-		</conflict>
-		<conflict>
-			<event id="liDet1" />
-			<event id="caDet1" />
-		</conflict>
-
-		<conflict>
-			<event id="liDet0"/>
-			<event id="move0" />
-		</conflict>
-		<conflict>
-			<event id="liDet0"/>
-			<event id="move1" />
-		</conflict>
-		<conflict>
-			<event id="liDet1"/>
-			<event id="move0" />
-		</conflict>
-		<conflict>
-			<event id="liDet1"/>
-			<event id="move1" />
-		</conflict>
-
-		<conflict>
-			<event id="caDet0"/>
-			<event id="move0" />
-		</conflict>
-		<conflict>
-			<event id="caDet0"/>
-			<event id="move1" />
-		</conflict>
-		<conflict>
-			<event id="caDet1"/>
-			<event id="move0" />
-		</conflict>
-		<conflict>
-			<event id="caDet1"/>
-			<event id="move1" />
-		</conflict>
-
-		<conflict>
-			<event id="map" />
-			<event id="liDet1"/>
-		</conflict>
-		<conflict>
-			<event id="map" />
-			<event id="caDet1" />
-		</conflict>
-		<conflict>
-			<event id="map"/>
-			<event id="move1" />
-		</conflict>
-
-		<conflict>
-			<event id="move0"/>
-			<event id="move1" />
-		</conflict>
-		<conflict>
-			<event id="liDet0" />
-			<event id="liDet1" />
-		</conflict>
-		<conflict>
-			<event id="caDet0" />
-			<event id="caDet1" />
-		</conflict>
-
-		<conflict>
-			<event id="goAround"/>
-			<event id="move0" />
+			<event id="caDet"/>
+			<event id="move" />
 		</conflict>
 		<conflict>
 			<event id="goAround"/>
-			<event id="move1" />
+			<event id="move" />
 		</conflict>
 	</conflicts>
 </fes>
