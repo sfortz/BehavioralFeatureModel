@@ -1,0 +1,16 @@
+namespace CleaningRobot
+
+features
+    Robot
+
+        optional
+            Mapping
+
+        mandatory
+            ObstacleDetection
+                alternative
+                    Lidar
+                    Camera
+
+        mandatory
+            Cleaning
