@@ -18,19 +18,12 @@ public class BundleEventStructureFactory {
         this.bes.addEvent(name);
     }
 
-    public void addEvents(String... names) {
-
-        for (String name : names) {
-            this.addEvent(name);
-        }
-    }
-
     public void addCausality(Set<String> bundle, String target) {
 
-        Event trg = this.bes.addEvent(target);
+        Event trg = new Event(target);
         Set<Event> bndl = new HashSet<>();
         for(String name: bundle) {
-            Event event = this.bes.addEvent(name);
+            Event event = new Event(name);
             bndl.add(event);
         }
 
@@ -39,6 +32,10 @@ public class BundleEventStructureFactory {
 
     public void addCausality(Set<Event> bundle, Event target) {
         this.bes.addCausality(bundle, target);
+    }
+
+    public void addConflict(String event1, String event2) {
+        this.addConflict(new Event(event1), new Event(event2));
     }
 
     public void addConflict(Event event1, Event event2) {

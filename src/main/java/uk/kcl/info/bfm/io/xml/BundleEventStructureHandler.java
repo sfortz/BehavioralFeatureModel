@@ -155,7 +155,7 @@ public class BundleEventStructureHandler implements XmlEventHandler {
                     Set<String> conflictEvents = conflictStack.pop();
                     if (conflictEvents.size() == 2) {
                         Iterator<String> it = conflictEvents.iterator();
-                        factory.addConflict(new Event(it.next()), new Event(it.next()));
+                        factory.addConflict(it.next(), it.next());
                     } else {
                         LOG.warn("Invalid conflict definition: {}", conflictEvents);
                     }
