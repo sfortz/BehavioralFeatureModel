@@ -21,31 +21,6 @@ public class XmlLoaderUtility extends XmlLoaders {
     private static final Logger LOG = LoggerFactory
             .getLogger(XmlLoaderUtility.class);
 
-    public static FeaturedTransitionSystem loadFeaturedTransitionSystem(InputStream in) throws TransitionSystemDefinitionException {
-        FeaturedTransitionSystemHandler handler = new FeaturedTransitionSystemHandler();
-        try {
-            XmlReader reader = new XmlReader(handler, in);
-            reader.readDocument();
-        } catch (XMLStreamException e) {
-            LOG.error("Error while reading FTS!", e);
-            throw new TransitionSystemDefinitionException("Error while reading FTS!", e);
-        }
-        return handler.geTransitionSystem();
-    }
-
-    public static FeaturedTransitionSystem loadFeaturedTransitionSystem(File xmlFile) throws TransitionSystemDefinitionException {
-        try {
-            return loadFeaturedTransitionSystem(new FileInputStream(xmlFile));
-        } catch (FileNotFoundException e) {
-            LOG.error("Error while loading FTS input ={}!", xmlFile, e);
-            throw new TransitionSystemDefinitionException("Error while loading FTS!", e);
-        }
-    }
-
-    public static FeaturedTransitionSystem loadFeaturedTransitionSystem(String xmlFile) throws TransitionSystemDefinitionException {
-        return loadFeaturedTransitionSystem(new File(xmlFile));
-    }
-
     public static BundleEventStructure loadBundleEventStructure(InputStream in) throws BundleEventStructureDefinitionException {
         BundleEventStructureHandler handler = new BundleEventStructureHandler();
         try {
