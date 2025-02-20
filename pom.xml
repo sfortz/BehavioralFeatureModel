@@ -180,24 +180,6 @@
       <groupId>io.github.universal-variability-language</groupId>
       <artifactId>fm-metamodel</artifactId>
       <version>${uvl_fm.version}</version>
-      <exclusions>  <!-- TODO: Remove? -->
-        <exclusion>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr-runtime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr4</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr4-runtime</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
