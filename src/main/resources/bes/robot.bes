@@ -33,8 +33,6 @@
 		<causality target="goAround">
 			<bundle>
 				<event id="liDet"/>
-			</bundle>
-			<bundle>
 				<event id="caDet"/>
 			</bundle>
 		</causality>
@@ -65,6 +63,10 @@
 		<conflict>
 			<event id="goAround"/>
 			<event id="move" />
+		</conflict>
+		<conflict>
+			<event id="liDet"/>
+			<event id="caDet" />
 		</conflict>
 	</conflicts>
 </bes>

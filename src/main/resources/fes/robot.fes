@@ -3,9 +3,9 @@
 
 	<events>
 		<event id="map" feature="mapping" fexpression="mapping"/>
-		<event id="liDet" feature="lidar" fexpression="mapping &amp;&amp; lidar"/>
-		<event id="caDet" feature="camera" fexpression="mapping &amp;&amp; camera"/>
-		<event id="move" feature="cleaning" fexpression="mapping"/>
+		<event id="liDet" feature="lidar" fexpression="lidar"/>
+		<event id="caDet" feature="camera" fexpression="camera"/>
+		<event id="move" feature="cleaning"/>
 		<event id="goAround" feature="cleaning"/>
 		<event id="clean" feature="cleaning"/>
 		<event id="charge" feature="robot"/>
@@ -33,8 +33,6 @@
 		<causality target="goAround">
 			<bundle>
 				<event id="liDet"/>
-			</bundle>
-			<bundle>
 				<event id="caDet"/>
 			</bundle>
 		</causality>
