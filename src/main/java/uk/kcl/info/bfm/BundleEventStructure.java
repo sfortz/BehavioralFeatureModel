@@ -40,4 +40,7 @@ public interface BundleEventStructure {
     int getCausalitiesCount();
     int getConflictsCount();
 
+    boolean isInConflict(Event var1, Event var2);
+
+    Set<Set<Event>> getAllBundles(Event var1);
 }

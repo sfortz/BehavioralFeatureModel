@@ -41,7 +41,7 @@ public class FeaturedEventStructurePrinter extends BundleEventStructurePrinter {
             Feature feature = this.getFES().getFeature(event);
             LOG.trace(this.getFES().toString());
             LOG.trace(feature.toString());
-            xtw.writeAttribute("feature", feature.getName());
+            xtw.writeAttribute("feature", feature.getFeatureName());
             FExpression fexpr = this.getFES().getFExpression(event);
             if(!fexpr.equals(FExpression.trueValue())){
                 xtw.writeAttribute("fexpression", fexpr.toString());

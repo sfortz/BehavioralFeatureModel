@@ -168,17 +168,17 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return events;
     }
 
-    private boolean isConflictFree(Event e, List<Event> config) {
+    protected boolean isConflictFree(Event e, List<Event> config) {
         for (Event other : config) {
-            if (this.allConflicts.contains(new ConflictRelation(e, other))) {
+            if (this.isInConflict(e, other)) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean respectsCausality(Event e, List<Event> config) {
-        Set<Set<Event>> causes = this.causalities.column(e).keySet(); // All X such as X ↦ e
+    protected boolean respectsCausality(Event e, List<Event> config) {
+        Set<Set<Event>> causes = this.getAllBundles(e); // All X such as X ↦ e
         for (Set<Event> bundle : causes) {
             if (Collections.disjoint(config, bundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
                 return false;
@@ -195,7 +195,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return allConfigs;
     }
 
-    private void buildConfigurations(List<Event> currentConfig, Set<Event> remainingEvents, Set<List<Event>> allConfigs) {
+    protected void buildConfigurations(List<Event> currentConfig, Set<Event> remainingEvents, Set<List<Event>> allConfigs) {
         // Add the current configuration to the allConfigs set. A new list is created to avoid modifying the original configuration.
         allConfigs.add(new ArrayList<>(currentConfig));
 
@@ -230,4 +230,15 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     public int getConflictsCount() {
         return this.allConflicts.size();
     }
+
+    @Override
+    public boolean isInConflict(Event var1, Event var2){
+        return this.allConflicts.contains(new ConflictRelation(var1, var2));
+    }
+
+    @Override
+    public Set<Set<Event>> getAllBundles(Event var1){
+        return this.causalities.column(var1).keySet();
+    }
+
 }

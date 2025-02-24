@@ -2,6 +2,7 @@ package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
+import be.vibes.solver.FeatureModel;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 
 import java.util.Set;
@@ -24,6 +25,11 @@ public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
         DefaultFeaturedEventStructure fes = (DefaultFeaturedEventStructure)this.bes;
         Event ev = fes.addEvent(event);
         fes.addFeature(ev,feature,fexpr);
+    }
+
+    public void setFeatureModel(FeatureModel fm){
+        DefaultFeaturedEventStructure fes = (DefaultFeaturedEventStructure)this.bes;
+        fes.setFeatureModel(fm);
     }
 
     public FeaturedEventStructure build() {
