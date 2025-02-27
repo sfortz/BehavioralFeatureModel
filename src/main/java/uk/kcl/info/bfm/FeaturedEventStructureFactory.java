@@ -8,8 +8,8 @@ import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import java.util.Set;
 
 public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
-    public FeaturedEventStructureFactory() {
-        super(new DefaultFeaturedEventStructure());
+    public FeaturedEventStructureFactory(FeatureModel fm) {
+        super(new DefaultFeaturedEventStructure(fm));
     }
 
     @Override
@@ -25,11 +25,6 @@ public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
         DefaultFeaturedEventStructure fes = (DefaultFeaturedEventStructure)this.bes;
         Event ev = fes.addEvent(event);
         fes.addFeature(ev,feature,fexpr);
-    }
-
-    public void setFeatureModel(FeatureModel fm){
-        DefaultFeaturedEventStructure fes = (DefaultFeaturedEventStructure)this.bes;
-        fes.setFeatureModel(fm);
     }
 
     public FeaturedEventStructure build() {

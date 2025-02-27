@@ -42,5 +42,4 @@ public interface BundleEventStructure {
 
     boolean isInConflict(Event var1, Event var2);
 
-    Set<Set<Event>> getAllBundles(Event var1);
 }

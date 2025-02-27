@@ -6,7 +6,7 @@ public class ConflictRelation {
     private final Event event1;
     private final Event event2;
 
-    ConflictRelation(Event event1, Event event2) {
+    public ConflictRelation(Event event1, Event event2) {
         this.event1 = event1;
         this.event2 = event2;
     }

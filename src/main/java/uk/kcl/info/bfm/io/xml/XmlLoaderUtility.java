@@ -1,5 +1,6 @@
 package uk.kcl.info.bfm.io.xml;
 
+import be.vibes.solver.FeatureModel;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.io.xml.XmlLoaders;
@@ -46,8 +47,8 @@ public class XmlLoaderUtility extends XmlLoaders {
         return XmlLoaderUtility.loadBundleEventStructure(new File(xmlFile));
     }
 
-    public static FeaturedEventStructure loadFeaturedEventStructure(InputStream in) throws BundleEventStructureDefinitionException {
-        FeaturedEventStructureHandler handler = new FeaturedEventStructureHandler();
+    public static FeaturedEventStructure loadFeaturedEventStructure(InputStream in, FeatureModel fm) throws BundleEventStructureDefinitionException {
+        FeaturedEventStructureHandler handler = new FeaturedEventStructureHandler(fm);
         try {
             XmlReader reader = new XmlReader(handler, in);
             reader.readDocument();
@@ -58,17 +59,17 @@ public class XmlLoaderUtility extends XmlLoaders {
         return handler.getBundleEventStructure();
     }
 
-    public static FeaturedEventStructure loadFeaturedEventStructure(File xmlFile) throws BundleEventStructureDefinitionException {
+    public static FeaturedEventStructure loadFeaturedEventStructure(File xmlFile, FeatureModel fm) throws BundleEventStructureDefinitionException {
         try {
-            return XmlLoaderUtility.loadFeaturedEventStructure(new FileInputStream(xmlFile));
+            return XmlLoaderUtility.loadFeaturedEventStructure(new FileInputStream(xmlFile), fm);
         } catch (FileNotFoundException e) {
             LOG.error("Error while loading FES input ={}!", xmlFile, e);
             throw new BundleEventStructureDefinitionException("Error while loading BES!", e);
         }
     }
 
-    public static FeaturedEventStructure loadFeaturedEventStructure(String xmlFile) throws BundleEventStructureDefinitionException {
-        return XmlLoaderUtility.loadFeaturedEventStructure(new File(xmlFile));
+    public static FeaturedEventStructure loadFeaturedEventStructure(String xmlFile, FeatureModel fm) throws BundleEventStructureDefinitionException {
+        return XmlLoaderUtility.loadFeaturedEventStructure(new File(xmlFile), fm);
     }
 
 }

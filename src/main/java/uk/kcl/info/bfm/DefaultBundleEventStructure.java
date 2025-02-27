@@ -14,10 +14,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     private final Table<Set<Event>, Event, CausalityRelation> causalities;
 
     DefaultBundleEventStructure() {
-        //Preconditions.checkNotNull(initialState, "InitialState may not be null!");
-        //this.initialState = new State(initialState);
         this.events = new HashMap<>();
-        //this.states.put(initialState, this.initialState);
         this.allCausalities = new HashSet<>();
         this.allConflicts = new HashSet<>();
         this.causalities = HashBasedTable.create();
@@ -46,6 +43,12 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return causality;
     }
 
+    CausalityRelation addCausality(CausalityRelation causality) {
+        Preconditions.checkNotNull(causality, "Causality may not be null!");
+        return addCausality(causality.getBundle(), causality.getTarget());
+    }
+
+
     ConflictRelation addConflict(Event event1, Event event2) {
         Preconditions.checkNotNull(event1, "Event may not be null!");
         Preconditions.checkNotNull(event2, "Event may not be null!");
@@ -57,6 +60,12 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
         return conflict;
     }
+
+    ConflictRelation addConflict(ConflictRelation conflict) {
+        Preconditions.checkNotNull(conflict, "Conflict may not be null!");
+        return addConflict(conflict.getEvent1(), conflict.getEvent2());
+    }
+
 
     @Override
     public Iterator<Event> events() {
@@ -236,8 +245,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return this.allConflicts.contains(new ConflictRelation(var1, var2));
     }
 
-    @Override
-    public Set<Set<Event>> getAllBundles(Event var1){
+    protected Set<Set<Event>> getAllBundles(Event var1){
         return this.causalities.column(var1).keySet();
     }
 

@@ -4,6 +4,7 @@ import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
 import be.vibes.fexpression.ParserUtil;
 import be.vibes.fexpression.exception.ParserException;
+import be.vibes.solver.FeatureModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.FeaturedEventStructure;
@@ -21,8 +22,8 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
     public static final String FEATURE_ATTR = "feature";
     public static final String FEXPRESSION_ATTR = "fexpression";
 
-    public FeaturedEventStructureHandler() {
-        this.factory = new FeaturedEventStructureFactory();
+    public FeaturedEventStructureHandler(FeatureModel fm) {
+        this.factory = new FeaturedEventStructureFactory(fm);
     }
 
     @Override

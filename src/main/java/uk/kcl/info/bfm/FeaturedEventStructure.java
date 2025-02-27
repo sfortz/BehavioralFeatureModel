@@ -8,7 +8,6 @@ import java.util.Iterator;
 
 public interface FeaturedEventStructure extends BundleEventStructure {
 
-    void setFeatureModel(FeatureModel fm);
     Feature getFeature(Event var1);
     FExpression getFExpression(Event var1);
 }

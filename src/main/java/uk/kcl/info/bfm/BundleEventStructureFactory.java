@@ -34,12 +34,20 @@ public class BundleEventStructureFactory {
         this.bes.addCausality(bundle, target);
     }
 
+    public void addCausality(CausalityRelation causalityRelation) {
+        this.bes.addCausality(causalityRelation);
+    }
+
     public void addConflict(String event1, String event2) {
         this.addConflict(new Event(event1), new Event(event2));
     }
 
     public void addConflict(Event event1, Event event2) {
         this.bes.addConflict(event1, event2);
+    }
+
+    public void addConflict(ConflictRelation conflictRelation) {
+        this.bes.addConflict(conflictRelation);
     }
 
     public BundleEventStructure build() {

@@ -8,7 +8,7 @@ public class CausalityRelation {
     private final Set<Event> bundle;
     private final Event target;
 
-    CausalityRelation(Set<Event> bundle, Event target) {
+    public CausalityRelation(Set<Event> bundle, Event target) {
         this.bundle = bundle;
         this.target = target;
     }
