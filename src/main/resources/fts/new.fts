@@ -226,7 +226,7 @@
         <state id="State_94">
             <transition action="charge" target="State_105" fexpression="true"></transition>
         </state>
-        <state id="State_0">=
+        <state id="State_0">
             <transition action="map" target="State_51" fexpression="Mapping"></transition>
             <transition action="liDet" target="State_34" fexpression="Lidar"></transition>
             <transition action="move" target="State_82" fexpression="true"></transition>
