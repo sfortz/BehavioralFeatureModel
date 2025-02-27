@@ -1,7 +1,4 @@
-package uk.kcl.info.utilities;
-
-import uk.kcl.info.bfm.ConflictRelation;
-import uk.kcl.info.bfm.Event;
+package uk.kcl.info.bfm;
 
 import java.util.*;
 import java.util.stream.Collectors;
