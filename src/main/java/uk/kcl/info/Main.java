@@ -1,16 +1,22 @@
 package uk.kcl.info;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 
+import be.vibes.fexpression.configuration.Configuration;
+import be.vibes.fexpression.exception.DimacsFormatException;
+import be.vibes.solver.FeatureModel;
+import be.vibes.solver.FeatureModelFactory;
+import be.vibes.solver.exception.ConstraintSolvingException;
+import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.TransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
-import de.vill.main.UVLModelFactory;
-import de.vill.model.FeatureModel;
+import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
 import uk.kcl.info.bfm.BundleEventStructure;
+import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
@@ -40,28 +46,84 @@ public class Main {
         XmlSaverUtility.save(ts, dirPath + "ts/new.ts");
     }
 
+    public static void testfts2fes() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException, IOException {
+        String dirPath = "src/main/resources/";
 
-    public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException {
-        testts2bes();
-        testbes2ts();
+        Path filePath = Paths.get(dirPath + "fm/uvl/robot.uvl");
+        String content = new String(Files.readAllBytes(filePath));
+        FeatureModelFactory uvlModelFactory = new FeatureModelFactory();
+        FeatureModel fm = (FeatureModel) uvlModelFactory.parse(content);
+
+        File file = new File(dirPath + "fts/robot.fts");
+        FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
+
+        FeaturedEventStructure fes = Translator.fts2fes(fm, fts);
+        System.out.println("Event Count: " + fes.getEventsCount());
+        System.out.println("Causality Count: " + fes.getCausalitiesCount());
+        System.out.println("Conflict Count: " + fes.getConflictsCount());
+        XmlSaverUtility.save(fes, dirPath + "fes/new.fes");
     }
 
-    public static void oldmain(String[] args) throws IOException {
-        // Read
-        String dirPath = "src/main/resources/fm/uvl/";
-        Path filePath = Paths.get(dirPath + "robot.uvl");
+    public static void testfes2fts() throws BundleEventStructureDefinitionException, TransitionSystemDefinitionException, IOException {
+        String dirPath = "src/main/resources/";
+
+        Path filePath = Paths.get(dirPath + "fm/uvl/robot.uvl");
         String content = new String(Files.readAllBytes(filePath));
-        UVLModelFactory uvlModelFactory = new UVLModelFactory();
-        FeatureModel featureModel = uvlModelFactory.parse(content);
+        FeatureModelFactory uvlModelFactory = new FeatureModelFactory(FeatureModelFactory.SolverType.BDD);
+        FeatureModel fm = (FeatureModel) uvlModelFactory.parse(content);
 
-        System.out.println("This is fm: " + featureModel.getRootFeature().getFeatureType());
-        System.out.println("This is fm: " + featureModel.getRootFeature().getChildren());
+        FeatureModelFactory sat4jFactory = new FeatureModelFactory(FeatureModelFactory.SolverType.SAT4J);
+        FeatureModel sat4jfm = (FeatureModel) sat4jFactory.parse(content);
 
-        System.out.println("This is fm: " + featureModel.getRootFeature().getParentFeature());
+        System.out.println("BDD:"); //TODO: Debug SAT4J Solver initialisation
+        try {
+            Iterator<Configuration> solutions = fm.getSolutions();
+            for (; solutions.hasNext(); ) {
+                System.out.println(solutions.next());
+            }
+        } catch (ConstraintSolvingException e) {
+            throw new RuntimeException(e);
+        }
 
-        System.out.println("This is fm: " + featureModel.getRootFeature().getParentGroup());
+        System.out.println("SAT4J:");
+        try {
+            Iterator<Configuration> solutions = sat4jfm.getSolutions();
+            for (; solutions.hasNext(); ) {
+                System.out.println(solutions.next());
+            }
+        } catch (ConstraintSolvingException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("-- END --");
+
+        File file = new File(dirPath + "fes/robot.fes");
+        FeaturedEventStructure fes = XmlLoaderUtility.loadFeaturedEventStructure(file, fm);
+
+        FeaturedTransitionSystem fts = Translator.fes2fts(fes);
+        System.out.println("Action Count: " + fts.getActionsCount());
+        System.out.println("State Count: " + fts.getStatesCount());
+        System.out.println("Transition Count: " + fts.getTransitionsCount());
+
+        PrintStream output = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new.dot"));
+        FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(fts, output);
+        printer.printDot();
+        printer.flush();
+        XmlSaverUtility.save(fts, dirPath + "fts/new.fts");
+    }
 
 
+    public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException, DimacsFormatException {
+
+        //testts2bes();
+        //testbes2ts();
+        //testfts2fes();
+        testfes2fts();
+    }
+
+    public static void oldmain(FeatureModel featureModel) throws IOException {
+
+        String dirPath = "src/main/resources/fm/uvl/";
         // Write
         String uvlModel = featureModel.toString();
         Path outFilePath = Paths.get(dirPath + featureModel.getNamespace() + "_out.uvl");
