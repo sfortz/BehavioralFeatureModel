@@ -4,6 +4,8 @@ import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
 import be.vibes.ts.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import uk.kcl.info.bfm.*;
 import uk.kcl.info.bfm.ConflictPartition;
@@ -13,8 +15,10 @@ import java.util.stream.Collectors;
 
 public class Translator {
 
-    private static Map<List<Event>, String> getConfigStateMapping(Set<List<Event>> configurations) {
-        Map<List<Event>, String> configToStateMap = new HashMap<>();
+    private static BiMap<List<Event>, String> configToStateMap;
+
+    private static BiMap<List<Event>, String> getConfigStateMapping(Set<List<Event>> configurations) {
+        configToStateMap = HashBiMap.create();
 
         int stateCounter = 0;
         for (List<Event> config : configurations) {
@@ -165,9 +169,11 @@ public class Translator {
             String source = t.getSource().getName();
             String action = t.getAction().getName();
             String target = t.getTarget().getName();
-            Event event = fes.getEvent(action);
-            FExpression fexpr = fes.getFExpression(event);
-            factory.addTransition(source, action, fexpr, target);
+            List<Event> config = configToStateMap.inverse().get(source);
+            FExpression f1 = fes.getFexpression(config);
+            FExpression f2 = fes.getFExpression(fes.getEvent(action));
+            FExpression fexpr = f1.and(f2);
+            factory.addTransition(source, action, fexpr.applySimplification().toCnf(), target);
         }
 
         return factory.build();
