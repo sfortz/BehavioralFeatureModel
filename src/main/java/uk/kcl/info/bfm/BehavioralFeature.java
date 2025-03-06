@@ -1,24 +1,24 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.Feature;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Table;
 import de.vill.config.Configuration;
-import de.vill.model.Feature;
 import de.vill.model.Group;
 import de.vill.util.Util;
 
 import java.util.*;
 
-public class BehaviouralFeature extends Feature implements BundleEventStructure {
+public class BehavioralFeature extends Feature implements BundleEventStructure {
     private final Map<Event, FExpression> events;
     private final Set<CausalityRelation> allCausalities;
     private final Set<ConflictRelation> allConflicts;
     private final Table<Set<Event>, Event, CausalityRelation> causalities;
 
-    public BehaviouralFeature(String name, Map<Event, FExpression> events) {
+    public BehavioralFeature(String name, Map<Event, FExpression> events) {
         super(name);
         this.events = events;
         this.allCausalities = new HashSet<>();
@@ -26,7 +26,7 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         this.causalities = HashBasedTable.create();
     }
 
-    public BehaviouralFeature(String name) {
+    public BehavioralFeature(String name) {
         this(name, new HashMap<>());
     }
 
@@ -34,7 +34,33 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return events;
     }
 
-    Event addEvent(String eventName, FExpression fexpr) {
+    public static BehavioralFeature clone(de.vill.model.Feature old) {
+        return clone(Feature.clone(old));
+    }
+
+    public static BehavioralFeature clone(Feature old) {
+        BehavioralFeature feature = new BehavioralFeature(old.getFeatureName());
+        feature.setNameSpace(old.getNameSpace());
+        feature.setLowerBound(old.getLowerBound());
+        feature.setUpperBound(old.getUpperBound());
+        feature.setSubmodelRoot(old.isSubmodelRoot());
+        feature.setRelatedImport(old.getRelatedImport());
+        feature.setFeatureType(old.getFeatureType());
+        feature.getAttributes().putAll(old.getAttributes());
+
+        for(Group group : old.getChildren()) {
+            feature.getChildren().add(group.clone());
+        }
+
+        for(Group group : feature.getChildren()) {
+            group.setParentFeature(feature);
+        }
+
+        feature.setParentGroup(old.getParentGroup());
+        return feature;
+    }
+
+    protected Event addEvent(String eventName, FExpression fexpr) {
 
         Event ev = new Event(eventName);
         if (this.events.containsKey(ev)){
@@ -45,34 +71,33 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return ev;
     }
 
-    void setFExpression(Event event, FExpression fexpr) {
+    protected void setFExpression(Event event, FExpression fexpr) {
         Preconditions.checkArgument(this.events.containsKey(event), "Event does not belong to this behavioral feature model!");
         this.events.put(event,fexpr);
     }
 
-
-    Set<BehaviouralFeature> getAllRecursiveFeatures() {
-        Set<BehaviouralFeature> features = new HashSet<>();
+    private Set<BehavioralFeature> getAllRecursiveFeatures() {
+        Set<BehavioralFeature> features = new HashSet<>();
         features.add(this);
 
         for (Group g : this.getChildren()) {
-            g.getFeatures().forEach(f -> features.addAll(((BehaviouralFeature) f).getAllRecursiveFeatures()));
+            g.getFeatures().forEach(f -> features.addAll(((BehavioralFeature) f).getAllRecursiveFeatures()));
         }
 
         return features;
     }
 
-    Set<Event> getAllRecursiveEvents() {
+    private Set<Event> getAllRecursiveEvents() {
         Set<Event> ev = new HashSet<>(this.events.keySet());
 
-        for (BehaviouralFeature f : this.getAllRecursiveFeatures()) {
+        for (BehavioralFeature f : this.getAllRecursiveFeatures()) {
             ev.addAll(f.getEvents().keySet());
         }
 
         return ev;
     }
 
-    CausalityRelation addCausality(Set<Event> bundle, Event target) {
+    protected CausalityRelation addCausality(Set<Event> bundle, Event target) {
         Preconditions.checkNotNull(bundle, "Bundle may not be null!");
         Preconditions.checkNotNull(target, "Targeted event may not be null!");
 
@@ -93,7 +118,12 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return causality;
     }
 
-    ConflictRelation addConflict(Event event1, Event event2) {
+    protected CausalityRelation addCausality(CausalityRelation causality) {
+        Preconditions.checkNotNull(causality, "Causality may not be null!");
+        return addCausality(causality.getBundle(), causality.getTarget());
+    }
+
+    protected ConflictRelation addConflict(Event event1, Event event2) {
         Preconditions.checkNotNull(event1, "Event may not be null!");
         Preconditions.checkNotNull(event2, "Event may not be null!");
 
@@ -107,6 +137,11 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return conflict;
     }
 
+    protected ConflictRelation addConflict(ConflictRelation conflict) {
+        Preconditions.checkNotNull(conflict, "Conflict may not be null!");
+        return addConflict(conflict.getEvent1(), conflict.getEvent2());
+    }
+
     @Override
     public Iterator<Event> events() {
         return this.events.keySet().iterator();
@@ -114,7 +149,7 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
 
     @Override
     public List<Event> getAllEvents() {
-        return null;
+        return this.events.keySet().stream().toList();
     }
 
     @Override
@@ -134,6 +169,11 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
     @Override
     public Iterator<ConflictRelation> conflicts() {
         return this.allConflicts.iterator();
+    }
+
+    @Override
+    public Iterator<CausalityRelation> getCausalities(Event event) {
+        return this.causalities.column(event).values().iterator();
     }
 
     @Override
@@ -216,7 +256,7 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return events;
     }
 
-    @Override
+    @Override //TODO: Implement.
     public Set<List<Event>> getAllConfigurations() {
         return null;
     }
@@ -236,43 +276,12 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return this.allConflicts.size();
     }
 
-    private String cardinalityToString() {
-        StringBuilder result = new StringBuilder();
-        if (!(this.getUpperBound() == null & this.getLowerBound() == null)) {
-            result.append(" cardinality [");
-            if (this.getLowerBound().equals(this.getUpperBound())) {
-                result.append(this.getLowerBound());
-            } else {
-                result.append(this.getLowerBound());
-                result.append("..");
-                result.append(this.getUpperBound());
-            }
-
-            result.append("] ");
-        }
-
-        return result.toString();
-    }
-
-    private String attributesToString(boolean withSubmodels, String currentAlias) {
-        StringBuilder result = new StringBuilder();
-        if (!this.getAttributes().isEmpty()) {
-            result.append(" {");
-            this.getAttributes().forEach((k, v) -> {
-                result.append(Util.addNecessaryQuotes(k));
-                result.append(' ');
-                result.append(v.toString(withSubmodels, currentAlias));
-                result.append(", ");
-            });
-            result.deleteCharAt(result.length() - 1);
-            result.deleteCharAt(result.length() - 1);
-            result.append("}");
-        }
-
-        return result.toString();
-    }
-
     @Override
+    public boolean isInConflict(Event var1, Event var2) {
+        return this.allConflicts.contains(new ConflictRelation(var1, var2));
+    }
+
+    @Override //TODO: Add the behavioural part
     public String toStringAsRoot(String currentAlias) {
         StringBuilder result = new StringBuilder();
         if (this.getFeatureType() != null) {
@@ -280,8 +289,8 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         }
 
         result.append(Util.addNecessaryQuotes(this.getFeatureName()));
-        result.append(this.cardinalityToString());
-        result.append(this.attributesToString(false, currentAlias));
+        //result.append(this.cardinalityToString());
+        //result.append(this.attributesToString(false, currentAlias));
         result.append(Configuration.getNewlineSymbol());
         Iterator var3 = this.getChildren().iterator();
 
@@ -293,7 +302,7 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return result.toString();
     }
 
-    @Override
+    @Override //TODO: Add the behavioural part
     public String toString(boolean withSubmodels, String currentAlias) {
         StringBuilder result = new StringBuilder();
         if (this.getFeatureType() != null) {
@@ -306,9 +315,9 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
             result.append(Util.addNecessaryQuotes(this.getReferenceFromSpecificSubmodel(currentAlias)));
         }
 
-        result.append(this.cardinalityToString());
+        //result.append(this.cardinalityToString());
         if (!this.isSubmodelRoot() || withSubmodels) {
-            result.append(this.attributesToString(withSubmodels, currentAlias));
+            //result.append(this.attributesToString(withSubmodels, currentAlias));
             result.append(Configuration.getNewlineSymbol());
             Iterator var4 = this.getChildren().iterator();
 
@@ -321,18 +330,17 @@ public class BehaviouralFeature extends Feature implements BundleEventStructure 
         return result.toString();
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        BehaviouralFeature that = (BehaviouralFeature) o;
+        BehavioralFeature that = (BehavioralFeature) o;
         return Objects.equals(events, that.events) && Objects.equals(allCausalities, that.allCausalities) && Objects.equals(allConflicts, that.allConflicts) && Objects.equals(causalities, that.causalities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(events, allCausalities, allConflicts, causalities);
+        return super.hashCode() + Objects.hash(events, allCausalities, allConflicts, causalities);
     }
 }

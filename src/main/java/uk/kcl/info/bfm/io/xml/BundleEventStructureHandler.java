@@ -26,6 +26,7 @@ public class BundleEventStructureHandler implements XmlEventHandler {
     public static final String BUNDLE_TAG = "bundle";
     public static final String CONFLICTS_TAG = "conflicts";
     public static final String CONFLICT_TAG = "conflict";
+
     public static final String ID_ATTR = "id";
     public static final String TARGET_ATTR = "target";
 

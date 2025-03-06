@@ -38,6 +38,7 @@ public interface BundleEventStructure {
     int getEventsCount();
 
     int getCausalitiesCount();
+
     int getConflictsCount();
 
     boolean isInConflict(Event var1, Event var2);

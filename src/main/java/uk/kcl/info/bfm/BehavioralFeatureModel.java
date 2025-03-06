@@ -1,45 +1,119 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
-import be.vibes.fexpression.Feature;
-import be.vibes.solver.FeatureModel;
+import be.vibes.fexpression.configuration.Configuration;
+import be.vibes.solver.ConstraintIdentifier;
+import be.vibes.solver.SolverFacade;
+import be.vibes.solver.exception.ConstraintNotFoundException;
+import be.vibes.solver.exception.ConstraintSolvingException;
+import be.vibes.solver.exception.SolverFatalErrorException;
+import be.vibes.solver.exception.SolverInitializationException;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-public interface BehavioralFeatureModel extends FeatureModel {
+public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
 
-    Event getEvent(String var1);
+    private SolverFacade solver;
 
-    Feature getFeature(String featureName);
+    protected BehavioralFeatureModel(de.vill.model.FeatureModel featureModel, SolverFacade solver) {
+        super();
+        this.getUsedLanguageLevels().addAll(featureModel.getUsedLanguageLevels());
+        this.setNamespace(featureModel.getNamespace());
+        this.getImports().addAll(featureModel.getImports());
+        this.setRootFeature(featureModel.getRootFeature());
+        this.getFeatureMap().putAll(featureModel.getFeatureMap());
+        this.getImports().addAll(featureModel.getImports());
+        this.getOwnConstraints().addAll(featureModel.getOwnConstraints());
+        this.setExplicitLanguageLevels(featureModel.isExplicitLanguageLevels());
+        this.getLiteralConstraints().addAll(featureModel.getLiteralConstraints());
+        this.getLiteralExpressions().addAll(featureModel.getLiteralExpressions());
+        this.getAggregateFunctionsWithRootFeature().addAll(featureModel.getAggregateFunctionsWithRootFeature());
+        this.solver = solver;
+    }
 
-    List<Feature> getFeatures();
+    protected BehavioralFeatureModel(SolverFacade solver) {
+        super();
+        this.solver = solver;
+    }
 
-    Iterator<Event> events();
-    Iterator<CausalityRelation> causalities();
-    Iterator<ConflictRelation> conflicts();
+    protected BehavioralFeatureModel() {
+        super();
+    }
 
-    CausalityRelation getCausality(Event var1, Event var2);
-    ConflictRelation getConflict(Event var1, Event var2);
-    boolean hasCausality(Event var1, Event var2);
-    boolean hasConflict(Event var1, Event var2);
-    Iterator<CausalityRelation> getCausalities(Event var1);
+    protected void setSolver(SolverFacade solver) {
+        if(this.solver == null){
+            this.solver = solver;
+        } else {
+            throw new RuntimeException("This Feature Model solver was already set.");
+        }
+    }
 
-    Iterator<ConflictRelation> getConflicts(Event var1);
+    public SolverFacade getSolver() {
+        return solver;
+    }
 
-    Iterator<Event> getOutgoing(Event var1);
+    /**
+     * Set the root feature of the feature model
+     * @param: rootFeature – the root feature
+     */
+    @Override
+    public void setRootFeature(de.vill.model.Feature rootFeature) {
+        super.setRootFeature(rootFeature);
+        // TODO: Change the solver by getting the root feature Feature Diagram.
+    }
 
-    Iterator<Event> getIncoming(Event var1);
+    @Override
+    public BehavioralFeature getRootFeature() {
+        return BehavioralFeature.clone(super.getRootFeature());
+    }
 
-    int getOutgoingCount(Event var1);
+    public BehavioralFeature getFeature(String name) {
+        if (name == null) {
+            return null;
+        }
 
-    int getIncomingCount(Event var1);
+        // Find matching feature in a case-insensitive way
+        for (Map.Entry<String, de.vill.model.Feature> entry : this.getFeatureMap().entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(name)) {
+                return BehavioralFeature.clone(entry.getValue());
+            }
+        }
 
-    int getCausalitiesCount();
-    int getConflictsCount();
+        return null; // Return null if no match is found
+    }
 
-    int getEventsCount();
+    public Set<BehavioralFeature> getFeatures() {
+        Set<BehavioralFeature> features = new HashSet<>();
+        for (de.vill.model.Feature f : this.getFeatureMap().values()) {
+            features.add(BehavioralFeature.clone(f));
+        }
+        return features;
+    }
 
-    FExpression getFExpression(Event event);
+    public ConstraintIdentifier addSolverConstraint(FExpression constraint)
+            throws SolverInitializationException, SolverFatalErrorException {
+        return this.solver.addConstraint(constraint);
+    }
+
+    public void removeSolverConstraint(ConstraintIdentifier id)
+            throws SolverFatalErrorException, ConstraintNotFoundException {
+        this.solver.removeConstraint(id);
+    }
+
+    public boolean isSatisfiable() throws ConstraintSolvingException {
+        return this.solver.isSatisfiable();
+    }
+
+    public Iterator<Configuration> getSolutions() throws ConstraintSolvingException {
+        return this.solver.getSolutions();
+    }
+
+    public void resetSolver() throws SolverInitializationException {
+        this.solver.reset();
+    }
+
+    public double getNumberOfSolutions() throws ConstraintSolvingException {
+        return this.solver.getNumberOfSolutions();
+    }
 
 }

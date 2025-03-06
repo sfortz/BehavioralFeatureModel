@@ -12,7 +12,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class BundleEventStructureXmlPrinter {
     protected OutputStream output;
-    private BundleEventStructureElementPrinter besPrinter;
+    private final BundleEventStructureElementPrinter besPrinter;
 
     public BundleEventStructureXmlPrinter(OutputStream output, BundleEventStructureElementPrinter besPrinter) {
         this.output = output;
