@@ -2,10 +2,12 @@ package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.DimacsModel;
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.Feature;
 import be.vibes.fexpression.exception.DimacsFormatException;
 import be.vibes.solver.*;
 import be.vibes.solver.constraints.ExclusionConstraint;
 import be.vibes.solver.constraints.RequirementConstraint;
+import be.vibes.solver.exception.FeatureModelDefinitionException;
 import be.vibes.solver.exception.SolverInitializationException;
 import de.vill.exception.ParseError;
 import de.vill.model.Group;
@@ -41,6 +43,7 @@ public class BehavioralFeatureModelFactory {
         BehavioralFeature feature = new BehavioralFeature(name);
         feature.setParentGroup(null);
         bfm.getFeatureMap().put(name, feature);
+        bfm.getNewFeatureMap().put(name, feature);
         bfm.setRootFeature(feature);
         return feature;
     }
@@ -57,6 +60,7 @@ public class BehavioralFeatureModelFactory {
         feature.setParentGroup(group);
         group.getFeatures().add(feature);
         bfm.getFeatureMap().put(name, feature);
+        bfm.getNewFeatureMap().put(name, feature);
         return feature;
     }
 
@@ -69,39 +73,72 @@ public class BehavioralFeatureModelFactory {
         return features;
     }
 
-    //TODO: Exclusion and Requirements should be at the feature level (To change both here and in ViBeS)!
-    public Constraint addExclusionConstraint(BehavioralFeature f1, BehavioralFeature f2) {
-        return addExclusionConstraint(f1.getFeatureName(), f2.getFeatureName());
+    private Set<String> getRecursiveChildren(BehavioralFeature f) {
+        Set<String> children = new HashSet<>();
+        children.add(f.getFeatureName());
+
+        for(Group g: f.getChildren()){
+            for(de.vill.model.Feature child: g.getFeatures()){
+                children.addAll(getRecursiveChildren(BehavioralFeature.clone(child)));
+            }
+        }
+        return children;
     }
 
-    public Constraint addRequirementConstraint(BehavioralFeature feature, BehavioralFeature dependency){
-        return addRequirementConstraint(feature.getFeatureName(), dependency.getFeatureName());
+    public ExclusionConstraint addExclusionConstraint(BehavioralFeature lca, String f1, String f2) {
+        return addConstraint(lca, f1, f2, "Exclusion");
     }
 
-    public Constraint addExclusionConstraint(String f1, String f2) {
+    public RequirementConstraint addRequirementConstraint(BehavioralFeature lca, String feature, String dependency) {
+        return addConstraint(lca, dependency, feature, "Requirement");
+    }
+
+    private <T extends Constraint> T addConstraint(BehavioralFeature lca, String f1, String f2, String type) {
+
+        if(bfm.getFeature(lca.getFeatureName()) == null){
+            throw new FeatureModelDefinitionException( "Impossible to add the new " + type
+                    + " constraint. Feature " + lca.getFeatureName() + " is not part of the FM."
+            );
+        }
+
+        Set<String> children = getRecursiveChildren(lca);
 
         if(bfm.getFeature(f1) == null || bfm.getFeature(f2) == null){
-            throw new BehavioralFeatureModelDefinitionException("Constraints should only refers to features belonging to the FM.");
+            throw new FeatureModelDefinitionException("Constraints should only refers to features belonging to the FM.");
+        }
+
+        if (!children.contains(f1) && !children.contains(f2)) {
+            throw new FeatureModelDefinitionException(
+                    type + " constraint should only refer to sub-features of " + lca.getFeatureName() + "."
+            );
         }
 
         LiteralConstraint c1 = new LiteralConstraint(f1);
         LiteralConstraint c2 = new LiteralConstraint(f2);
-        Constraint constraint = new ExclusionConstraint(c1, c2);
-        bfm.getOwnConstraints().add(constraint);
-        return constraint;
+
+        switch (type) {
+            case "Exclusion": {
+                ExclusionConstraint constraint = new ExclusionConstraint(c1, c2);
+                lca.getExclusions().add(constraint);
+                bfm.getOwnConstraints().add(constraint);
+                return (T) constraint;
+            }
+            case "Requirement":
+                RequirementConstraint constraint = new RequirementConstraint(c1, c2);
+                lca.getRequirements().add(constraint);
+                bfm.getOwnConstraints().add(constraint);
+                return (T) constraint;
+            default: throw new FeatureModelDefinitionException("Unknown type of constraints!");
+        }
     }
 
-    public Constraint addRequirementConstraint(String feature, String dependency) {
+     public void addEvent(String featName, String event) {
+        this.addEvent(featName, event, FExpression.trueValue());
 
-        if(bfm.getFeature(feature) == null || bfm.getFeature(dependency) == null){
-            throw new BehavioralFeatureModelDefinitionException("Constraints should only refers to features belonging to the FM.");
-        }
+    }
 
-        LiteralConstraint f = new LiteralConstraint(feature);
-        LiteralConstraint d = new LiteralConstraint(dependency);
-        Constraint constraint = new RequirementConstraint(d, f);
-        bfm.getOwnConstraints().add(constraint);
-        return constraint;
+    public void addEvent(BehavioralFeature feat,  String event) {
+        this.addEvent(feat, event, FExpression.trueValue());
     }
 
     public void addEvent(String featName, String event, FExpression fexpr) {
@@ -109,6 +146,16 @@ public class BehavioralFeatureModelFactory {
         BehavioralFeature feature = bfm.getFeature(featName);
         if(feature != null){
             feature.addEvent(event, fexpr);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Events should always be associated to one feature of the BFM.");
+        }
+    }
+
+    public void addEvent(BehavioralFeature feat,  String event, FExpression fexpr) {
+
+        BehavioralFeature feature = bfm.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.addEvent(event, fexpr);
         } else {
             throw new BehavioralFeatureModelDefinitionException("Events should always be associated to one feature of the BFM.");
         }
@@ -145,6 +192,37 @@ public class BehavioralFeatureModelFactory {
         }
     }
 
+    public void addCausality(BehavioralFeature feat, Set<String> bundle, String target) {
+
+        Event trg = new Event(target);
+        Set<Event> bndl = new HashSet<>();
+        for(String name: bundle) {
+            Event event = new Event(name);
+            bndl.add(event);
+        }
+
+        this.addCausality(feat,bndl,trg);
+    }
+
+    public void addCausality(BehavioralFeature feat, Set<Event> bundle, Event target) {
+
+        BehavioralFeature feature = bfm.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.addCausality(bundle, target);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Causalities should always be associated to one feature of the BFM.");
+        }
+    }
+
+    public void addCausality(BehavioralFeature feat, CausalityRelation causalityRelation) {
+        BehavioralFeature feature = bfm.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.addCausality(causalityRelation);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Causalities should always be associated to one feature of the BFM.");
+        }
+    }
+
     public void addConflict(String featName, String event1, String event2) {
         this.addConflict(featName, new Event(event1), new Event(event2));
     }
@@ -162,6 +240,28 @@ public class BehavioralFeatureModelFactory {
         BehavioralFeature feature = bfm.getFeature(featName);
         if(feature != null){
             feature.addConflict(conflictRelation);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
+        }
+    }
+
+    public void addConflict(BehavioralFeature feat, String event1, String event2) {
+        this.addConflict(feat, new Event(event1), new Event(event2));
+    }
+
+    public void addConflict(BehavioralFeature feat, Event event1, Event event2) {
+        BehavioralFeature feature = bfm.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.addConflict(event1, event2);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
+        }
+    }
+
+    public void addConflict(BehavioralFeature feat, ConflictRelation conflictRelation) {
+        BehavioralFeature feature = bfm.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.addConflict(conflictRelation);
         } else {
             throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
         }

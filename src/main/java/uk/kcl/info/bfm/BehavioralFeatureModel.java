@@ -1,6 +1,7 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.Feature;
 import be.vibes.fexpression.configuration.Configuration;
 import be.vibes.solver.ConstraintIdentifier;
 import be.vibes.solver.SolverFacade;
@@ -10,10 +11,12 @@ import be.vibes.solver.exception.SolverFatalErrorException;
 import be.vibes.solver.exception.SolverInitializationException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
 
     private SolverFacade solver;
+    private final Map<String, BehavioralFeature> featureMap = new HashMap<>();
 
     protected BehavioralFeatureModel(de.vill.model.FeatureModel featureModel, SolverFacade solver) {
         super();
@@ -22,6 +25,9 @@ public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
         this.getImports().addAll(featureModel.getImports());
         this.setRootFeature(featureModel.getRootFeature());
         this.getFeatureMap().putAll(featureModel.getFeatureMap());
+        for(Map.Entry<String, de.vill.model.Feature> entry: featureModel.getFeatureMap().entrySet()){
+            this.featureMap.put(entry.getKey(), BehavioralFeature.clone(entry.getValue()));
+        }
         this.getImports().addAll(featureModel.getImports());
         this.getOwnConstraints().addAll(featureModel.getOwnConstraints());
         this.setExplicitLanguageLevels(featureModel.isExplicitLanguageLevels());
@@ -64,7 +70,7 @@ public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
 
     @Override
     public BehavioralFeature getRootFeature() {
-        return BehavioralFeature.clone(super.getRootFeature());
+        return getFeature(super.getRootFeature().getFeatureName());
     }
 
     public BehavioralFeature getFeature(String name) {
@@ -73,21 +79,21 @@ public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
         }
 
         // Find matching feature in a case-insensitive way
-        for (Map.Entry<String, de.vill.model.Feature> entry : this.getFeatureMap().entrySet()) {
+        for (Map.Entry<String, BehavioralFeature> entry : this.featureMap.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(name)) {
-                return BehavioralFeature.clone(entry.getValue());
+                return entry.getValue();
             }
         }
 
         return null; // Return null if no match is found
     }
 
-    public Set<BehavioralFeature> getFeatures() {
-        Set<BehavioralFeature> features = new HashSet<>();
-        for (de.vill.model.Feature f : this.getFeatureMap().values()) {
-            features.add(BehavioralFeature.clone(f));
-        }
-        return features;
+    public Collection<BehavioralFeature> getFeatures() {
+        return this.featureMap.values();
+    }
+
+    protected  Map<String, BehavioralFeature> getNewFeatureMap(){
+        return featureMap;
     }
 
     public ConstraintIdentifier addSolverConstraint(FExpression constraint)
@@ -116,4 +122,51 @@ public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
         return this.solver.getNumberOfSolutions();
     }
 
+    private static List<BehavioralFeature> getAncestors(BehavioralFeature feature) {
+        List<BehavioralFeature> ancestors = new ArrayList<>();
+        while (feature != null) {
+            ancestors.add(feature);
+            feature = (BehavioralFeature) feature.getParentFeature();
+        }
+        return ancestors;
+    }
+
+    private static BehavioralFeature leastCommonAncestor(BehavioralFeature f1, BehavioralFeature f2) {
+        List<BehavioralFeature> ancestorsF1 = getAncestors(f1);
+        List<BehavioralFeature> ancestorsF2 = getAncestors(f2);
+
+        // Find the lowest common ancestor
+        for (BehavioralFeature ancestor : ancestorsF1) {
+            if (ancestorsF2.contains(ancestor)) {
+                return ancestor;
+            }
+        }
+
+        return null;
+    }
+
+    public BehavioralFeature leastCommonAncestor (List<FExpression> fExpressions){
+
+        FExpression disjunction = FExpression.falseValue();
+
+        for (FExpression fexp: fExpressions){
+            disjunction.orWith(fexp);
+        }
+
+        disjunction = disjunction.toCnf().applySimplification();
+
+        if (disjunction.isTrue()) {
+            return this.getRootFeature();
+        }
+
+        Set<BehavioralFeature> features = disjunction.getFeatures().stream().map(f -> this.getFeature(f.getFeatureName())).collect(Collectors.toSet());
+
+        Iterator<BehavioralFeature> iterator = features.iterator();
+        BehavioralFeature lca = iterator.next();
+
+        while (iterator.hasNext()) {
+            lca = leastCommonAncestor(lca, iterator.next());
+        }
+        return lca;
+    }
 }

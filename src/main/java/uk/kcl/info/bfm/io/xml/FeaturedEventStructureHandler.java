@@ -19,6 +19,7 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(FeaturedEventStructureHandler.class);
 
+    public static final String BES_TAG = "fes";
     public static final String FEATURE_ATTR = "feature";
     public static final String FEXPRESSION_ATTR = "fexpression";
 
@@ -44,7 +45,7 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
         } else {
             // Otherwise, it's a standalone event declaration
             Attribute featAtt = element.getAttributeByName(QName.valueOf(FEATURE_ATTR));
-            String f = null;
+            String f;
             if (featAtt != null) {
                 f = featAtt.getValue();
             } else {

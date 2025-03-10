@@ -30,6 +30,8 @@ public class BehavioralFeature extends Feature implements BundleEventStructure {
         this(name, new HashMap<>());
     }
 
+    // TODO: CHeck if I have all functionalities from FES
+
     public Map<Event, FExpression> getEvents() {
         return events;
     }
@@ -47,6 +49,8 @@ public class BehavioralFeature extends Feature implements BundleEventStructure {
         feature.setRelatedImport(old.getRelatedImport());
         feature.setFeatureType(old.getFeatureType());
         feature.getAttributes().putAll(old.getAttributes());
+        feature.getExclusions().addAll(old.getExclusions());
+        feature.getRequirements().addAll(old.getRequirements());
 
         for(Group group : old.getChildren()) {
             feature.getChildren().add(group.clone());
@@ -74,6 +78,16 @@ public class BehavioralFeature extends Feature implements BundleEventStructure {
     protected void setFExpression(Event event, FExpression fexpr) {
         Preconditions.checkArgument(this.events.containsKey(event), "Event does not belong to this behavioral feature model!");
         this.events.put(event,fexpr);
+    }
+
+    public FExpression getFExpression(Event event) {
+        Preconditions.checkNotNull(event, "Event may not be null!");
+        FExpression fexpr = this.events.get(event);
+        if (fexpr == null) {
+            fexpr = FExpression.trueValue();
+        }
+
+        return fexpr;
     }
 
     private Set<BehavioralFeature> getAllRecursiveFeatures() {

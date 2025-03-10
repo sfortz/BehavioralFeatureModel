@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.*;
 
 public class BundleEventStructurePrinter implements BundleEventStructureElementPrinter{
     private static final Logger LOG = LoggerFactory.getLogger(BundleEventStructurePrinter.class);
@@ -21,7 +22,7 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     @Override
     public void printElement(XMLStreamWriter xtw, BundleEventStructure bes) throws XMLStreamException {
         LOG.trace("Printing BES element");
-        xtw.writeStartElement("bes");
+        xtw.writeStartElement(BES_TAG);
         this.bes = bes;
         this.printEvents(xtw, bes.events());
         this.printCausalities(xtw);
@@ -33,12 +34,12 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     @Override
     public void printEvents(XMLStreamWriter xtw, Iterator<Event> iterator) throws XMLStreamException {
         LOG.trace("Starting Events");
-        xtw.writeStartElement("events");
+        xtw.writeStartElement(EVENTS_TAG);
         while(iterator.hasNext()) {
             Event event = iterator.next();
             LOG.trace("Printing event element");
-            xtw.writeStartElement("event");
-            xtw.writeAttribute("id", event.getName());
+            xtw.writeStartElement(EVENT_TAG);
+            xtw.writeAttribute(ID_ATTR, event.getName());
             xtw.writeCharacters(" ");
             xtw.writeEndElement();
         }
@@ -49,11 +50,11 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     @Override
     public void printCausalities(XMLStreamWriter xtw) throws XMLStreamException {
         LOG.trace("Starting Causalities");
-        xtw.writeStartElement("causalities");
+        xtw.writeStartElement(CAUSALITIES_TAG);
         for(Event ev: bes.getAllEvents()){
             LOG.trace("Printing causality element");
-            xtw.writeStartElement("causality");
-            xtw.writeAttribute("target", ev.getName());
+            xtw.writeStartElement(CAUSALITY_TAG);
+            xtw.writeAttribute(TARGET_ATTR, ev.getName());
             for (Iterator<CausalityRelation> causalities = bes.getCausalities(ev); causalities.hasNext();) {
                 CausalityRelation causality = causalities.next();
                 printBundle(xtw, causality.getBundle());
@@ -65,10 +66,10 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     }
 
     private void printBundle(XMLStreamWriter xtw, Set<Event> bundle) throws XMLStreamException {
-        xtw.writeStartElement("bundle");
+        xtw.writeStartElement(BUNDLE_TAG);
         for (Event ev : bundle){
-            xtw.writeStartElement("event");
-            xtw.writeAttribute("id", ev.getName());
+            xtw.writeStartElement(EVENT_TAG);
+            xtw.writeAttribute(ID_ATTR, ev.getName());
             xtw.writeCharacters(" ");
             xtw.writeEndElement();
         }
@@ -78,17 +79,17 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     @Override
     public void printConflicts(XMLStreamWriter xtw, Iterator<ConflictRelation> iterator) throws XMLStreamException {
         LOG.trace("Starting Conflicts");
-        xtw.writeStartElement("conflicts");
+        xtw.writeStartElement(CONFLICTS_TAG);
         while(iterator.hasNext()) {
             ConflictRelation conflict = iterator.next();
             LOG.trace("Printing conflict element");
-            xtw.writeStartElement("conflict");
-            xtw.writeStartElement("event");
-            xtw.writeAttribute("id", conflict.getEvent1().getName());
+            xtw.writeStartElement(CONFLICT_TAG);
+            xtw.writeStartElement(EVENT_TAG);
+            xtw.writeAttribute(ID_ATTR, conflict.getEvent1().getName());
             xtw.writeCharacters(" ");
             xtw.writeEndElement();
-            xtw.writeStartElement("event");
-            xtw.writeAttribute("id", conflict.getEvent2().getName());
+            xtw.writeStartElement(EVENT_TAG);
+            xtw.writeAttribute(ID_ATTR, conflict.getEvent2().getName());
             xtw.writeCharacters(" ");
             xtw.writeEndElement();
             xtw.writeEndElement();
