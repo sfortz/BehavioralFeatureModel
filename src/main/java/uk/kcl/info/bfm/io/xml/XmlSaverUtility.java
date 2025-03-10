@@ -1,12 +1,10 @@
 package uk.kcl.info.bfm.io.xml;
 
-import be.vibes.ts.FeaturedTransitionSystem;
-import be.vibes.ts.TransitionSystem;
-import be.vibes.ts.exception.TransitionSystemDefinitionException;
-import be.vibes.ts.io.xml.TransitionSystemPrinter;
 import be.vibes.ts.io.xml.XmlSavers;
+import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.FeaturedEventStructure;
+import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 
 import javax.xml.stream.XMLStreamException;
@@ -63,5 +61,28 @@ public class XmlSaverUtility extends XmlSavers {
 
     public static void save(FeaturedEventStructure fes, String outputFileName) throws BundleEventStructureDefinitionException {
         save(fes, new File(outputFileName));
+    }
+
+    public static void save(BehavioralFeatureModel bfm, OutputStream out) throws BehavioralFeatureModelDefinitionException {
+        BehavioralFeatureModelPrinter printer = new BehavioralFeatureModelPrinter();
+        BehavioralFeatureModelXmlPrinter xmlOut = new BehavioralFeatureModelXmlPrinter(out, printer);
+
+        try {
+            xmlOut.print(bfm);
+        } catch (XMLStreamException var5) {
+            throw new BehavioralFeatureModelDefinitionException("Exception while printing XML!", var5);
+        }
+    }
+
+    public static void save(BehavioralFeatureModel bfm, File out) throws BehavioralFeatureModelDefinitionException {
+        try {
+            save(bfm, new FileOutputStream(out));
+        } catch (FileNotFoundException var3) {
+            throw new BehavioralFeatureModelDefinitionException("Output file not found!", var3);
+        }
+    }
+
+    public static void save(BehavioralFeatureModel bfm, String outputFileName) throws BehavioralFeatureModelDefinitionException {
+        save(bfm, new File(outputFileName));
     }
 }

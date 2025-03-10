@@ -1,48 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <bfm namespace="CleaningRobot">
-	<features>
-		<feature name="Robot">
-			<events>
-				<event id="charge"/>
-			</events>
+	<feature name="Robot">
+		<events>
+			<event id="charge"/>
+		</events>
+		<optional>
+			<feature name="Mapping">
+				<events>
+					<event id="map" fexpression="mapping"/>
+				</events>
+			</feature>
+		</optional>
 
-			<optional>
-				<feature name="Mapping">
-					<events>
-						<event id="map" fexpression="mapping"/>
-					</events>
-				</feature>
-			</optional>
+		<mandatory>
+			<feature name="ObstacleDetection">
+				<alternative>
+					<feature name="Lidar">
+						<events>
+							<event id="liDet" fexpression="lidar"/>
+						</events>
+					</feature>
+					<feature name="Camera">
+						<events>
+							<event id="caDet" fexpression="camera"/>
+						</events>
+					</feature>
+				</alternative>
+			</feature>
+		</mandatory>
 
-			<mandatory>
-				<feature name="ObstacleDetection">
-
-					<alternative>
-						<feature name="Lidar">
-							<events>
-								<event id="liDet" fexpression="lidar"/>
-							</events>
-						</feature>
-						<feature name="Camera">
-							<events>
-								<event id="caDet" fexpression="camera"/>
-							</events>
-						</feature>
-					</alternative>
-				</feature>
-			</mandatory>
-
-			<mandatory>
-				<feature name="Cleaning">
-					<events>
-						<event id="move"/>
-						<event id="goAround"/>
-						<event id="clean"/>
-					</events>
-				</feature>
+		<mandatory>
+			<feature name="Cleaning">
+				<events>
+					<event id="move"/>
+					<event id="goAround"/>
+					<event id="clean"/>
+				</events>
 				<event_constraints>
-
 					<causalities>
 						<causality target="clean">
 							<bundle>
@@ -59,20 +54,10 @@
 						</conflict>
 					</conflicts>
 				</event_constraints>
-			</mandatory>
-		</feature>
-	</features>
+			</feature>
+		</mandatory>
 
-	<feature_constraints>
-		<exclusions>
-			<exclude conflict1=""  conflict2=""/> <!--TODO: To remove! -->
-		</exclusions>
-		<requirements>
-			<requires feature=""  dependency=""/> <!--TODO: To remove! -->
-		</requirements>
-	</feature_constraints>
-
-	<event_constraints>
+		<event_constraints>
 		<causalities>
 			<causality target="move">
 				<bundle>
@@ -105,6 +90,7 @@
 				</bundle>
 			</causality>
 		</causalities>
+
 		<conflicts>
 			<conflict>
 				<event id="liDet"/>
@@ -116,4 +102,5 @@
 			</conflict>
 		</conflicts>
 	</event_constraints>
+	</feature>
 </bfm>

@@ -1,14 +1,14 @@
 package uk.kcl.info.bfm.io.xml;
 
 import be.vibes.solver.FeatureModel;
-import be.vibes.ts.FeaturedTransitionSystem;
-import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.io.xml.XmlLoaders;
 import be.vibes.ts.io.xml.XmlReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.FeaturedEventStructure;
+import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 
 import javax.xml.stream.XMLStreamException;
@@ -54,7 +54,7 @@ public class XmlLoaderUtility extends XmlLoaders {
             reader.readDocument();
         } catch (XMLStreamException e) {
             LOG.error("Error while reading FES", e);
-            throw new BundleEventStructureDefinitionException("Error while reading BES!", e);
+            throw new BundleEventStructureDefinitionException("Error while reading FES!", e);
         }
         return handler.getBundleEventStructure();
     }
@@ -64,7 +64,7 @@ public class XmlLoaderUtility extends XmlLoaders {
             return XmlLoaderUtility.loadFeaturedEventStructure(new FileInputStream(xmlFile), fm);
         } catch (FileNotFoundException e) {
             LOG.error("Error while loading FES input ={}!", xmlFile, e);
-            throw new BundleEventStructureDefinitionException("Error while loading BES!", e);
+            throw new BundleEventStructureDefinitionException("Error while loading FES!", e);
         }
     }
 
@@ -72,4 +72,28 @@ public class XmlLoaderUtility extends XmlLoaders {
         return XmlLoaderUtility.loadFeaturedEventStructure(new File(xmlFile), fm);
     }
 
+    public static BehavioralFeatureModel loadBehavioralFeatureModel(InputStream in) throws BehavioralFeatureModelDefinitionException {
+        BehavioralFeatureModelHandler handler = new BehavioralFeatureModelHandler();
+        try {
+            XmlReader reader = new XmlReader(handler, in);
+            reader.readDocument();
+        } catch (XMLStreamException e) {
+            LOG.error("Error while reading BFM", e);
+            throw new BehavioralFeatureModelDefinitionException("Error while reading BFM!", e);
+        }
+        return handler.getBehavioralFeatureModel();
+    }
+
+    public static BehavioralFeatureModel loadBehavioralFeatureModel(File xmlFile) throws BehavioralFeatureModelDefinitionException {
+        try {
+            return XmlLoaderUtility.loadBehavioralFeatureModel(new FileInputStream(xmlFile));
+        } catch (FileNotFoundException e) {
+            LOG.error("Error while loading BFM input ={}!", xmlFile, e);
+            throw new BehavioralFeatureModelDefinitionException("Error while loading BFM!", e);
+        }
+    }
+
+    public static BehavioralFeatureModel loadBehavioralFeatureModel(String xmlFile) throws BehavioralFeatureModelDefinitionException {
+        return XmlLoaderUtility.loadBehavioralFeatureModel(new File(xmlFile));
+    }
 }

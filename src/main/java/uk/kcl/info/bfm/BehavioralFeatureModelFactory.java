@@ -2,7 +2,6 @@ package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.DimacsModel;
 import be.vibes.fexpression.FExpression;
-import be.vibes.fexpression.Feature;
 import be.vibes.fexpression.exception.DimacsFormatException;
 import be.vibes.solver.*;
 import be.vibes.solver.constraints.ExclusionConstraint;

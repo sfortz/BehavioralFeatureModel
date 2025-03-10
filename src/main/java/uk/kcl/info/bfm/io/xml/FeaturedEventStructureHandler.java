@@ -44,6 +44,7 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
             conflictStack.peek().add(id);
         } else {
             // Otherwise, it's a standalone event declaration
+
             Attribute featAtt = element.getAttributeByName(QName.valueOf(FEATURE_ATTR));
             String f;
             if (featAtt != null) {

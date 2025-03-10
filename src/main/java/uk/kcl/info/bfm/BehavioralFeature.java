@@ -90,7 +90,7 @@ public class BehavioralFeature extends Feature implements BundleEventStructure {
         return fexpr;
     }
 
-    private Set<BehavioralFeature> getAllRecursiveFeatures() {
+    public Set<BehavioralFeature> getAllRecursiveFeatures() {
         Set<BehavioralFeature> features = new HashSet<>();
         features.add(this);
 
@@ -101,7 +101,7 @@ public class BehavioralFeature extends Feature implements BundleEventStructure {
         return features;
     }
 
-    private Set<Event> getAllRecursiveEvents() {
+    public Set<Event> getAllRecursiveEvents() {
         Set<Event> ev = new HashSet<>(this.events.keySet());
 
         for (BehavioralFeature f : this.getAllRecursiveFeatures()) {

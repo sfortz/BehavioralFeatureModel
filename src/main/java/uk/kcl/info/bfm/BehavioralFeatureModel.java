@@ -1,7 +1,6 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
-import be.vibes.fexpression.Feature;
 import be.vibes.fexpression.configuration.Configuration;
 import be.vibes.solver.ConstraintIdentifier;
 import be.vibes.solver.SolverFacade;
@@ -9,6 +8,8 @@ import be.vibes.solver.exception.ConstraintNotFoundException;
 import be.vibes.solver.exception.ConstraintSolvingException;
 import be.vibes.solver.exception.SolverFatalErrorException;
 import be.vibes.solver.exception.SolverInitializationException;
+import de.vill.model.Feature;
+import de.vill.model.Group;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,6 +95,32 @@ public class BehavioralFeatureModel  extends de.vill.model.FeatureModel {
 
     protected  Map<String, BehavioralFeature> getNewFeatureMap(){
         return featureMap;
+    }
+
+    private BehavioralFeature getRecursiveFeature(BehavioralFeature currentFeature, Event event){
+
+        if(currentFeature.getEvents().containsKey(event)){
+            return currentFeature;
+        } else {
+            for (Group group : currentFeature.getChildren()) {
+                for (Feature bf : group.getFeatures()) {
+                    BehavioralFeature result = getRecursiveFeature(this.getFeature(bf.getFeatureName()), event);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    public BehavioralFeature getFeature(Event event){
+        return getRecursiveFeature(this.getRootFeature(), event);
+    }
+
+    public FExpression getFExpression(Event event){
+        BehavioralFeature bf = getRecursiveFeature(this.getRootFeature(), event);
+        return bf.getFExpression(event);
     }
 
     public ConstraintIdentifier addSolverConstraint(FExpression constraint)
