@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<events>
+		<event id="map" feature="mapping" fexpression="mapping"/>
+		<event id="liDet_0" feature="lidar" fexpression="mapping &amp;&amp; lidar"/>
+		<event id="caDet_0" feature="camera" fexpression="mapping &amp;&amp; camera"/>
+		<event id="move_0" feature="cleaning" fexpression="mapping"/>
+		<event id="liDet_1" feature="lidar" fexpression="!mapping &amp;&amp; lidar"/>
+		<event id="caDet_1" feature="camera" fexpression="!mapping &amp;&amp; camera"/>
+		<event id="move_1" feature="cleaning" fexpression="!mapping"/>
+		<event id="goAround" feature="cleaning"/>
+		<event id="clean" feature="cleaning"/>
+		<event id="charge" feature="robot"/>
+	</events>
+
+	<causalities>
+		<causality target="move_0">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="liDet_0">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="caDet_0">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="goAround">
+			<bundle>
+				<event id="liDet_0"/>
+				<event id="caDet_0"/>
+				<event id="liDet_1"/>
+				<event id="caDet_1"/>
+			</bundle>
+		</causality>
+
+		<causality target="clean">
+			<bundle>
+				<event id="goAround"/>
+				<event id="move_0"/>
+				<event id="move_1"/>
+			</bundle>
+		</causality>
+
+		<causality target="charge">
+			<bundle>
+				<event id="clean"/>
+			</bundle>
+		</causality>
+	</causalities>
+
+	<conflicts>
+		<conflict>
+			<event id="liDet0" />
+			<event id="caDet0" />
+		</conflict>
+		<conflict>
+			<event id="liDet0" />
+			<event id="caDet1" />
+		</conflict>
+		<conflict>
+			<event id="liDet1" />
+			<event id="caDet0" />
+		</conflict>
+		<conflict>
+			<event id="liDet1" />
+			<event id="caDet1" />
+		</conflict>
+
+		<conflict>
+			<event id="liDet0"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="liDet0"/>
+			<event id="move1" />
+		</conflict>
+		<conflict>
+			<event id="liDet1"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="liDet1"/>
+			<event id="move1" />
+		</conflict>
+
+		<conflict>
+			<event id="caDet0"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="caDet0"/>
+			<event id="move1" />
+		</conflict>
+		<conflict>
+			<event id="caDet1"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="caDet1"/>
+			<event id="move1" />
+		</conflict>
+
+		<conflict>
+			<event id="map" />
+			<event id="liDet1"/>
+		</conflict>
+		<conflict>
+			<event id="map" />
+			<event id="caDet1" />
+		</conflict>
+		<conflict>
+			<event id="map"/>
+			<event id="move1" />
+		</conflict>
+
+		<conflict>
+			<event id="move0"/>
+			<event id="move1" />
+		</conflict>
+		<conflict>
+			<event id="liDet0" />
+			<event id="liDet1" />
+		</conflict>
+		<conflict>
+			<event id="caDet0" />
+			<event id="caDet1" />
+		</conflict>
+
+		<conflict>
+			<event id="goAround"/>
+			<event id="move0" />
+		</conflict>
+		<conflict>
+			<event id="goAround"/>
+			<event id="move1" />
+		</conflict>
+	</conflicts>
+</fes>

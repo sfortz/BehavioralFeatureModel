@@ -2,9 +2,7 @@ package uk.kcl.info.bfm;
 
 import java.util.*;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 
 public class DefaultBundleEventStructure implements BundleEventStructure{
 

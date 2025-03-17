@@ -1,8 +1,6 @@
 package uk.kcl.info.bfm;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public interface BundleEventStructure {
     Iterator<Event> events();

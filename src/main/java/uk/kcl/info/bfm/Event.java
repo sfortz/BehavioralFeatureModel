@@ -1,8 +1,6 @@
 package uk.kcl.info.bfm;
 
-import be.vibes.fexpression.FExpression;
 import com.google.common.base.Preconditions;
-
 import java.util.Objects;
 
 public class Event {

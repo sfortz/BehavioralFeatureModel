@@ -10,12 +10,8 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.kcl.info.bfm.Event;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class BundleEventStructureHandler implements XmlEventHandler {
     public static final String BES_TAG = "bes";

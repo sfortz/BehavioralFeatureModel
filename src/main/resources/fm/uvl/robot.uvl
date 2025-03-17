@@ -13,3 +13,7 @@ features
 
         mandatory
             Cleaning
+
+constraints
+    Mapping => Cleaning
+    ! (Cleaning & Lidar)

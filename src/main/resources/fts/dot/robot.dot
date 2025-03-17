@@ -1,0 +1,19 @@
+digraph G {
+rankdir=LR;
+state0[ label = "state0", style=filled, color=green ];
+state0 -> state1 [ label=" map/mapping " ];
+state0 -> state2 [ label=" liDet/(!mapping && lidar) " ];
+state0 -> state2 [ label=" caDet/(camera && !mapping) " ];
+state0 -> state3 [ label=" move/!mapping " ];
+state4 [ label = "state5" ];
+state2 [ label = "state2" ];
+state2 -> state3 [ label=" goAround/true " ];
+state1 [ label = "state1" ];
+state1 -> state2 [ label=" liDet/(mapping && lidar) " ];
+state1 -> state2 [ label=" caDet/(camera && mapping) " ];
+state1 -> state3 [ label=" move/mapping " ];
+state5 [ label = "state4" ];
+state5 -> state4 [ label=" charge/true " ];
+state3 [ label = "state3" ];
+state3 -> state5 [ label=" clean/true " ];
+}
