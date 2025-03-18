@@ -22,13 +22,24 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature>{
 
         super();
         this.setNamespace(fm.getNamespace());
-        this.getOwnConstraints().addAll(fm.getOwnConstraints());
 
-        for (Map.Entry<String, Feature> entry: fm.getFeatureMap().entrySet()){
-            this.getFeatureMap().put(entry.getKey(), new BehavioralFeature(entry.getValue()));
+        BehavioralFeature root = new BehavioralFeature(fm.getRootFeature());
+        this.setRootFeature(root);
+
+        Queue<BehavioralFeature> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+
+            BehavioralFeature bf = queue.poll();
+            this.getFeatureMap().put(bf.getFeatureName(), bf);
+
+            for (Group<BehavioralFeature> group: bf.getChildren()){
+                queue.addAll(group.getFeatures());
+            }
         }
 
-        this.setRootFeature(this.getFeature(fm.getRootFeature().getFeatureName()));
+        this.getOwnConstraints().addAll(fm.getOwnConstraints());
         this.setSolver(fm.getSolver());
     }
 
