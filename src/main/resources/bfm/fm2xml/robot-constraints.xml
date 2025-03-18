@@ -1,0 +1,31 @@
+<fm namespace="CleaningRobot">
+    <feature name="Robot">
+        <optional>
+            <feature name="Mapping"/>
+        </optional>
+        <mandatory>
+            <feature name="ObstacleDetection">
+                <alternative>
+                    <feature name="Lidar"/>
+                    <feature name="Camera"/>
+                </alternative>
+                <feature_constraints>
+                    <exclusions>
+                        <exclude conflict1="Lidar"  conflict2="Camera"/> <!--TODO: To remove! -->
+                    </exclusions>
+                </feature_constraints>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="Cleaning"/>
+        </mandatory>
+        <feature_constraints>
+            <exclusions>
+                <exclude conflict1="Cleaning"  conflict2="Lidar"/> <!--TODO: To remove! -->
+            </exclusions>
+            <requirements>
+                <requires feature="Cleaning"  dependency="Mapping"/> <!--TODO: To remove! -->
+            </requirements>
+        </feature_constraints>
+    </feature>
+</fm>

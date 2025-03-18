@@ -102,7 +102,7 @@ public class Translator {
 
         // Step 1: Collect actions & add events
         Map<Action, Event> eventMap = new HashMap<>();
-        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
+        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) { //TODO: This loop only works for Linear BES!
             Action a = it.next();
             String name = a.getName();
             Event e = new Event(name);
@@ -179,59 +179,7 @@ public class Translator {
         return factory.build();
     }
 
-    private static List<Feature> getAncestors(Feature feature) {
-        List<Feature> ancestors = new ArrayList<>();
-        while (feature != null) {
-            ancestors.add(feature);
-            feature = feature.getParentFeature();
-        }
-        return ancestors;
-    }
-
-    private static Feature leastCommonAncestor(Feature f1, Feature f2) {
-        List<Feature> ancestorsF1 = getAncestors(f1);
-        List<Feature> ancestorsF2 = getAncestors(f2);
-
-        // Find the lowest common ancestor
-        for (Feature ancestor : ancestorsF1) {
-            if (ancestorsF2.contains(ancestor)) {
-                return ancestor;
-            }
-        }
-
-        return null;
-    }
-
-    private static Feature leastCommonAncestor (FeatureModel fm, List<FExpression> fExpressions){
-
-        FExpression disjunction = FExpression.falseValue();
-
-        for (FExpression fexp: fExpressions){
-            disjunction.orWith(fexp);
-        }
-
-        disjunction = disjunction.toCnf().applySimplification();
-
-        if (disjunction.isTrue()) {
-            return fm.getRootFeature();
-        }
-
-        Set<Feature> features = disjunction.getFeatures().stream().map(f -> fm.getFeature(f.getFeatureName())).collect(Collectors.toSet());
-
-        if (features.size() == 1) {
-            return features.stream().toList().getFirst();
-        }
-
-        Iterator<Feature> iterator = features.iterator();
-        Feature lca = iterator.next();
-
-        while (iterator.hasNext()) {
-            lca = leastCommonAncestor(lca, iterator.next());
-        }
-        return lca;
-    }
-
-    public static FeaturedEventStructure fts2fes(FeatureModel fm, FeaturedTransitionSystem fts){
+    public static FeaturedEventStructure fts2fes(FeatureModel<? extends Feature> fm, FeaturedTransitionSystem fts){
         BundleEventStructure bes = ts2bes(fts);
         FeaturedEventStructureFactory factory = new FeaturedEventStructureFactory(fm);
 
@@ -247,11 +195,11 @@ public class Translator {
                 fexpList.add(fts.getFExpression(t));
             }
 
-            Feature f = leastCommonAncestor(fm, fexpList);
+            Feature f = fm.getLeastCommonAncestor(fexpList);
             FExpression fexpr = FExpression.falseValue();
 
             for (Transition t: transList){
-                fexpr.orWith(fts.getFExpression(t));  //TODO: Check Algo in paper for non-linearity
+                fexpr.orWith(fts.getFExpression(t));
             }
             factory.addEvent(e.getName(), f, fexpr.applySimplification());
         }
@@ -274,13 +222,130 @@ public class Translator {
         return null;
     }
 
-    public static FeatureModel bfm2fm(BehavioralFeatureModel bfm){
+    public static FeatureModel<Feature> bfm2fm(BehavioralFeatureModel bfm){
         // TODO: This should probably not exist, but be a function "getUnderlyingFM" in the BFM.
         return null;
     }
 
-    public static BehavioralFeatureModel fts2bfm(FeatureModel fm, FeaturedTransitionSystem fts){
-        return null;
+    public static BehavioralFeatureModel fts2bfm(FeatureModel<Feature> fm, FeaturedTransitionSystem fts){
+
+        BehavioralFeatureModelFactory factory = new BehavioralFeatureModelFactory(fm);
+        Map<Event, FExpression> fExprMap = new HashMap<>();
+        Map<Transition, Event> tMap = new HashMap<>();
+
+        // Step 1: Collect actions & add events
+        for (Iterator<Action> it = fts.actions(); it.hasNext(); ) { //TODO: This loop only works for Linear BES!
+            Action a = it.next();
+            Event e = new Event(a.getName());
+
+            List<Transition> transList = new ArrayList<>();
+            List<FExpression> fexpList = new ArrayList<>();
+            for (Iterator<Transition> transIt = fts.getTransitions(a); transIt.hasNext(); ) {
+                Transition t = transIt.next();
+                transList.add(t);
+                tMap.put(t,e);
+                fexpList.add(fts.getFExpression(t));
+            }
+
+            String ancestor = fm.getLeastCommonAncestor(fexpList).getFeatureName();
+            BehavioralFeature f = factory.getFeature(ancestor);
+            FExpression fexpr = FExpression.falseValue();
+
+            for (Transition t: transList){
+                fexpr.orWith(fts.getFExpression(t));
+            }
+
+            fExprMap.put(e,fexpr);
+            factory.addEvent(f, e.getName(), fexpr.applySimplification().toCnf());
+        }
+
+        // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
+        Set<ConflictRelation> conflicts = new HashSet<>();
+        Set<CausalityRelation> candidateBundles = new HashSet<>();
+
+        for (Map.Entry<Transition, Event> entry1: tMap.entrySet()){
+            Action a1 = entry1.getKey().getAction();
+            Event e1 = entry1.getValue();
+
+            Set<Event> bundle = new HashSet<>();
+
+            for (Map.Entry<Transition, Event> entry2: tMap.entrySet()){
+                Action a2 = entry2.getKey().getAction();
+
+                if(!a1.equals(a2)) {
+                    Event e2 = entry2.getValue();
+
+                    boolean a1ToA2 = reachable(fts, a1, a2);  //Should reachable be about Transitions or Actions?
+                    boolean a2ToA1 = reachable(fts, a2, a1);
+
+                    // Conflict relation
+                    if (!a1ToA2 && !a2ToA1) {
+                        List<FExpression> fexprs = new ArrayList<>();
+                        fexprs.add(fExprMap.get(e1));
+                        fexprs.add(fExprMap.get(e2));
+                        String lca = fm.getLeastCommonAncestor(fexprs).getFeatureName();
+                        factory.addConflict(lca, e1, e2);
+                        conflicts.add(new ConflictRelation(e1, e2));
+                    }
+
+                    // Causality relation (candidate)
+                    if (a2ToA1 && !a1ToA2) {
+                        bundle.add(e2);
+                    }
+                }
+            }
+            if (!bundle.isEmpty()) {
+                candidateBundles.add(new CausalityRelation(bundle, e1));
+            }
+        }
+
+        System.out.println("Conflict Count: " + conflicts.size());
+        System.out.println("Causality candidate count: " + candidateBundles.size());
+
+        // Step 4: Non-conflicting bundle splitting
+        candidateBundles = candidateBundles.stream()
+                .flatMap(causality -> ConflictPartition.findMaximalCliques(causality.getBundle(), conflicts)
+                        .stream().map(newBundle -> new CausalityRelation(newBundle, causality.getTarget())))
+                .collect(Collectors.toSet());
+
+        for(CausalityRelation causality: candidateBundles){
+            List<FExpression> fexprs = new ArrayList<>();
+            fexprs.add(fExprMap.get(causality.getTarget()));
+            for(Event e2: causality.getBundle()){
+                fexprs.add(fExprMap.get(e2));
+            }
+            String lca = fm.getLeastCommonAncestor(fexprs).getFeatureName();
+            factory.addCausality(lca, causality);
+        }
+
+        /*
+        Input: feature f' and linear FTS (M, T, H) over features N and events E with T = (S, E, so, 8) and f' € features (M)
+        Output: BFM (f : E,C, FC, EC)
+
+        7: EC « ECUflé, e") | f'= Ica (M, V(s,e',') EsM(s, e, 8)))
+        • The set of conflicts associated to f
+        " Get the feature f' that e' is associated to
+        " Get the feature f" that e" is associated to
+        • The conflict cannot be added further down the tree
+        • Both events are not reachable from one another
+        • Beginning causalities associated to f
+        12: EC+ ECUUéeêf(X, é) |f'= Ica(M, V(s,e',s') EsM((s, é', s')))
+        "Get the feature f' that e' is associated to
+        X=fe" | f"= Ica(M, V(s,e",s')EsM((s,e", s')))
+        » Get the feature f" that e" is associated to
+        If = Ica(M,f'^f")
+        • The causality cannot be added further down the tree
+        ^ reachable(e"
+        ", e') A → reachable(e', e")}} • The events in X can reach e' but not the other way around
+        16: while (D,e) E EC do
+        17: EC+ EC\(0,e)}
+        • Discard empty causalities
+        18: while (X, e) € EC such that e1, ez E X and e1 # ez and (e1, e2) & EC do
+        19: let X1+ X| {e17, X24X1{22}
+        20: EC< (EC|(X, e)}) U{(X1, e), (X2, e)}
+         */
+
+        return (BehavioralFeatureModel) factory.build();
     }
 
 }

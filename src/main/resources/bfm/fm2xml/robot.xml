@@ -1,0 +1,18 @@
+<fm namespace="CleaningRobot">
+    <feature name="Robot">
+        <optional>
+            <feature name="Mapping"/>
+        </optional>
+        <mandatory>
+            <feature name="ObstacleDetection">
+                <alternative>
+                    <feature name="Lidar"/>
+                    <feature name="Camera"/>
+                </alternative>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="Cleaning"/>
+        </mandatory>
+    </feature>
+</fm>
