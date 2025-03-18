@@ -1,8 +1,8 @@
 package uk.kcl.info.bfm.io.xml;
 
+import be.vibes.solver.Group;
 import be.vibes.solver.constraints.ExclusionConstraint;
 import be.vibes.solver.constraints.RequirementConstraint;
-import de.vill.model.Group;
 import uk.kcl.info.bfm.BehavioralFeature;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.ConflictRelation;

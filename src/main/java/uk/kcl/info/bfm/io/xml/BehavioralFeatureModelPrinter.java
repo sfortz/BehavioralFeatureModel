@@ -1,9 +1,10 @@
 package uk.kcl.info.bfm.io.xml;
 
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.Feature;
 import be.vibes.solver.constraints.ExclusionConstraint;
 import be.vibes.solver.constraints.RequirementConstraint;
-import de.vill.model.Group;
+import be.vibes.solver.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
@@ -121,7 +122,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
             case OPTIONAL -> xtw.writeStartElement(OPTIONAL_TAG);
         }
 
-        for(de.vill.model.Feature feature: group.getFeatures()){
+        for(Feature feature: group.getFeatures()){
             BehavioralFeature f = bfm.getFeature(feature.getFeatureName());
             printElement(xtw, f);
         }

@@ -3,8 +3,8 @@ package uk.kcl.info.bfm.io.xml;
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.ParserUtil;
 import be.vibes.fexpression.exception.ParserException;
+import be.vibes.solver.Group;
 import be.vibes.ts.io.xml.XmlEventHandler;
-import de.vill.model.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.BehavioralFeature;
@@ -12,14 +12,8 @@ import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.BehavioralFeatureModelFactory;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Stack;
+import javax.xml.stream.events.*;
+import java.util.*;
 
 public class BehavioralFeatureModelHandler implements XmlEventHandler {
     public static final String BFM_TAG = "bfm";
@@ -75,7 +69,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     }
 
     public BehavioralFeatureModel getBehavioralFeatureModel() {
-        return this.factory.build();
+        return (BehavioralFeatureModel) this.factory.build();
     }
 
     public void handleStartDocument() {
