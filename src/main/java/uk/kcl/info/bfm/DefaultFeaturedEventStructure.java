@@ -14,27 +14,27 @@ import com.google.common.base.Preconditions;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure implements FeaturedEventStructure{
+public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends DefaultBundleEventStructure implements FeaturedEventStructure<F>{
 
-    private final Map<Event, Feature> features = new HashMap();
+    private final Map<Event, F> features = new HashMap<>();
 
-    private final Map<Event, FExpression> eventFexpressions = new HashMap();
+    private final Map<Event, FExpression> eventFexpressions = new HashMap<>();
 
-    private final Map<List<Event>, FExpression> configFexpressions = new HashMap();
+    private final Map<List<Event>, FExpression> configFexpressions = new HashMap<>();
 
-    private final FeatureModel fm;
+    private final FeatureModel<F> fm;
 
-    public DefaultFeaturedEventStructure(FeatureModel fm) {
+    public DefaultFeaturedEventStructure(FeatureModel<F> fm) {
         super();
         this.fm = fm;
     }
 
-    public FeatureModel getFm() {
+    public FeatureModel<F> getFm() {
         return fm;
     }
 
     @Override
-    public Feature getFeature(Event event) {
+    public F getFeature(Event event) {
         Preconditions.checkNotNull(event, "Event may not be null!");
         return this.features.get(event);
     }
@@ -55,7 +55,7 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
         return configFexpressions.get(config);
     }
 
-    private Feature getFeatureFromFM(Feature feature){
+    private F getFeatureFromFM(F feature){
         return this.fm.getFeature(feature.getFeatureName());
     }
 
@@ -75,8 +75,8 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
         }
 
         @Override
-        public FExpression feature(Feature feature) {
-            return new FExpression(getFeatureFromFM(feature));
+        public FExpression feature(Feature<?> feature) {
+            return new FExpression(getFeatureFromFM((F) feature));
         }
 
         @Override
@@ -125,10 +125,10 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
         }
     }
 
-    void addFeature(Event event, Feature feature, FExpression fexpr) {
+    void addFeature(Event event, Feature<?> feature, FExpression fexpr) {
         Preconditions.checkNotNull(event, "Event may not be null!");
         Preconditions.checkNotNull(feature, "Feature may not be null!");
-        this.features.put(event, getFeatureFromFM(feature));
+        this.features.put(event, getFeatureFromFM((F) feature));
         this.eventFexpressions.put(event, getFexpFromFM(fexpr));
     }
 
@@ -144,7 +144,6 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
         }
         return allConfigs;
     }
-
 
     private void buildProductConfigurations(List<Event> currentConfig, Queue<Event> remainingEvents, Set<List<Event>> allConfigs) throws ConstraintSolvingException {
         // Add the current configuration to the allConfigs set. A new list is created to avoid modifying the original configuration.
@@ -165,7 +164,7 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
 
                     // Construct the feature expression
                     FExpression productFExp = FExpression.trueValue();
-                    for (Feature f : product.getFeatures()) {
+                    for (Feature<?> f : product.getFeatures()) {
                         productFExp.andWith(new FExpression(f));
                     }
 
@@ -202,9 +201,9 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
         while (solutions.hasNext()) {
             Configuration sol = solutions.next();
             FExpression acc = FExpression.trueValue();
-            Set<Feature> selected = Arrays.stream(sol.getFeatures()).collect(Collectors.toSet());
+            Set<F> selected = (Set<F>) Arrays.stream(sol.getFeatures()).collect(Collectors.toSet());
             selected = selected.stream().map(f -> { //TODO: To remove once Feature.hashcode() is debugged
-                    for(Feature feat: this.fm.getFeatures()){
+                    for(F feat: this.fm.getFeatures()){
                         if (f.getFeatureName().equals(feat.getFeatureName())){
                             return feat;
                         }
@@ -212,13 +211,13 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
                     return null;
             }).collect(Collectors.toSet());
 
-            Set<Feature> deselected = new HashSet<>(this.fm.getFeatures());
+            Set<F> deselected = new HashSet<>(this.fm.getFeatures());
             deselected.removeAll(selected);
 
-            for (Feature f : selected) {
+            for (F f : selected) {
                 acc.andWith(new FExpression(f));
             }
-            for (Feature f : deselected) {
+            for (F f : deselected) {
                 acc.andWith(new FExpression(f).not());
             }
 
@@ -227,7 +226,6 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
 
         return currentFExpr.applySimplification().toCnf();
     }
-
 
     protected boolean respectsCausality(List<Event> currentConfig, Configuration product, Set<Set<Event>> initialBundles) {
 
@@ -261,7 +259,7 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
 
     private boolean respectsFM(Configuration product, Event e) throws ConstraintSolvingException {
 
-        Feature f = features.get(e);
+        F f = features.get(e);
         if(!product.isSelected(f)){
             return false;
         }
@@ -273,7 +271,7 @@ public class DefaultFeaturedEventStructure extends DefaultBundleEventStructure i
 
     private ConfigurationSet getValidProducts(Event event) {
 
-        Feature f = this.features.get(event);
+        F f = this.features.get(event);
         FExpression constraint = this.eventFexpressions.get(event).and(new FExpression(f));
         return new ConfigurationSet(this.fm, constraint);
     }

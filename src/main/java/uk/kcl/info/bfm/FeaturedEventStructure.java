@@ -5,9 +5,9 @@ import be.vibes.fexpression.Feature;
 
 import java.util.List;
 
-public interface FeaturedEventStructure extends BundleEventStructure {
+public interface FeaturedEventStructure<F extends Feature<F>> extends BundleEventStructure {
 
-    Feature getFeature(Event var1);
+    F getFeature(Event var1);
     FExpression getFExpression(Event var1);
     FExpression getFexpression(List<Event> config);
 }

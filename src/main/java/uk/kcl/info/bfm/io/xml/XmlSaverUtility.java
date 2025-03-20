@@ -40,7 +40,7 @@ public class XmlSaverUtility extends XmlSavers {
         save(bes, new File(outputFileName));
     }
 
-    public static void save(FeaturedEventStructure fes, OutputStream out) throws BundleEventStructureDefinitionException {
+    public static void save(FeaturedEventStructure<?> fes, OutputStream out) throws BundleEventStructureDefinitionException {
         FeaturedEventStructurePrinter printer = new FeaturedEventStructurePrinter();
         BundleEventStructureXmlPrinter xmlOut = new BundleEventStructureXmlPrinter(out, printer);
 
@@ -51,7 +51,7 @@ public class XmlSaverUtility extends XmlSavers {
         }
     }
 
-    public static void save(FeaturedEventStructure fes, File out) throws BundleEventStructureDefinitionException {
+    public static void save(FeaturedEventStructure<?> fes, File out) throws BundleEventStructureDefinitionException {
         try {
             save(fes, new FileOutputStream(out));
         } catch (FileNotFoundException var3) {
@@ -59,7 +59,7 @@ public class XmlSaverUtility extends XmlSavers {
         }
     }
 
-    public static void save(FeaturedEventStructure fes, String outputFileName) throws BundleEventStructureDefinitionException {
+    public static void save(FeaturedEventStructure<?> fes, String outputFileName) throws BundleEventStructureDefinitionException {
         save(fes, new File(outputFileName));
     }
 

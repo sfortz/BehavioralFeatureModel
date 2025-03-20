@@ -5,8 +5,8 @@ import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
 
 public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
-    public FeaturedEventStructureFactory(FeatureModel fm) {
-        super(new DefaultFeaturedEventStructure(fm));
+    public FeaturedEventStructureFactory(FeatureModel<?> fm) {
+        super(new DefaultFeaturedEventStructure<>(fm));
     }
 
     @Override
@@ -14,17 +14,17 @@ public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
         throw new UnsupportedOperationException("FES doesn't allow to add an event if not associated with a feature.");
     }
 
-    public void addEvent(String event, Feature feature) {
+    public void addEvent(String event, Feature<?> feature) {
         this.addEvent(event, feature, FExpression.trueValue());
     }
 
-    public void addEvent(String event, Feature feature, FExpression fexpr) {
-        DefaultFeaturedEventStructure fes = (DefaultFeaturedEventStructure)this.bes;
+    public void addEvent(String event, Feature<?> feature, FExpression fexpr) {
+        DefaultFeaturedEventStructure<?> fes = (DefaultFeaturedEventStructure<?>) this.bes;
         Event ev = fes.addEvent(event);
         fes.addFeature(ev,feature,fexpr);
     }
 
-    public FeaturedEventStructure build() {
-        return (DefaultFeaturedEventStructure)super.build();
+    public FeaturedEventStructure<?> build() {
+        return (DefaultFeaturedEventStructure<?>) super.build();
     }
 }

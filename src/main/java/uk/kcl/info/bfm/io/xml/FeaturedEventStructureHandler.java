@@ -77,7 +77,7 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
     }
 
     @Override
-    public FeaturedEventStructure getBundleEventStructure() {
+    public FeaturedEventStructure<?> getBundleEventStructure() {
         return getFactory().build();
     }
 

@@ -47,7 +47,7 @@ public class XmlLoaderUtility extends XmlLoaders {
         return XmlLoaderUtility.loadBundleEventStructure(new File(xmlFile));
     }
 
-    public static FeaturedEventStructure loadFeaturedEventStructure(InputStream in, FeatureModel<?> fm) throws BundleEventStructureDefinitionException {
+    public static FeaturedEventStructure<?> loadFeaturedEventStructure(InputStream in, FeatureModel<?> fm) throws BundleEventStructureDefinitionException {
         FeaturedEventStructureHandler handler = new FeaturedEventStructureHandler(fm);
         try {
             XmlReader reader = new XmlReader(handler, in);
@@ -59,7 +59,7 @@ public class XmlLoaderUtility extends XmlLoaders {
         return handler.getBundleEventStructure();
     }
 
-    public static FeaturedEventStructure loadFeaturedEventStructure(File xmlFile, FeatureModel<?> fm) throws BundleEventStructureDefinitionException {
+    public static FeaturedEventStructure<?> loadFeaturedEventStructure(File xmlFile, FeatureModel<?> fm) throws BundleEventStructureDefinitionException {
         try {
             return XmlLoaderUtility.loadFeaturedEventStructure(new FileInputStream(xmlFile), fm);
         } catch (FileNotFoundException e) {
@@ -68,7 +68,7 @@ public class XmlLoaderUtility extends XmlLoaders {
         }
     }
 
-    public static FeaturedEventStructure loadFeaturedEventStructure(String xmlFile, FeatureModel<?> fm) throws BundleEventStructureDefinitionException {
+    public static FeaturedEventStructure<?> loadFeaturedEventStructure(String xmlFile, FeatureModel<?> fm) throws BundleEventStructureDefinitionException {
         return XmlLoaderUtility.loadFeaturedEventStructure(new File(xmlFile), fm);
     }
 

@@ -53,8 +53,8 @@ public class FeaturedEventStructurePrinter extends BundleEventStructurePrinter {
         LOG.trace("End Events");
     }
 
-    private FeaturedEventStructure getFES() {
-        return (FeaturedEventStructure)this.bes;
+    private FeaturedEventStructure<?> getFES() {
+        return (FeaturedEventStructure<?>)this.bes;
     }
 
 }
