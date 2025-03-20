@@ -56,7 +56,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     protected String charValue;
 
     // Stack to track FM depth
-    protected Stack<Group> groupStack = new Stack<>();
+    protected Stack<Group<BehavioralFeature>> groupStack = new Stack<>();
     protected Stack<BehavioralFeature> featureStack = new Stack<>();
 
     // Stack to track nested bundles
@@ -154,25 +154,25 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
 
     protected void handleStartOptionalTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing optional group");
-        Group currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.OPTIONAL);
+        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.OPTIONAL);
         this.groupStack.push(currentGroup);
     }
 
     protected void handleStartMandatoryTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing mandatory group");
-        Group currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.MANDATORY);
+        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.MANDATORY);
         this.groupStack.push(currentGroup);
     }
 
     protected void handleStartOrTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing or group");
-        Group currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.OR);
+        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.OR);
         this.groupStack.push(currentGroup);
     }
 
     protected void handleStartAlternativeTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing alternative group");
-        Group currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.ALTERNATIVE);
+        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.ALTERNATIVE);
         this.groupStack.push(currentGroup);
     }
 

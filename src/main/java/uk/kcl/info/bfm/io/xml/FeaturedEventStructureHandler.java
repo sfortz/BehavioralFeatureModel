@@ -23,7 +23,7 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
     public static final String FEATURE_ATTR = "feature";
     public static final String FEXPRESSION_ATTR = "fexpression";
 
-    public FeaturedEventStructureHandler(FeatureModel fm) {
+    public FeaturedEventStructureHandler(FeatureModel<?> fm) {
         this.factory = new FeaturedEventStructureFactory(fm);
     }
 
@@ -60,14 +60,14 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
                 if (expr != null) {
                     try {
                         FExpression fexpr = ParserUtil.getInstance().parse(expr);
-                        getFactory().addEvent(id,new Feature(f),fexpr);
+                        getFactory().addEvent(id,new Feature<>(f),fexpr);
                     } catch (ParserException e) {
                         LOG.error("Exception while parsing fexpression {}!", expr, e);
                         throw new XMLStreamException("Exception while parsing fexpression " + expr, e);
                     }
                 }
             } else {
-                getFactory().addEvent(id,new Feature(f));
+                getFactory().addEvent(id,new Feature<>(f));
             }
         }
     }

@@ -18,7 +18,7 @@ public interface BehavioralFeatureModelElementPrinter {
 
     void printElement(XMLStreamWriter xtw, BehavioralFeature feature) throws XMLStreamException;
 
-    void printElement(XMLStreamWriter xtw, Group group) throws XMLStreamException;
+    void printElement(XMLStreamWriter xtw, Group<BehavioralFeature> group) throws XMLStreamException;
 
     void printExclusions(XMLStreamWriter xtw, List<ExclusionConstraint> exclusions) throws XMLStreamException;
 
@@ -29,8 +29,6 @@ public interface BehavioralFeatureModelElementPrinter {
     void printElement(XMLStreamWriter xtw, RequirementConstraint constraint) throws XMLStreamException;
 
     void printEvents(XMLStreamWriter writer, Iterator<Event>  events) throws XMLStreamException;
-
-    //void printCausalities(XMLStreamWriter writer) throws XMLStreamException;
 
     void printCausalities(XMLStreamWriter xtw, BehavioralFeature bf) throws XMLStreamException;
 

@@ -1,7 +1,6 @@
 package uk.kcl.info.bfm.io.xml;
 
 import be.vibes.fexpression.FExpression;
-import be.vibes.fexpression.Feature;
 import be.vibes.solver.constraints.ExclusionConstraint;
 import be.vibes.solver.constraints.RequirementConstraint;
 import be.vibes.solver.Group;
@@ -38,11 +37,9 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         LOG.trace("Printing BFM element");
         xtw.writeStartElement(BFM_TAG);
         this.bfm = bfm;
-        //this.bf = bfm.getRootFeature();
         xtw.writeAttribute(NAMESPACE_ATTR, bfm.getNamespace());
         this.printElement(xtw, bfm.getRootFeature()); //bf);
         xtw.writeEndElement();
-        //this.bf = null;
         this.bfm = null;
     }
 
@@ -56,7 +53,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         this.printEvents(xtw, bf.events());
 
         //print groups
-        for(Group group: bf.getChildren()){
+        for(Group<BehavioralFeature> group: bf.getChildren()){
             this.printElement(xtw, group);
         }
 
@@ -113,7 +110,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
     }
 
     @Override
-    public void printElement(XMLStreamWriter xtw, Group group) throws XMLStreamException {
+    public void printElement(XMLStreamWriter xtw, Group<BehavioralFeature> group) throws XMLStreamException {
         LOG.trace("Printing group element");
         switch (group.GROUPTYPE){
             case OR -> xtw.writeStartElement(OR_TAG);
@@ -122,8 +119,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
             case OPTIONAL -> xtw.writeStartElement(OPTIONAL_TAG);
         }
 
-        for(Feature feature: group.getFeatures()){
-            BehavioralFeature f = bfm.getFeature(feature.getFeatureName());
+        for(BehavioralFeature f: group.getFeatures()){
             printElement(xtw, f);
         }
         xtw.writeEndElement();
