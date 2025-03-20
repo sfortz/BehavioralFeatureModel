@@ -165,4 +165,12 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
         }
     }
 
+    @Override
+    public BehavioralFeatureModel build() {
+
+        BehavioralFeatureModel bfm = (BehavioralFeatureModel) super.build();
+        bfm.setCausalityTable();
+        return bfm;
+    }
+
 }

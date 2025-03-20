@@ -50,7 +50,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         xtw.writeAttribute(NAME_ATTR, bf.getFeatureName());
 
         //print events
-        this.printEvents(xtw, bf.events());
+        this.printEvents(xtw, bf.getEventMap().keySet().iterator());
 
         //print groups
         for(Group<BehavioralFeature> group: bf.getChildren()){
@@ -77,7 +77,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
                 this.printCausalities(xtw, bf);
             }
             if (bf.getConflictsCount() > 0) {
-                this.printConflicts(xtw, bf.conflicts());
+                this.printConflicts(xtw, bf.getConflicts().iterator());
             }
 
             xtw.writeEndElement();
@@ -166,7 +166,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         LOG.trace("Starting Causalities");
         xtw.writeStartElement(CAUSALITIES_TAG);
         for(Event ev: bf.getAllRecursiveEvents()){
-            Iterator<CausalityRelation> causalities = bf.getCausalities(ev);
+            Iterator<CausalityRelation> causalities = bfm.getAllCausalitiesOfEvent(ev);
             if(causalities.hasNext()){
                 LOG.trace("Printing causality element");
                 xtw.writeStartElement(CAUSALITY_TAG);

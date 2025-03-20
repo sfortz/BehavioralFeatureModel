@@ -13,13 +13,13 @@ public interface BundleEventStructure {
 
     Iterator<ConflictRelation> conflicts();
 
-    Iterator<CausalityRelation> getCausalities(Event event);
+    Iterator<CausalityRelation> getAllCausalitiesOfEvent(Event event);
 
     CausalityRelation getCausality(Set<Event> bundle, Event event);
 
     ConflictRelation getConflict(Event var1, Event var2);
 
-    Set<ConflictRelation> getConflicts(Event var1);
+    Set<ConflictRelation> getAllConflictsOfEvent(Event var1);
 
     Iterator<CausalityRelation> getOutgoingCausalities(Event var1);
 

@@ -89,7 +89,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
-    public Iterator<CausalityRelation> getCausalities(Event event) {
+    public Iterator<CausalityRelation> getAllCausalitiesOfEvent(Event event) {
         return this.causalities.column(event).values().iterator();
     }
 
@@ -148,7 +148,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
-    public Set<ConflictRelation> getConflicts(Event event) {
+    public Set<ConflictRelation> getAllConflictsOfEvent(Event event) {
 
         Set<ConflictRelation> conflicts = new HashSet<>();
 
@@ -166,7 +166,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
         Set<Event> events = new HashSet<>();
         for(Event event: this.events.values()){
-            if(this.causalities.containsColumn(event)){
+            if(!this.causalities.containsColumn(event)){
                 events.add(event);
             }
         }
