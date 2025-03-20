@@ -1,7 +1,6 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
-import be.vibes.fexpression.Feature;
 import be.vibes.solver.*;
 import be.vibes.solver.XMLModelFactory;
 import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
@@ -10,15 +9,15 @@ import java.util.*;
 public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFeature, FeatureModel<BehavioralFeature>> {
 
     public BehavioralFeatureModelFactory() {
-        super(new BehavioralFeatureModel());
+        super(BehavioralFeatureModel::new);
     }
 
     public BehavioralFeatureModelFactory(SolverType type) {
-        super(new BehavioralFeatureModel(), type);
+        super(BehavioralFeatureModel::new, type);
     }
 
-    public BehavioralFeatureModelFactory(FeatureModel<Feature> fm) {
-        super(new BehavioralFeatureModel(fm), fm.getSolver().getType());
+    public BehavioralFeatureModelFactory(FeatureModel<?> fm) {
+        super(() -> new BehavioralFeatureModel(fm), fm.getSolver().getType());
     }
 
     public BehavioralFeature setRootFeature(String name){

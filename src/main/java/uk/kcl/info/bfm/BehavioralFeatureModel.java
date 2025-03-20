@@ -10,15 +10,15 @@ import java.util.*;
 
 public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature>{
 
-    public BehavioralFeatureModel() {
+    protected BehavioralFeatureModel() {
         super();
     }
 
-    public BehavioralFeatureModel(SolverFacade solver) {
+    protected BehavioralFeatureModel(SolverFacade solver) {
         super(solver);
     }
 
-    public BehavioralFeatureModel(FeatureModel<Feature> fm) {
+    protected BehavioralFeatureModel(FeatureModel<?> fm) {
 
         super();
         this.setNamespace(fm.getNamespace());
@@ -34,8 +34,8 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature>{
             BehavioralFeature bf = queue.poll();
             this.getFeatureMap().put(bf.getFeatureName(), bf);
 
-            for (Group<BehavioralFeature> group: bf.getChildren()){
-                queue.addAll(group.getFeatures());
+            for (Group<?> group: bf.getChildren()){
+                queue.addAll((Collection<? extends BehavioralFeature>) group.getFeatures());
             }
         }
 
@@ -48,8 +48,8 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature>{
         if(currentFeature.getEvents().containsKey(event)){
             return currentFeature;
         } else {
-            for (Group<BehavioralFeature> group : currentFeature.getChildren()) {
-                for (BehavioralFeature bf : group.getFeatures()) {
+            for (Group<?> group : currentFeature.getChildren()) {
+                for (Feature<?> bf : group.getFeatures()) {
                     BehavioralFeature result = getRecursiveFeature(this.getFeature(bf.getFeatureName()), event);
                     if (result != null) {
                         return result;
@@ -66,6 +66,7 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature>{
 
     public FExpression getFExpression(Event event){
         BehavioralFeature bf = getRecursiveFeature(this.getRootFeature(), event);
+        assert bf != null;
         return bf.getFExpression(event);
     }
 }
