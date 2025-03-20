@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<bes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<events>
-		<event id="map" feature="mapping" fexpression="mapping"/>
-		<event id="liDet_0" feature="lidar" fexpression="mapping &amp;&amp; lidar"/>
-		<event id="caDet_0" feature="camera" fexpression="mapping &amp;&amp; camera"/>
-		<event id="move_0" feature="cleaning" fexpression="mapping"/>
-		<event id="liDet_1" feature="lidar" fexpression="!mapping &amp;&amp; lidar"/>
-		<event id="caDet_1" feature="camera" fexpression="!mapping &amp;&amp; camera"/>
-		<event id="move_1" feature="cleaning" fexpression="!mapping"/>
-		<event id="goAround" feature="cleaning"/>
-		<event id="clean" feature="cleaning"/>
-		<event id="charge" feature="robot"/>
+		<event id="map"/>
+		<event id="liDet_0"/>
+		<event id="caDet_0"/>
+		<event id="move_0"/>
+		<event id="liDet_1"/>
+		<event id="caDet_1"/>
+		<event id="move_1"/>
+		<event id="goAround"/>
+		<event id="clean"/>
+		<event id="charge"/>
 	</events>
 
 	<causalities>
@@ -144,4 +144,4 @@
 			<event id="move_1" />
 		</conflict>
 	</conflicts>
-</fes>
+</bes>
