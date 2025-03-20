@@ -259,35 +259,6 @@ public class Translator {
         return factory.build();
     }
 
-    /*
-    *
-    * Input: BFM (f : E, C, FC, EC)
-Output: linear FTS (M, T , μ) with T = (S, ˆE, so, δ) and M = (f ′, G, FC′)
-1: M ← GetFM ((f : E, C, FC, EC)) ▷ Build the feature model
-2: let Conf, Cause, μ′ ← ∅
-3: ( ˆE, Conf, Cause, μ′) ← GetEventConstr ((f : E, C, FC, EC), ˆE, Conf, Cause, μ′) ▷ Get the events, constraints and μ
-4: ▷ Build the transition system
-5: initialize set S ⊆ P( ˆE)
-6: set s0 ← ∅
-7: for {e1, . . . , en} ⊆ P( ˆE) do ▷ Build set of states (the set of configurations)
-8: for ei ∈ {e1, . . . , en} do ▷ Get the sets of events that are not in conflict
-9: for ej ∈ {ei+1, . . . , en} do
-10: if (ei, ej ) ∈ Conf then
-11: skip ▷ Skip this set of events and try another one
-12: for (X, ei) ∈ Cause do ▷ Only take the sets that satisfy the causality relation condition
-13: if {e1, . . . , ei} ∩ X = ∅ then
-14: skip ▷ Skip this set of events and try another one
-15: S ← S ∪ {e1, . . . , en}
-16: initialize relation δ ⊆ S × E × S
-17: for s, s′ ∈ S, e ∈ E do ▷ Build the transition relation
-18: if s′ \ s = {e} then
-19: δ ← δ ∪ {(s, e, s′)} ▷ Include transition
-20: μ ← μ ∪ {((s, e, s′), μ′(e))} ▷ Include feature expression label
-21: return (M, T , μ) with T = (S, ˆE, so, δ) and M = (f ′, G, FC′)
-    *
-    *
-    * */
-
     public static FeatureModel<?> bfm2fm(BehavioralFeatureModel bfm){
         // TODO: This should probably not exist, but be a function "getUnderlyingFM" in the BFM.
 
