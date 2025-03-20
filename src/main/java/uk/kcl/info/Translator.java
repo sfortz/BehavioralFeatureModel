@@ -3,6 +3,7 @@ package uk.kcl.info;
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
+import be.vibes.solver.FeatureModelFactory;
 import be.vibes.ts.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -160,7 +161,7 @@ public class Translator {
         return factory.build();
     }
 
-    public static FeaturedTransitionSystem fes2fts(FeaturedEventStructure fes){
+    public static FeaturedTransitionSystem fes2fts(FeaturedEventStructure<?> fes){
         TransitionSystem ts = bes2ts(fes);
         FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(ts.getInitialState().getName());
 
@@ -179,7 +180,7 @@ public class Translator {
         return factory.build();
     }
 
-    public static FeaturedEventStructure fts2fes(FeatureModel<? extends Feature> fm, FeaturedTransitionSystem fts){
+    public static FeaturedEventStructure<?> fts2fes(FeatureModel<?> fm, FeaturedTransitionSystem fts){
         BundleEventStructure bes = ts2bes(fts);
         FeaturedEventStructureFactory factory = new FeaturedEventStructureFactory(fm);
 
@@ -195,7 +196,7 @@ public class Translator {
                 fexpList.add(fts.getFExpression(t));
             }
 
-            Feature f = fm.getLeastCommonAncestor(fexpList);
+            Feature<?> f = fm.getLeastCommonAncestor(fexpList);
             FExpression fexpr = FExpression.falseValue();
 
             for (Transition t: transList){
@@ -218,16 +219,82 @@ public class Translator {
     }
 
     public static FeaturedTransitionSystem bfm2fts(BehavioralFeatureModel bfm){
-        // TODO: Maybe we should return the FM as well?
-        return null;
+
+        Map<Event, FExpression> mu = new HashMap<>();
+        for (BehavioralFeature bf : bfm.getFeatures()) {
+            mu.putAll(bf.getEventMap());
+        }
+
+        Set<List<Event>> configurations = bfm.getAllConfigurations();
+        Map<List<Event>, String> mapping = getConfigStateMapping(configurations);
+
+        String initialState = mapping.get(new ArrayList<>());
+        FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(initialState);
+
+        for (Event ev : bfm.getAllEvents()) {
+            factory.addAction(ev.getName());
+        }
+
+        factory.addStates(mapping.values().toArray(new String[0]));
+
+        for (List<Event> c1 : configurations) {
+            for (List<Event> c2 : configurations) {
+
+                String s1 = mapping.get(c1);
+                String s2 = mapping.get(c2);
+
+                // If c2 is c1 with exactly one more event at the end
+                if (c2.size() == c1.size() + 1) {
+                    Event e = c2.removeLast();
+                    // Check if the remaining part of c2 is equal to c1
+                    if (c1.equals(c2)) {
+                        factory.addTransition(s1, e.getName(), mu.get(e), s2);
+                    }
+                    // Restore the last event back to c2
+                    c2.add(e);
+                }
+            }
+        }
+
+        return factory.build();
     }
 
-    public static FeatureModel<Feature> bfm2fm(BehavioralFeatureModel bfm){
+    /*
+    *
+    * Input: BFM (f : E, C, FC, EC)
+Output: linear FTS (M, T , μ) with T = (S, ˆE, so, δ) and M = (f ′, G, FC′)
+1: M ← GetFM ((f : E, C, FC, EC)) ▷ Build the feature model
+2: let Conf, Cause, μ′ ← ∅
+3: ( ˆE, Conf, Cause, μ′) ← GetEventConstr ((f : E, C, FC, EC), ˆE, Conf, Cause, μ′) ▷ Get the events, constraints and μ
+4: ▷ Build the transition system
+5: initialize set S ⊆ P( ˆE)
+6: set s0 ← ∅
+7: for {e1, . . . , en} ⊆ P( ˆE) do ▷ Build set of states (the set of configurations)
+8: for ei ∈ {e1, . . . , en} do ▷ Get the sets of events that are not in conflict
+9: for ej ∈ {ei+1, . . . , en} do
+10: if (ei, ej ) ∈ Conf then
+11: skip ▷ Skip this set of events and try another one
+12: for (X, ei) ∈ Cause do ▷ Only take the sets that satisfy the causality relation condition
+13: if {e1, . . . , ei} ∩ X = ∅ then
+14: skip ▷ Skip this set of events and try another one
+15: S ← S ∪ {e1, . . . , en}
+16: initialize relation δ ⊆ S × E × S
+17: for s, s′ ∈ S, e ∈ E do ▷ Build the transition relation
+18: if s′ \ s = {e} then
+19: δ ← δ ∪ {(s, e, s′)} ▷ Include transition
+20: μ ← μ ∪ {((s, e, s′), μ′(e))} ▷ Include feature expression label
+21: return (M, T , μ) with T = (S, ˆE, so, δ) and M = (f ′, G, FC′)
+    *
+    *
+    * */
+
+    public static FeatureModel<?> bfm2fm(BehavioralFeatureModel bfm){
         // TODO: This should probably not exist, but be a function "getUnderlyingFM" in the BFM.
-        return null;
+
+        return new FeatureModelFactory<>(bfm).build();
     }
 
-    public static BehavioralFeatureModel fts2bfm(FeatureModel<Feature> fm, FeaturedTransitionSystem fts){
+    public static BehavioralFeatureModel fts2bfm(FeatureModel<?> fm, FeaturedTransitionSystem fts){
 
         BehavioralFeatureModelFactory factory = new BehavioralFeatureModelFactory(fm);
         Map<Event, FExpression> fExprMap = new HashMap<>();
@@ -289,7 +356,7 @@ public class Translator {
                     }
 
                     // Causality relation (candidate)
-                    if (a2ToA1 && !a1ToA2) {
+                    if (a2ToA1 && !a1ToA2) {  ///TODO: Optimise, only looping once for each pair
                         bundle.add(e2);
                     }
                 }
