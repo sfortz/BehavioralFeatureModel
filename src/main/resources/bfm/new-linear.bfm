@@ -125,8 +125,6 @@
                     </bundle>
                 </causality>
             </causalities>
-
-
             <conflicts>
                 <conflict>
                     <event id="move_0"> </event>
