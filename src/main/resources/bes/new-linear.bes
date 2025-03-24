@@ -13,7 +13,6 @@
         <event id="map"> </event>
     </events>
     <causalities>
-        <causality target="move_1"></causality>
         <causality target="move_0">
             <bundle>
                 <event id="map"> </event>
@@ -43,7 +42,6 @@
                 <event id="clean"> </event>
             </bundle>
         </causality>
-        <causality target="liDet_1"></causality>
         <causality target="goAround">
             <bundle>
                 <event id="liDet_1"> </event>
@@ -62,7 +60,6 @@
                 <event id="map"> </event>
             </bundle>
         </causality>
-        <causality target="caDet_1"></causality>
         <causality target="clean">
             <bundle>
                 <event id="move_1"> </event>
@@ -89,7 +86,6 @@
                 <event id="map"> </event>
             </bundle>
         </causality>
-        <causality target="map"></causality>
     </causalities>
     <conflicts>
         <conflict>

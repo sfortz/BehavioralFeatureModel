@@ -53,13 +53,16 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
         xtw.writeStartElement(CAUSALITIES_TAG);
         for(Event ev: bes.getAllEvents()){
             LOG.trace("Printing causality element");
-            xtw.writeStartElement(CAUSALITY_TAG);
-            xtw.writeAttribute(TARGET_ATTR, ev.getName());
-            for (Iterator<CausalityRelation> causalities = bes.getAllCausalitiesOfEvent(ev); causalities.hasNext();) {
-                CausalityRelation causality = causalities.next();
-                printBundle(xtw, causality.getBundle());
+            Iterator<CausalityRelation> causalities = bes.getAllCausalitiesOfEvent(ev);
+            if(causalities.hasNext()){
+                xtw.writeStartElement(CAUSALITY_TAG);
+                xtw.writeAttribute(TARGET_ATTR, ev.getName());
+                while (causalities.hasNext()) {
+                    CausalityRelation causality = causalities.next();
+                    printBundle(xtw, causality.getBundle());
+                }
+                xtw.writeEndElement();
             }
-            xtw.writeEndElement();
         }
         xtw.writeEndElement();
         LOG.trace("End Causalities");
