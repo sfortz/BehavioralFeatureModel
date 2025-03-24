@@ -9,5 +9,5 @@ public interface FeaturedEventStructure<F extends Feature<F>> extends BundleEven
 
     F getFeature(Event var1);
     FExpression getFExpression(Event var1);
-    FExpression getFexpression(List<Event> config);
+    FExpression getFExpression(List<Event> config);
 }

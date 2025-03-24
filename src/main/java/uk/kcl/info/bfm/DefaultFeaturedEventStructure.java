@@ -51,7 +51,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
     }
 
     @Override
-    public FExpression getFexpression(List<Event> config) {
+    public FExpression getFExpression(List<Event> config) {
         return configFexpressions.get(config);
     }
 
