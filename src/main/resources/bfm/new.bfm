@@ -3,13 +3,15 @@
     <feature name="Robot">
         <events>
             <event id="charge"> </event>
-            <event id="move"> </event>
+            <event id="caDet" fexpression="camera"> </event>
             <event id="clean"> </event>
             <event id="goAround"> </event>
+            <event id="liDet" fexpression="lidar"> </event>
         </events>
         <optional>
             <feature name="Mapping">
                 <events>
+                    <event id="move"> </event>
                     <event id="map" fexpression="mapping"> </event>
                 </events>
             </feature>
@@ -17,25 +19,9 @@
         <mandatory>
             <feature name="ObstacleDetection">
                 <alternative>
-                    <feature name="Lidar">
-                        <events>
-                            <event id="liDet" fexpression="lidar"> </event>
-                        </events>
-                    </feature>
-                    <feature name="Camera">
-                        <events>
-                            <event id="caDet" fexpression="camera"> </event>
-                        </events>
-                    </feature>
+                    <feature name="Lidar"></feature>
+                    <feature name="Camera"></feature>
                 </alternative>
-                <event_constraints>
-                    <conflicts>
-                        <conflict>
-                            <event id="liDet"> </event>
-                            <event id="caDet"> </event>
-                        </conflict>
-                    </conflicts>
-                </event_constraints>
             </feature>
         </mandatory>
         <mandatory>
@@ -111,6 +97,10 @@
                 <conflict>
                     <event id="liDet"> </event>
                     <event id="move"> </event>
+                </conflict>
+                <conflict>
+                    <event id="liDet"> </event>
+                    <event id="caDet"> </event>
                 </conflict>
             </conflicts>
         </event_constraints>

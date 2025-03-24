@@ -169,7 +169,7 @@ public class Translator {
                 return f1.and(f2);
             } else {
                 FExpression f3 = isReachable(fts, t.getTarget(), f1.and(f2), destination, visited);
-                if (!f3.applySimplification().equals(FExpression.falseValue())) {
+                if (!f3.applySimplification().isFalse()) {
                     return f3;
                 }
             }
@@ -185,7 +185,7 @@ public class Translator {
 
         for (State t:targets){
             FExpression fexpr = isReachable(fts, t, FExpression.trueValue(), a2, visited);
-            if(!fexpr.applySimplification().equals(FExpression.falseValue())){
+            if(!fexpr.applySimplification().isFalse()){
                 return true;
             }
         }
@@ -312,6 +312,7 @@ public class Translator {
                 fexpr.orWith(fts.getFExpression(t));
             }
 
+            fexpr = fexpr.applySimplification();
             String ancestor = fm.getLeastCommonAncestor(fexpList).getFeatureName();
             BehavioralFeature f = factory.getFeature(ancestor);
             fExprMap.put(e,fexpr);

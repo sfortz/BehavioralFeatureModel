@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fes>
     <events>
-        <event id="move" feature="Robot"> </event>
+        <event id="move" feature="Mapping"> </event>
         <event id="charge" feature="Robot"> </event>
-        <event id="liDet" feature="Lidar" fexpression="Lidar"> </event>
-        <event id="caDet" feature="Camera" fexpression="Camera"> </event>
+        <event id="liDet" feature="Robot" fexpression="Lidar"> </event>
+        <event id="caDet" feature="Robot" fexpression="Camera"> </event>
         <event id="goAround" feature="Robot"> </event>
         <event id="clean" feature="Robot"> </event>
         <event id="map" feature="Mapping" fexpression="Mapping"> </event>
