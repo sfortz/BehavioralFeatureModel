@@ -75,8 +75,7 @@ public class Translator {
             Transition t = it.next();
             if (t.getAction().equals(destination)) {
                 return true;
-            } else
-            if (isReachable(ts, t.getTarget(), destination, visited)) {
+            } else if (isReachable(ts, t.getTarget(), destination, visited)) {
                 return true;
             }
         }
@@ -89,13 +88,12 @@ public class Translator {
         List<Transition> transitions = Lists.newArrayList(ts.getTransitions(a1));
         Set<State> targets = transitions.stream().map(Transition::getTarget).collect(Collectors.toSet());
 
-        boolean acc = false;
-
         for (State t:targets){
-            acc = acc || isReachable(ts, t, a2, visited);
+            if(isReachable(ts, t, a2, visited)){
+                return true;
+            }
         }
-
-        return acc;
+        return false;
     }
 
     public static BundleEventStructure ts2bes(TransitionSystem ts) {
@@ -147,9 +145,6 @@ public class Translator {
             }
         }
 
-        System.out.println("Conflict Count: " + conflicts.size());
-        System.out.println("Causality candidate count: " + candidateBundles.size());
-
         // Step 4: Optimize non-conflicting bundle splitting
         candidateBundles = candidateBundles.stream()
                 .flatMap(causality -> ConflictPartition.findMaximalCliques(causality.getBundle(), conflicts)
@@ -161,6 +156,42 @@ public class Translator {
         return factory.build();
     }
 
+    private static FExpression isReachable(FeaturedTransitionSystem fts, State current, FExpression f1, Action destination, Set<State> visited) {
+        if (visited.contains(current)) {
+            return FExpression.falseValue();
+        }
+        visited.add(current);
+
+        for (Iterator<Transition> it = fts.getOutgoing(current); it.hasNext(); ) {
+            Transition t = it.next();
+            FExpression f2 = fts.getFExpression(t);
+            if (t.getAction().equals(destination)) {
+                return f1.and(f2);
+            } else {
+                FExpression f3 = isReachable(fts, t.getTarget(), f1.and(f2), destination, visited);
+                if (!f3.applySimplification().equals(FExpression.falseValue())) {
+                    return f3;
+                }
+            }
+        }
+        return FExpression.falseValue();
+    }
+
+    private static boolean reachable(FeaturedTransitionSystem fts, Action a1, Action a2) {
+        Set<State> visited = new HashSet<>();
+
+        List<Transition> transitions = Lists.newArrayList(fts.getTransitions(a1));
+        Set<State> targets = transitions.stream().map(Transition::getTarget).collect(Collectors.toSet());
+
+        for (State t:targets){
+            FExpression fexpr = isReachable(fts, t, FExpression.trueValue(), a2, visited);
+            if(!fexpr.applySimplification().equals(FExpression.falseValue())){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static FeaturedTransitionSystem fes2fts(FeaturedEventStructure<?> fes){
         TransitionSystem ts = bes2ts(fes);
         FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(ts.getInitialState().getName());
@@ -170,9 +201,10 @@ public class Translator {
             String source = t.getSource().getName();
             String action = t.getAction().getName();
             String target = t.getTarget().getName();
-            List<Event> config = configToStateMap.inverse().get(source);
-            FExpression f1 = fes.getFexpression(config);
-            FExpression f2 = fes.getFExpression(fes.getEvent(action));
+            List<Event> configSrc = configToStateMap.inverse().get(source);
+            List<Event> configTrg = configToStateMap.inverse().get(target);
+            FExpression f1 = fes.getFExpression(configSrc);
+            FExpression f2 = fes.getFExpression(configTrg);
             FExpression fexpr = f1.and(f2);
             factory.addTransition(source, action, fexpr.applySimplification().toCnf(), target);
         }
@@ -188,20 +220,15 @@ public class Translator {
             Event e = it.next();
             Action a = fts.getAction(e.getName());
 
-            List<Transition> transList = new ArrayList<>();
+            FExpression fexpr = FExpression.falseValue();
             List<FExpression> fexpList = new ArrayList<>();
             for (Iterator<Transition> transIt = fts.getTransitions(a); transIt.hasNext(); ) {
                 Transition t = transIt.next();
-                transList.add(t);
                 fexpList.add(fts.getFExpression(t));
+                fexpr.orWith(fts.getFExpression(t));
             }
 
             Feature<?> f = fm.getLeastCommonAncestor(fexpList);
-            FExpression fexpr = FExpression.falseValue();
-
-            for (Transition t: transList){
-                fexpr.orWith(fts.getFExpression(t));
-            }
             factory.addEvent(e.getName(), f, fexpr.applySimplification());
         }
 
@@ -276,23 +303,17 @@ public class Translator {
             Action a = it.next();
             Event e = new Event(a.getName());
 
-            List<Transition> transList = new ArrayList<>();
+            FExpression fexpr = FExpression.falseValue();
             List<FExpression> fexpList = new ArrayList<>();
             for (Iterator<Transition> transIt = fts.getTransitions(a); transIt.hasNext(); ) {
                 Transition t = transIt.next();
-                transList.add(t);
                 tMap.put(t,e);
                 fexpList.add(fts.getFExpression(t));
+                fexpr.orWith(fts.getFExpression(t));
             }
 
             String ancestor = fm.getLeastCommonAncestor(fexpList).getFeatureName();
             BehavioralFeature f = factory.getFeature(ancestor);
-            FExpression fexpr = FExpression.falseValue();
-
-            for (Transition t: transList){
-                fexpr.orWith(fts.getFExpression(t));
-            }
-
             fExprMap.put(e,fexpr);
             factory.addEvent(f, e.getName(), fexpr.applySimplification().toCnf());
         }
@@ -313,7 +334,7 @@ public class Translator {
                 if(!a1.equals(a2)) {
                     Event e2 = entry2.getValue();
 
-                    boolean a1ToA2 = reachable(fts, a1, a2);  //Should reachable be about Transitions or Actions?
+                    boolean a1ToA2 = reachable(fts, a1, a2);
                     boolean a2ToA1 = reachable(fts, a2, a1);
 
                     // Conflict relation
@@ -356,34 +377,7 @@ public class Translator {
             factory.addCausality(lca, causality);
         }
 
-        /*
-        Input: feature f' and linear FTS (M, T, H) over features N and events E with T = (S, E, so, 8) and f' € features (M)
-        Output: BFM (f : E,C, FC, EC)
-
-        7: EC « ECUflé, e") | f'= Ica (M, V(s,e',') EsM(s, e, 8)))
-        • The set of conflicts associated to f
-        " Get the feature f' that e' is associated to
-        " Get the feature f" that e" is associated to
-        • The conflict cannot be added further down the tree
-        • Both events are not reachable from one another
-        • Beginning causalities associated to f
-        12: EC+ ECUUéeêf(X, é) |f'= Ica(M, V(s,e',s') EsM((s, é', s')))
-        "Get the feature f' that e' is associated to
-        X=fe" | f"= Ica(M, V(s,e",s')EsM((s,e", s')))
-        » Get the feature f" that e" is associated to
-        If = Ica(M,f'^f")
-        • The causality cannot be added further down the tree
-        ^ reachable(e"
-        ", e') A → reachable(e', e")}} • The events in X can reach e' but not the other way around
-        16: while (D,e) E EC do
-        17: EC+ EC\(0,e)}
-        • Discard empty causalities
-        18: while (X, e) € EC such that e1, ez E X and e1 # ez and (e1, e2) & EC do
-        19: let X1+ X| {e17, X24X1{22}
-        20: EC< (EC|(X, e)}) U{(X1, e), (X2, e)}
-         */
-
-        return (BehavioralFeatureModel) factory.build();
+        return factory.build();
     }
 
 }

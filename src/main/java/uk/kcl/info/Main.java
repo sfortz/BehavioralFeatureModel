@@ -23,13 +23,10 @@ public class Main {
 
     public static void testts2bes() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
         String dirPath = "src/main/resources/";
-        File file = new File(dirPath + "ts/robot.ts");
+        File file = new File(dirPath + "ts/robot-linear.ts");
         TransitionSystem ts = XmlLoaderUtility.loadTransitionSystem(file);
         BundleEventStructure bes = Translator.ts2bes(ts);
-        System.out.println("Event Count: " + bes.getEventsCount());
-        System.out.println("Causality Count: " + bes.getCausalitiesCount());
-        System.out.println("Conflict Count: " + bes.getConflictsCount());
-        XmlSaverUtility.save(bes, dirPath + "bes/new.bes");
+        XmlSaverUtility.save(bes, dirPath + "bes/new-linear.bes");
     }
 
     public static void testbes2ts() throws BundleEventStructureDefinitionException, TransitionSystemDefinitionException, FileNotFoundException {
@@ -37,9 +34,6 @@ public class Main {
         File file = new File(dirPath + "bes/robot-linear.bes");
         BundleEventStructure bes = XmlLoaderUtility.loadBundleEventStructure(file);
         TransitionSystem ts = Translator.bes2ts(bes);
-        System.out.println("Action Count: " + ts.getActionsCount());
-        System.out.println("State Count: " + ts.getStatesCount());
-        System.out.println("Transition Count: " + ts.getTransitionsCount());
         XmlSaverUtility.save(ts, dirPath + "ts/new-linear.ts");
 
         PrintStream output = new PrintStream(new FileOutputStream(dirPath + "ts/dot/new-linear.dot"));
@@ -54,14 +48,26 @@ public class Main {
         File fmFile = new File(dirPath + "bfm/fm2xml/robot.xml");
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
 
-        File file = new File(dirPath + "fts/robot.fts");
+        File file0 = new File(dirPath + "fts/robot.fts");
+        FeaturedTransitionSystem fts0 = XmlLoaderUtility.loadFeaturedTransitionSystem(file0);
+
+        FeaturedEventStructure<?> fes0 = Translator.fts2fes(fm, fts0);
+        System.out.println("Event Count: " + fes0.getEventsCount());
+        System.out.println("Causality Count: " + fes0.getCausalitiesCount());
+        System.out.println("Conflict Count: " + fes0.getConflictsCount());
+        XmlSaverUtility.save(fes0, dirPath + "fes/new.fes");
+
+        /*  LINEAR  */
+
+        File file = new File(dirPath + "fts/robot-linear.fts");
         FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
 
         FeaturedEventStructure<?> fes = Translator.fts2fes(fm, fts);
         System.out.println("Event Count: " + fes.getEventsCount());
         System.out.println("Causality Count: " + fes.getCausalitiesCount());
         System.out.println("Conflict Count: " + fes.getConflictsCount());
-        XmlSaverUtility.save(fes, dirPath + "fes/new.fes");
+        XmlSaverUtility.save(fes, dirPath + "fes/new-linear.fes");
+
     }
 
     public static void testfes2fts() throws BundleEventStructureDefinitionException, TransitionSystemDefinitionException, IOException {
@@ -101,6 +107,22 @@ public class Main {
         File fmFile = new File(dirPath + "bfm/fm2xml/robot.xml");
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
 
+        File file0 = new File(dirPath + "fes/robot.fes");
+        FeaturedEventStructure<?> fes0 = XmlLoaderUtility.loadFeaturedEventStructure(file0, fm);
+
+        FeaturedTransitionSystem fts0 = Translator.fes2fts(fes0);
+        System.out.println("Action Count: " + fts0.getActionsCount());
+        System.out.println("State Count: " + fts0.getStatesCount());
+        System.out.println("Transition Count: " + fts0.getTransitionsCount());
+
+        PrintStream output0 = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new.dot"));
+        FeaturedTransitionSystemDotPrinter printer0 = new FeaturedTransitionSystemDotPrinter(fts0, output0);
+        printer0.printDot();
+        printer0.flush();
+        XmlSaverUtility.save(fts0, dirPath + "fts/new.fts");
+
+        /*  LINEAR  */
+
         File file = new File(dirPath + "fes/robot-linear.fes");
         FeaturedEventStructure<?> fes = XmlLoaderUtility.loadFeaturedEventStructure(file, fm);
 
@@ -114,6 +136,8 @@ public class Main {
         printer.printDot();
         printer.flush();
         XmlSaverUtility.save(fts, dirPath + "fts/new-fromFES-linear.fts");
+
+
     }
 
     public static void testfts2bfm() throws TransitionSystemDefinitionException {
@@ -122,21 +146,49 @@ public class Main {
         File fmFile = new File(dirPath + "bfm/fm2xml/robot.xml");
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
 
-        File file = new File(dirPath + "fts/robot.fts");
+        File file0 = new File(dirPath + "fts/robot.fts");
+        FeaturedTransitionSystem fts0 = XmlLoaderUtility.loadFeaturedTransitionSystem(file0);
+
+        BehavioralFeatureModel bfm0 = Translator.fts2bfm(fm, fts0);
+        XmlSaverUtility.save(bfm0, dirPath + "bfm/new.bfm");
+
+        /*  LINEAR  */
+
+        File file = new File(dirPath + "fts/robot-linear.fts");
         FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
 
         BehavioralFeatureModel bfm = Translator.fts2bfm(fm, fts);
-        XmlSaverUtility.save(bfm, dirPath + "bfm/new.bfm");
+        XmlSaverUtility.save(bfm, dirPath + "bfm/new-linear.bfm");
     }
 
     public static void testbfm2fts() throws TransitionSystemDefinitionException, IOException {
         String dirPath = "src/main/resources/";
 
+        File fileBFM0 = new File(dirPath + "bfm/robot.bfm");
+        BehavioralFeatureModel bfm0 = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM0);
+
+        FeatureModel<?> fm0 =Translator.bfm2fm(bfm0);
+        File file0 = new File(dirPath + "bfm/fm2xml/new.xml");
+        XmlSavers.save(fm0, file0);
+
+        FeaturedTransitionSystem fts0 = Translator.bfm2fts(bfm0);
+        System.out.println("Action Count: " + fts0.getActionsCount());
+        System.out.println("State Count: " + fts0.getStatesCount());
+        System.out.println("Transition Count: " + fts0.getTransitionsCount());
+
+        PrintStream output0 = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new-fromBFM.dot"));
+        FeaturedTransitionSystemDotPrinter printer0 = new FeaturedTransitionSystemDotPrinter(fts0, output0);
+        printer0.printDot();
+        printer0.flush();
+        XmlSaverUtility.save(fts0, dirPath + "fts/new-fromBFM.fts");
+
+        /*  LINEAR  */
+
         File fileBFM = new File(dirPath + "bfm/robot.bfm");
         BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM);
 
         FeatureModel<?> fm =Translator.bfm2fm(bfm);
-        File file = new File(dirPath + "bfm/fm2xml/new.xml");
+        File file = new File(dirPath + "bfm/fm2xml/new-linear.xml");
         XmlSavers.save(fm, file);
 
         FeaturedTransitionSystem fts = Translator.bfm2fts(bfm);
@@ -144,11 +196,12 @@ public class Main {
         System.out.println("State Count: " + fts.getStatesCount());
         System.out.println("Transition Count: " + fts.getTransitionsCount());
 
-        PrintStream output = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new-fromBFM.dot"));
+        PrintStream output = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new-fromBFM-linear.dot"));
         FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(fts, output);
         printer.printDot();
         printer.flush();
-        XmlSaverUtility.save(fts, dirPath + "fts/new-fromBFM.fts");
+        XmlSaverUtility.save(fts, dirPath + "fts/new-fromBFM-linear.fts");
+
     }
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
