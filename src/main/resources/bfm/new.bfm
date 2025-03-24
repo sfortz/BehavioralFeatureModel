@@ -28,6 +28,14 @@
                         </events>
                     </feature>
                 </alternative>
+                <event_constraints>
+                    <conflicts>
+                        <conflict>
+                            <event id="liDet"> </event>
+                            <event id="caDet"> </event>
+                        </conflict>
+                    </conflicts>
+                </event_constraints>
             </feature>
         </mandatory>
         <mandatory>
@@ -103,10 +111,6 @@
                 <conflict>
                     <event id="liDet"> </event>
                     <event id="move"> </event>
-                </conflict>
-                <conflict>
-                    <event id="liDet"> </event>
-                    <event id="caDet"> </event>
                 </conflict>
             </conflicts>
         </event_constraints>

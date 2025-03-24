@@ -58,7 +58,7 @@
 	</causalities>
 
 	<conflicts>
-		<conflict>
+		<!--<conflict>
 			<event id="liDet_0" />
 			<event id="caDet_0" />
 		</conflict>
@@ -73,7 +73,7 @@
 		<conflict>
 			<event id="liDet_1" />
 			<event id="caDet_1" />
-		</conflict>
+		</conflict>-->
 
 		<conflict>
 			<event id="liDet_0"/>
