@@ -4,9 +4,9 @@
         <events>
             <event id="liDet_1" fexpression="(lidar &amp;&amp; !mapping)"> </event>
             <event id="charge"> </event>
-            <event id="liDet_0" fexpression="(lidar &amp;&amp; mapping)"> </event>
-            <event id="caDet_0" fexpression="(mapping &amp;&amp; camera)"> </event>
-            <event id="caDet_1" fexpression="(!mapping &amp;&amp; camera)"> </event>
+            <event id="liDet_0" fexpression="(mapping &amp;&amp; lidar)"> </event>
+            <event id="caDet_0" fexpression="(camera &amp;&amp; mapping)"> </event>
+            <event id="caDet_1" fexpression="(camera &amp;&amp; !mapping)"> </event>
             <event id="clean"> </event>
             <event id="goAround"> </event>
         </events>

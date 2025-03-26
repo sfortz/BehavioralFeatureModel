@@ -173,7 +173,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return events;
     }
 
-    protected boolean isConflictFree(Event e, List<Event> config) {
+    protected boolean isConflictFree(Event e, Set<Event> config) {
         for (Event other : config) {
             if (this.isInConflict(e, other)) {
                 return false;
@@ -182,7 +182,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return true;
     }
 
-    protected boolean respectsCausality(Event e, List<Event> config) {
+    protected boolean respectsCausality(Event e, Set<Event> config) {
         Set<Set<Event>> causes = this.getAllBundles(e); // All X such as X ↦ e
         for (Set<Event> bundle : causes) {
             if (Collections.disjoint(config, bundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
@@ -193,26 +193,29 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
-    public Set<List<Event>> getAllConfigurations() {
-        Set<List<Event>> allConfigs = new HashSet<>();
-        Set<Event> allEvents = new HashSet<>(this.getAllEvents());
-        buildConfigurations(new ArrayList<>(), allEvents, allConfigs);
-        return allConfigs;
+    public TreeMap<Integer, Set<Set<Event>>> getAllConfigurations() {
+        TreeMap<Integer, Set<Set<Event>>> configurationsBySize = new TreeMap<>();
+        Set<Event> allEvents = new HashSet<>(this.events.values());
+        buildConfigurations(new LinkedHashSet<>(), allEvents, configurationsBySize);
+        return configurationsBySize;
     }
 
-    protected void buildConfigurations(List<Event> currentConfig, Set<Event> remainingEvents, Set<List<Event>> allConfigs) {
-        // Add the current configuration to the allConfigs set. A new list is created to avoid modifying the original configuration.
-        allConfigs.add(new ArrayList<>(currentConfig));
+    protected void buildConfigurations(LinkedHashSet<Event> currentConfig, Set<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) {
 
-        // Iterate over a copy of remaining events to prevent concurrent modification issues.
-        for (Event e : new HashSet<>(remainingEvents)) {
+        // Store a copy of the current configuration
+        Set<Event> configSet = new HashSet<>(currentConfig);
+        configurationsBySize.computeIfAbsent(configSet.size(), k -> new HashSet<>()).add(configSet);
+
+        // Iterate over a new list (copy of remainingEvents) to avoid ConcurrentModificationException
+        List<Event> remainingEventsList = new ArrayList<>(remainingEvents);
+        for (Event e : remainingEventsList) {
             if (isConflictFree(e, currentConfig) && respectsCausality(e, currentConfig)) {
                 // If both conditions are satisfied, add the event to the current configuration.
                 currentConfig.add(e);
                 // Remove event 'e' from remaining events to prevent re-selection in this configuration.
                 remainingEvents.remove(e);
                 // Recursively build configurations with the updated current configuration and remaining events.
-                buildConfigurations(currentConfig, remainingEvents, allConfigs);
+                buildConfigurations(currentConfig, remainingEvents, configurationsBySize);
                 // Backtrack: Remove event 'e' from the current configuration to explore other possible configurations.
                 currentConfig.remove(e);
                 // Add event 'e' back to the remaining events for further exploration.

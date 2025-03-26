@@ -31,7 +31,7 @@ public interface BundleEventStructure {
 
     Set<Event> getInitialEvents();
 
-    Set<List<Event>> getAllConfigurations();
+    TreeMap<Integer, Set<Set<Event>>> getAllConfigurations();
 
     int getEventsCount();
 
