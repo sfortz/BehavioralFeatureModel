@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bes>
+    <events>
+        <event id="a"> </event>
+        <event id="b"> </event>
+        <event id="c"> </event>
+        <event id="d"> </event>
+        <event id="e"> </event>
+    </events>
+    <causalities>
+        <causality target="a">
+            <bundle>
+                <event id="c"> </event>
+            </bundle>
+        </causality>
+        <causality target="b">
+            <bundle>
+                <event id="c"> </event>
+            </bundle>
+        </causality>
+        <causality target="d">
+            <bundle>
+                <event id="c"> </event>
+            </bundle>
+            <bundle>
+                <event id="a"> </event>
+            </bundle>
+            <bundle>
+                <event id="b"> </event>
+            </bundle>
+        </causality>
+        <causality target="e">
+            <bundle>
+                <event id="c"> </event>
+            </bundle>
+        </causality>
+    </causalities>
+    <conflicts>
+        <conflict>
+            <event id="a"> </event>
+            <event id="e"> </event>
+        </conflict>
+        <conflict>
+            <event id="b"> </event>
+            <event id="e"> </event>
+        </conflict>
+        <conflict>
+            <event id="d"> </event>
+            <event id="e"> </event>
+        </conflict>
+    </conflicts>
+</bes>
