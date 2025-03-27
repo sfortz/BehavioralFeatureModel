@@ -195,15 +195,15 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     @Override
     public TreeMap<Integer, Set<Set<Event>>> getAllConfigurations() {
         TreeMap<Integer, Set<Set<Event>>> configurationsBySize = new TreeMap<>();
-        Set<Event> allEvents = new HashSet<>(this.events.values());
-        buildConfigurations(new LinkedHashSet<>(), allEvents, configurationsBySize);
+        buildConfigurations(new LinkedHashSet<>(), new ArrayList<>(this.events.values()), configurationsBySize);
         return configurationsBySize;
     }
 
-    protected void buildConfigurations(LinkedHashSet<Event> currentConfig, Set<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) {
+    private void buildConfigurations(HashSet<Event> currentConfig, List<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) {
 
         // Store a copy of the current configuration
         Set<Event> configSet = new HashSet<>(currentConfig);
+        // Add to TreeMap based on its size
         configurationsBySize.computeIfAbsent(configSet.size(), k -> new HashSet<>()).add(configSet);
 
         // Iterate over a new list (copy of remainingEvents) to avoid ConcurrentModificationException
