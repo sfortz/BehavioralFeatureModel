@@ -7,6 +7,7 @@ import be.vibes.solver.FeatureModel;
 import be.vibes.solver.io.xml.XmlLoaders;
 import be.vibes.solver.io.xml.XmlSavers;
 import be.vibes.ts.FeaturedTransitionSystem;
+import be.vibes.ts.FeaturedTransitionSystemFactory;
 import be.vibes.ts.TransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
@@ -40,6 +41,18 @@ public class Main {
         TransitionSystemDotPrinter printer = new TransitionSystemDotPrinter(ts, output);
         printer.printDot();
         printer.flush();
+
+        /*  LINEAR  */
+
+        File file2 = new File(dirPath + "bes/robot.bes");
+        BundleEventStructure bes2 = XmlLoaderUtility.loadBundleEventStructure(file2);
+        TransitionSystem ts2 = Translator.bes2ts(bes2);
+        XmlSaverUtility.save(ts2, dirPath + "ts/new.ts");
+
+        PrintStream output2 = new PrintStream(new FileOutputStream(dirPath + "ts/dot/new.dot"));
+        TransitionSystemDotPrinter printer2 = new TransitionSystemDotPrinter(ts2, output2);
+        printer2.printDot();
+        printer2.flush();
     }
 
     public static void testfts2fes() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
@@ -115,11 +128,11 @@ public class Main {
         System.out.println("State Count: " + fts0.getStatesCount());
         System.out.println("Transition Count: " + fts0.getTransitionsCount());
 
-        PrintStream output0 = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new.dot"));
+        PrintStream output0 = new PrintStream(new FileOutputStream(dirPath + "fts/dot/new-fromFES.dot"));
         FeaturedTransitionSystemDotPrinter printer0 = new FeaturedTransitionSystemDotPrinter(fts0, output0);
         printer0.printDot();
         printer0.flush();
-        XmlSaverUtility.save(fts0, dirPath + "fts/new.fts");
+        XmlSaverUtility.save(fts0, dirPath + "fts/new-fromFES.fts");
 
         /*  LINEAR  */
 
@@ -167,6 +180,7 @@ public class Main {
         File fileBFM0 = new File(dirPath + "bfm/robot.bfm");
         BehavioralFeatureModel bfm0 = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM0);
 
+        /*
         FeatureModel<?> fm0 =Translator.bfm2fm(bfm0);
         File file0 = new File(dirPath + "bfm/fm2xml/new.xml");
         XmlSavers.save(fm0, file0);
@@ -180,7 +194,7 @@ public class Main {
         FeaturedTransitionSystemDotPrinter printer0 = new FeaturedTransitionSystemDotPrinter(fts0, output0);
         printer0.printDot();
         printer0.flush();
-        XmlSaverUtility.save(fts0, dirPath + "fts/new-fromBFM.fts");
+        XmlSaverUtility.save(fts0, dirPath + "fts/new-fromBFM.fts");*/
 
         /*  LINEAR  */
 
@@ -205,12 +219,36 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
+        //toDot();
         testts2bes();
         testbes2ts();
         testfts2fes();
         testfes2fts();
         testfts2bfm();
-        testbfm2fts();
+        //testbfm2fts();
+        //testparallel();
     }
+
+    public static void testparallel() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
+        String dirPath = "src/main/resources/";
+        File file = new File(dirPath + "ts/parallel.ts");
+        TransitionSystem ts = XmlLoaderUtility.loadTransitionSystem(file);
+        BundleEventStructure bes = Translator.ts2bes(ts);
+        XmlSaverUtility.save(bes, dirPath + "bes/new-parallel.bes");
+    }
+
+
+    public static void toDot() throws TransitionSystemDefinitionException, FileNotFoundException {
+        String dirPath = "src/main/resources/";
+        File file = new File(dirPath + "fts/aerouc5.fts");
+        FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
+
+
+        PrintStream output = new PrintStream(new FileOutputStream(dirPath + "fts/dot/aerouc5.dot"));
+        FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(fts, output);
+        printer.printDot();
+        printer.flush();
+    }
+
 }
 

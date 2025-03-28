@@ -16,8 +16,10 @@ import java.util.stream.Collectors;
 
 public class Translator {
 
-    private static BiMap<Set<Event>, String> getConfigStateMapping(TreeMap<Integer, Set<Set<Event>>> configurations) {
-        BiMap<Set<Event>, String> configToStateMap = HashBiMap.create();
+    static BiMap<Set<Event>, String> configToStateMap;
+
+    private static void setConfigStateMapping(TreeMap<Integer, Set<Set<Event>>> configurations) {
+        configToStateMap = HashBiMap.create();
         int stateCounter = 0;
 
         // Ensure the empty set is always mapped to "State_0"
@@ -31,8 +33,6 @@ public class Translator {
                 }
             }
         }
-
-        return configToStateMap;
     }
 
     /**
@@ -47,8 +47,8 @@ public class Translator {
 
     public static TransitionSystem bes2ts(BundleEventStructure bes) {
         TreeMap<Integer, Set<Set<Event>>> configurations = bes.getAllConfigurations();
-        Map<Set<Event>, String> mapping = getConfigStateMapping(configurations);
-        String initialState = mapping.getOrDefault(Collections.emptySet(), "State_0");
+        setConfigStateMapping(configurations);
+        String initialState = configToStateMap.getOrDefault(Collections.emptySet(), "State_0");
 
         TransitionSystemFactory factory = new TransitionSystemFactory(initialState);
 
@@ -56,7 +56,7 @@ public class Translator {
         for (Event ev : bes.getAllEvents()) {
             factory.addAction(ev.getName());
         }
-        factory.addStates(mapping.values().toArray(new String[0]));
+        factory.addStates(configToStateMap.values().toArray(new String[0]));
 
         // Create transitions efficiently
         for (int size : configurations.keySet()) {
@@ -66,12 +66,12 @@ public class Translator {
             if (nextConfigs == null) continue;
 
             for (Set<Event> c1 : currentConfigs) {
-                String s1 = mapping.get(c1);
+                String s1 = configToStateMap.get(c1);
                 for (Set<Event> c2 : nextConfigs) {
                     if (c2.size() == c1.size() + 1 && c2.containsAll(c1)) {
                         Event addedEvent = getSingleDifference(c1, c2);
                         if (addedEvent != null) {
-                            String s2 = mapping.get(c2);
+                            String s2 = configToStateMap.get(c2);
                             factory.addTransition(s1, addedEvent.getName(), s2);
                         }
                     }
@@ -212,19 +212,20 @@ public class Translator {
         TransitionSystem ts = bes2ts(fes);
         FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(ts.getInitialState().getName());
 
-        /*
         for (Iterator<Transition> it = ts.transitions(); it.hasNext(); ) {
             Transition t = it.next();
             String source = t.getSource().getName();
             String action = t.getAction().getName();
             String target = t.getTarget().getName();
-            List<Event> configSrc = configToStateMap.inverse().get(source);
-            List<Event> configTrg = configToStateMap.inverse().get(target);
+            Set<Event> configSrc = configToStateMap.inverse().get(source);
+            Set<Event> configTrg = configToStateMap.inverse().get(target);
             FExpression f1 = fes.getFExpression(configSrc);
             FExpression f2 = fes.getFExpression(configTrg);
-            FExpression fexpr = f1.and(f2);
-            factory.addTransition(source, action, fexpr.applySimplification().toCnf(), target);
-        }*/
+            FExpression fexpr = f1.and(f2).applySimplification().toCnf();
+            if(!fexpr.isFalse()){
+                factory.addTransition(source, action, fexpr.applySimplification().toCnf(), target);
+            }
+        }
 
         return factory.build();
     }
@@ -270,9 +271,8 @@ public class Translator {
         }
 
         TreeMap<Integer, Set<Set<Event>>> configurations = bfm.getAllConfigurations();
-        BiMap<Set<Event>, String> mapping = getConfigStateMapping(configurations);
 
-        String initialState = mapping.get(new ArrayList<>());
+        String initialState = configToStateMap.get(new ArrayList<>());
         FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(initialState);
 
 /*

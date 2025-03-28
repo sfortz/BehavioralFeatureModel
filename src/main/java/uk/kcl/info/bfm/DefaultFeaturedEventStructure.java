@@ -3,10 +3,8 @@ package uk.kcl.info.bfm;
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.FExpressionVisitorWithReturn;
 import be.vibes.fexpression.Feature;
-import be.vibes.fexpression.configuration.Configuration;
 import be.vibes.fexpression.configuration.ConfigurationSet;
 import be.vibes.fexpression.exception.FExpressionException;
-import be.vibes.solver.ConstraintIdentifier;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.exception.ConstraintSolvingException;
 import com.google.common.base.Preconditions;
@@ -20,9 +18,9 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
 
     private final Map<Event, FExpression> eventFexpressions = new HashMap<>();
 
-    private final Map<List<Event>, FExpression> configFexpressions = new HashMap<>();
-
     private final FeatureModel<F> fm;
+
+    private Map<Set<Event>, FExpression> productConfigurations;
 
     public DefaultFeaturedEventStructure(FeatureModel<F> fm) {
         super();
@@ -51,8 +49,8 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
     }
 
     @Override
-    public FExpression getFExpression(List<Event> config) {
-        return configFexpressions.get(config);
+    public FExpression getFExpression(Set<Event> config) {
+        return this.productConfigurations.get(config);
     }
 
     private F getFeatureFromFM(F feature){
@@ -133,147 +131,124 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
     }
 
     @Override
-    public Set<List<Event>> getAllConfigurations() {
-        Set<List<Event>> allConfigs = new HashSet<>();
-        Queue<Event> allEvents = new LinkedList<>(this.getAllEvents());
+    public TreeMap<Integer, Set<Set<Event>>> getAllConfigurations() {
+        TreeMap<Integer, Set<Set<Event>>> configurationsBySize = new TreeMap<>();
+        this.productConfigurations = new HashMap<>();
+        this.productConfigurations.put(new HashSet<>(), FExpression.trueValue());
         try {
-            buildProductConfigurations(new ArrayList<>(), allEvents, allConfigs);
+            buildProductConfigurations(new LinkedHashSet<>(), new ArrayList<>(this.getAllEvents()), configurationsBySize);
             this.fm.resetSolver();
         } catch (ConstraintSolvingException e) {
             throw new IllegalStateException("Error solving constraints: " + e.getMessage(), e.getCause());
         }
-        return allConfigs;
+        return configurationsBySize;
     }
 
-    private void buildProductConfigurations(List<Event> currentConfig, Queue<Event> remainingEvents, Set<List<Event>> allConfigs) throws ConstraintSolvingException {
-        // Add the current configuration to the allConfigs set. A new list is created to avoid modifying the original configuration.
-        allConfigs.add(new ArrayList<>(currentConfig));
+
+    private void buildProductConfigurations(Set<Event> currentConfig, List<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) throws ConstraintSolvingException {
+
+        // Store a copy of the current configuration
+        Set<Event> configSet = new HashSet<>(currentConfig);
+        // Add to TreeMap based on its size
+        configurationsBySize.computeIfAbsent(configSet.size(), k -> new HashSet<>()).add(configSet);
 
         // Create a copy of remaining events to avoid concurrent modification
-        Queue<Event> remainingCopy = new LinkedList<>(remainingEvents);
-
-        while (!remainingCopy.isEmpty()) {
-            Event e = remainingCopy.poll();
-
+        List<Event> remainingEventsList = new ArrayList<>(remainingEvents);
+        for (Event e : remainingEventsList) {
             if (isConflictFree(e, currentConfig)) {
-                Set<Set<Event>> initialBundles = this.getAllBundles(e);
-
-                ConfigurationSet products = getValidProducts(e);
-
-                for (Configuration product : products) {
-
-                    // Construct the feature expression
-                    FExpression productFExp = FExpression.trueValue();
-                    for (Feature<?> f : product.getFeatures()) {
-                        productFExp.andWith(new FExpression(f));
-                    }
-
-                    ConstraintIdentifier constrId = this.fm.addSolverConstraint(productFExp);
-
-                    if (this.fm.isSatisfiable() && respectsCausality(currentConfig, product, initialBundles)) {
-                        // If valid, add event to current configuration and remove from remaining events
+                List<FExpression> products = getValidProducts(e, currentConfig); // The products containing e parent feature,  satisfying the fexpr associated to e AND the fexpr associated to currentConfig
+                for (FExpression productFExp : products) {
+                    if (respectsCausality(e, currentConfig, productFExp)) {
+                        // If both conditions are satisfied, add the event to the current configuration.
                         currentConfig.add(e);
+                        // Remove event 'e' from remaining events to prevent re-selection in this configuration.
                         remainingEvents.remove(e);
-                        // Recursively build configurations
-                        buildProductConfigurations(currentConfig, remainingEvents, allConfigs);
-                        // Backtrack: remove the event and restore the queue
+                        // Concatenate FExpression
+                        this.productConfigurations.merge(new HashSet<>(currentConfig), productFExp, (oldValue, newValue) -> oldValue.or(newValue).applySimplification().toCnf());
+                        // Recursively build configurations with the updated current configuration and remaining events.
+                        buildProductConfigurations(currentConfig, remainingEvents, configurationsBySize);
+                        // Backtrack: Remove event 'e' from the current configuration to explore other possible configurations.
                         currentConfig.remove(e);
-                        remainingEvents.offer(e);
+                        // Add event 'e' back to the remaining events for further exploration.
+                        remainingEvents.add(e);
                     }
-
-                    this.fm.removeSolverConstraint(constrId);
                 }
             }
         }
-
-        FExpression currentFExpr = getCurrentFExpr();
-        configFexpressions.merge(
-                new ArrayList<>(currentConfig),
-                currentFExpr.applySimplification(),
-                FExpression::or
-        );
     }
 
-    private FExpression getCurrentFExpr() throws ConstraintSolvingException {
-        Iterator<Configuration> solutions = this.fm.getSolutions();
-        FExpression currentFExpr = FExpression.falseValue();
+    protected boolean respectsCausality(Event e, Set<Event> config, FExpression productFexpr) {
+        Set<Set<Event>> causes = this.getAllBundles(e); // All X such as X ↦ e
 
-        while (solutions.hasNext()) {
-            Configuration sol = solutions.next();
-            FExpression acc = FExpression.trueValue();
-            Set<F> selected = (Set<F>) Arrays.stream(sol.getFeatures()).collect(Collectors.toSet());
-            selected = selected.stream().map(f -> { //TODO: To remove once Feature.hashcode() is debugged
-                    for(F feat: this.fm.getFeatures()){
-                        if (f.getFeatureName().equals(feat.getFeatureName())){
-                            return feat;
-                        }
-                    }
-                    return null;
-            }).collect(Collectors.toSet());
+        for (Set<Event> bundle : causes) {
 
-            Set<F> deselected = new HashSet<>(this.fm.getFeatures());
-            deselected.removeAll(selected);
-
-            for (F f : selected) {
-                acc.andWith(new FExpression(f));
-            }
-            for (F f : deselected) {
-                acc.andWith(new FExpression(f).not());
-            }
-
-            currentFExpr.orWith(acc.applySimplification());
-        }
-
-        return currentFExpr.applySimplification().toCnf();
-    }
-
-    protected boolean respectsCausality(List<Event> currentConfig, Configuration product, Set<Set<Event>> initialBundles) {
-
-        if(initialBundles.isEmpty() && currentConfig.isEmpty()){
-            return true;
-        }
-
-        boolean causal = false;
-        for (Set<Event> oldBundle: initialBundles){
-
-            Set<Event> candidateBundle = oldBundle.stream()
-                    .filter(ev -> {
-                        try {
-                            return respectsFM(product, ev);
-                        } catch (ConstraintSolvingException ex) {
-                            throw new IllegalStateException("No bundle created, Error solving constraints: " + ex.getMessage(), ex.getCause());
-                        }
+            // Restrict bundle to only events whose features are in the product
+            Set<Event> restrictedBundle = bundle.stream()
+                    .filter(event -> {
+                        FExpression fexpr = this.getFExpression(event).and(productFexpr);
+                        return !fexpr.applySimplification().isFalse();
                     })
                     .collect(Collectors.toSet());
 
-            if (currentConfig.isEmpty() && candidateBundle.isEmpty()) {
-                causal = true;
-                break;
-            } else if (!Collections.disjoint(currentConfig, candidateBundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
-                causal = true;
-                break;
+            // If the intersection is empty, causality is not respected
+            if (!restrictedBundle.isEmpty() & Collections.disjoint(config, restrictedBundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
+                return false;
             }
         }
-        return causal;
+        return true;
     }
 
-    private boolean respectsFM(Configuration product, Event e) throws ConstraintSolvingException {
+    private List<FExpression> getValidProducts(Event event, Set<Event> config) {
 
-        F f = features.get(e);
-        if(!product.isSelected(f)){
-            return false;
-        }
-        ConstraintIdentifier constrId = this.fm.addSolverConstraint(eventFexpressions.get(e));
-        boolean isSatisfiable = this.fm.isSatisfiable();
-        this.fm.removeSolverConstraint(constrId);
-        return isSatisfiable;
+        Collection<F> allFeatures = this.fm.getFeatures();
+        FExpression configFexpr = this.productConfigurations.get(config);
+
+        FExpression constraint = this.getFExpression(event).and(configFexpr);
+        ConfigurationSet allProducts = new ConfigurationSet(this.fm, constraint);
+
+        List<FExpression> allFExps = allProducts.stream().map(product -> {
+            // Construct the product feature expression
+            FExpression productFExp = FExpression.trueValue();
+
+            List<F> featuresTMP = new ArrayList<>();
+            F f1 = null;
+            for (Feature<?> f : product) { //TODO: To remove once Feature.hashcode() is debugged
+                for(F f2: this.fm.getFeatures()){
+                    if (f.getFeatureName().equals(f2.getFeatureName())){
+                       f1 = f2;
+                    }
+                }
+                assert (f1 != null);
+                featuresTMP.add(f1);
+            }
+
+            for (F f : allFeatures) {
+                FExpression fFexpr= new FExpression(f);
+                if(featuresTMP.contains(f)){
+                //if(product.isSelected(f)){
+                    productFExp.andWith(fFexpr);
+                } else {
+                    productFExp.andWith(fFexpr.not());
+                }
+            }
+            return productFExp.applySimplification();
+        }).toList();
+
+/*
+        List<FExpression> allFExps2 = allProducts.stream().map(product -> {
+            // Construct the product feature expression
+            FExpression productFExp = FExpression.trueValue();
+            for (F f : allFeatures) {
+                FExpression fFexpr= new FExpression(f);
+                if(product.isSelected(f)){
+                    productFExp.andWith(fFexpr);
+                } else {
+                    productFExp.andWith(fFexpr.not());
+                }
+            }
+            return productFExp.applySimplification();
+        }).toList();*/
+
+        return allFExps;
     }
-
-    private ConfigurationSet getValidProducts(Event event) {
-
-        F f = this.features.get(event);
-        FExpression constraint = this.eventFexpressions.get(event).and(new FExpression(f));
-        return new ConfigurationSet(this.fm, constraint);
-    }
-
 }

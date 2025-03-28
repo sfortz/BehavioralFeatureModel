@@ -182,10 +182,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return true;
     }
 
-    protected boolean respectsCausality(Event e, Set<Event> config) {
+    protected boolean respectsCausality(Event e, Set<Event> c1) {
+
         Set<Set<Event>> causes = this.getAllBundles(e); // All X such as X ↦ e
         for (Set<Event> bundle : causes) {
-            if (Collections.disjoint(config, bundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
+            if (Collections.disjoint(c1, bundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
                 return false;
             }
         }
@@ -199,7 +200,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return configurationsBySize;
     }
 
-    private void buildConfigurations(HashSet<Event> currentConfig, List<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) {
+    private void buildConfigurations(Set<Event> currentConfig, List<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) {
 
         // Store a copy of the current configuration
         Set<Event> configSet = new HashSet<>(currentConfig);
