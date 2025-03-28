@@ -2,7 +2,7 @@
 <bfm namespace="CleaningRobot">
     <feature name="Robot">
         <events>
-            <event id="liDet_1" fexpression="(lidar &amp;&amp; !mapping)"> </event>
+            <event id="liDet_1" fexpression="(!mapping &amp;&amp; lidar)"> </event>
             <event id="charge"> </event>
             <event id="liDet_0" fexpression="(mapping &amp;&amp; lidar)"> </event>
             <event id="caDet_0" fexpression="(camera &amp;&amp; mapping)"> </event>
