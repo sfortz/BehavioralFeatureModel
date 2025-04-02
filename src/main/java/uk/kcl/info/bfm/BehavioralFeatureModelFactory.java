@@ -30,23 +30,8 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
         return addFeature(feature, group, name);
     }
 
-    public void addEvent(String featName, String event) {
-        this.addEvent(featName, event, FExpression.trueValue());
-
-    }
-
     public void addEvent(BehavioralFeature feat,  String event) {
         this.addEvent(feat, event, FExpression.trueValue());
-    }
-
-    public void addEvent(String featName, String event, FExpression fexpr) {
-
-        BehavioralFeature feature = this.getFeature(featName);
-        if(feature != null){
-            feature.addEvent(event, fexpr);
-        } else {
-            throw new BehavioralFeatureModelDefinitionException("Events should always be associated to one feature of the BFM.");
-        }
     }
 
     public void addEvent(BehavioralFeature feat,  String event, FExpression fexpr) {
