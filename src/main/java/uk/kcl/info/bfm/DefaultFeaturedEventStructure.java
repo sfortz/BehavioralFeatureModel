@@ -20,7 +20,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
 
     private final FeatureModel<F> fm;
 
-    private Map<Set<Event>, FExpression> productConfigurations;
+    private Map<Set<Event>, FExpression> configFexpressions;
 
     public DefaultFeaturedEventStructure(FeatureModel<F> fm) {
         super();
@@ -50,7 +50,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
 
     @Override
     public FExpression getFExpression(Set<Event> config) {
-        return this.productConfigurations.get(config);
+        return this.configFexpressions.get(config);
     }
 
     private F getFeatureFromFM(F feature){
@@ -133,8 +133,8 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
     @Override
     public TreeMap<Integer, Set<Set<Event>>> getAllConfigurations() {
         TreeMap<Integer, Set<Set<Event>>> configurationsBySize = new TreeMap<>();
-        this.productConfigurations = new HashMap<>();
-        this.productConfigurations.put(new HashSet<>(), FExpression.trueValue());
+        this.configFexpressions = new HashMap<>();
+        this.configFexpressions.put(new HashSet<>(), FExpression.trueValue());
         try {
             buildProductConfigurations(new LinkedHashSet<>(), new ArrayList<>(this.getAllEvents()), configurationsBySize);
             this.fm.resetSolver();
@@ -143,7 +143,6 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
         }
         return configurationsBySize;
     }
-
 
     private void buildProductConfigurations(Set<Event> currentConfig, List<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) throws ConstraintSolvingException {
 
@@ -164,7 +163,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
                         // Remove event 'e' from remaining events to prevent re-selection in this configuration.
                         remainingEvents.remove(e);
                         // Concatenate FExpression
-                        this.productConfigurations.merge(new HashSet<>(currentConfig), productFExp, (oldValue, newValue) -> oldValue.or(newValue).applySimplification().toCnf());
+                        this.configFexpressions.merge(new HashSet<>(currentConfig), productFExp, (oldValue, newValue) -> oldValue.or(newValue).applySimplification().toCnf());
                         // Recursively build configurations with the updated current configuration and remaining events.
                         buildProductConfigurations(currentConfig, remainingEvents, configurationsBySize);
                         // Backtrack: Remove event 'e' from the current configuration to explore other possible configurations.
@@ -201,7 +200,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
     private List<FExpression> getValidProducts(Event event, Set<Event> config) {
 
         Collection<F> allFeatures = this.fm.getFeatures();
-        FExpression configFexpr = this.productConfigurations.get(config);
+        FExpression configFexpr = this.configFexpressions.get(config);
 
         FExpression constraint = this.getFExpression(event).and(configFexpr);
         ConfigurationSet allProducts = new ConfigurationSet(this.fm, constraint);
