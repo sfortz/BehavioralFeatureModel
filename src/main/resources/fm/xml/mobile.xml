@@ -1,0 +1,35 @@
+<fm namespace="Mobile">
+    <feature name="MM">
+        <mandatory>
+            <feature name="ME">
+                <mandatory>
+                    <feature name="CD"/>
+                </mandatory>
+                <mandatory>
+                    <feature name="LM"/>
+                </mandatory>
+                <mandatory>
+                    <feature name="VM"/>
+                </mandatory>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="F"/>
+        </optional>
+        <optional>
+            <feature name="CM"/>
+        </optional>
+        <optional>
+            <feature name="SMS"/>
+        </optional>
+        <mandatory>
+            <feature name="E">
+                <alternative>
+                    <feature name="P"/>
+                    <feature name="M"/>
+                    <feature name="V"/>
+                </alternative>
+            </feature>
+        </mandatory>
+    </feature>
+</fm>

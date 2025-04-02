@@ -1,0 +1,73 @@
+<fm namespace="BodyComfortSystem">
+    <feature name="BCS">
+        <optional>
+            <feature name="HMI">
+                <optional>
+                    <feature name="LED">
+                        <or>
+                            <feature name="LEDFP"/>
+                            <feature name="LEDCLS"/>
+                            <feature name="LEDPW"/>
+                        </or>
+                    </feature>
+                </optional>
+            </feature>
+        </optional>
+
+        <mandatory>
+            <feature name="DS">
+                <mandatory>
+                    <feature name="PW">
+                        <mandatory>
+                            <feature name="FP">
+                            </feature>
+                        </mandatory>
+                    </feature>
+                </mandatory>
+            </feature>
+        </mandatory>
+
+        <mandatory>
+            <feature name="SEC">
+                <optional>
+                    <feature name="AS">
+                        <optional>
+                            <feature name="IM"/>
+                        </optional>
+                    </feature>
+                </optional>
+                <optional>
+                    <feature name="CLS">
+                        <optional>
+                            <feature name="AL"/>
+                        </optional>
+                    </feature>
+                </optional>
+                <optional>
+                    <feature name="RCK">
+                        <optional>
+                            <feature name="CAS"/>
+                        </optional>
+                        <optional>
+                            <feature name="SF"/>
+                        </optional>
+                        <optional>
+                            <feature name="CAP"/>
+                        </optional>
+                    </feature>
+                </optional>
+                <feature_constraints>
+                    <requirements>
+                        <requires feature="CAS"  dependency="AS"/>
+                        <requires feature="RCK"  dependency="CLS"/>
+                    </requirements>
+                </feature_constraints>
+            </feature>
+        </mandatory>
+        <feature_constraints>
+            <requirements>
+                <requires feature="LEDCLS"  dependency="CLS"/>
+            </requirements>
+        </feature_constraints>
+    </feature>
+</fm>
