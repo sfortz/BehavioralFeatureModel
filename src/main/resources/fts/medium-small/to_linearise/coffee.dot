@@ -1,0 +1,30 @@
+digraph COFFEE_MACHINE {
+  FeatureModel [shape=plaintext, style=filled, color=yellow, label="FM = VM and BEV and COF and (EUR xor DOL) and (CAP => TON) and (not (CAP and DOL))"];
+  FM="VM and BEV and COF and (EUR xor DOL) and (CAP => TON) and (not (CAP and DOL))";
+  name="COFFEE MACHINE";
+  0 [initial=True];
+
+  0 -> 1 [ label = "insertBev(Euro) | EUR" ];
+  0 -> 1 [ label = "insertBev(Dollar) | DOL" ];
+  1 -> 14 [ label = "cancelBev | X" ];
+  1 -> 2 [ label = "sugar | BEV" ];
+  1 -> 3 [ label = "no_sugar | BEV" ];
+  2 -> 6 [ label = "coffee | COF" ];
+  2 -> 5 [ label = "tea | TEA" ];
+  2 -> 4 [ label = "cappuccino | CAP" ];
+  3 -> 9 [ label = "cappuccino | CAP" ];
+  3 -> 8 [ label = "tea | TEA" ];
+  3 -> 7 [ label = "coffee | COF" ];
+  6 -> 7 [ label = "pour_sugar | BEV" ];
+  5 -> 8 [ label = "pour_sugar | BEV" ];
+  4 -> 9 [ label = "pour_sugar | BEV" ];
+  9 -> 11 [ label = "pour_milk | CAP" ];
+  9 -> 10 [ label = "pour_coffee | CAP" ];
+  8 -> 12 [ label = "pour_tea | TEA" ];
+  7 -> 12 [ label = "pour_coffee | COF" ];
+  11 -> 12 [ label = "pour_coffee | CAP" ];
+  10 -> 12 [ label = "pour_milk | CAP" ];
+  12 -> 13 [ label = "ring | TON" ];
+  12 -> 13 [ label = "skip | not TON" ];
+  13 -> 15 [ label = "take_cup | VM" ];
+}

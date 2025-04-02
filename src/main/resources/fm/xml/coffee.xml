@@ -5,13 +5,19 @@
                 <mandatory>
                     <feature name="COF"/>
                 </mandatory>
-                <mandatory>
+                <optional>
                     <feature name="TEA"/>
-                </mandatory>
+                </optional>
+                <optional>
+                    <feature name="CAP"/>
+                </optional>
             </feature>
         </mandatory>
         <optional>
             <feature name="TON"/>
+        </optional>
+        <optional>
+            <feature name="X"/>
         </optional>
         <mandatory>
             <feature name="CUR">
@@ -22,6 +28,9 @@
             </feature>
         </mandatory>
         <feature_constraints>
+            <exclusions>
+                <exclude conflict1="DOL"  conflict2="CAP"/>
+            </exclusions>
             <requirements>
                 <requires feature="CAP"  dependency="TON"/>
             </requirements>
