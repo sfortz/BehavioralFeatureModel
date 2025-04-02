@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+	<struct>
+		<and mandatory="true" name="MM">
+			<and mandatory="true" name="ME">
+				<feature mandatory="true" name="CD"/>
+				<feature mandatory="true" name="LM"/>
+				<feature mandatory="true" name="VM"/>
+			</and>
+			<feature name="F"/>
+			<feature name="CM"/>
+			<feature name="SMS"/>
+			<alt mandatory="true" name="E">
+				<feature name="P"/>
+				<feature name="M"/>
+				<feature name="V"/>
+			</alt>
+		</and>
+	</struct>
+</featureModel>

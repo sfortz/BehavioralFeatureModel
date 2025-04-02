@@ -1,0 +1,30 @@
+<fm namespace="VendingMachine">
+    <feature name="VM">
+        <mandatory>
+            <feature name="BEV">
+                <mandatory>
+                    <feature name="COF"/>
+                </mandatory>
+                <mandatory>
+                    <feature name="TEA"/>
+                </mandatory>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="TON"/>
+        </optional>
+        <mandatory>
+            <feature name="CUR">
+                <alternative>
+                    <feature name="EUR"/>
+                    <feature name="DOL"/>
+                </alternative>
+            </feature>
+        </mandatory>
+        <feature_constraints>
+            <requirements>
+                <requires feature="CAP"  dependency="TON"/>
+            </requirements>
+        </feature_constraints>
+    </feature>
+</fm>
