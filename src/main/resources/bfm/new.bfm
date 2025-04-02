@@ -3,16 +3,16 @@
     <feature name="Robot">
         <events>
             <event id="charge"> </event>
-            <event id="caDet" fexpression="camera"> </event>
+            <event id="caDet" fexpression="Camera"> </event>
             <event id="clean"> </event>
             <event id="goAround"> </event>
-            <event id="liDet" fexpression="lidar"> </event>
+            <event id="liDet" fexpression="Lidar"> </event>
         </events>
         <optional>
             <feature name="Mapping">
                 <events>
                     <event id="move"> </event>
-                    <event id="map" fexpression="mapping"> </event>
+                    <event id="map" fexpression="Mapping"> </event>
                 </events>
             </feature>
         </optional>

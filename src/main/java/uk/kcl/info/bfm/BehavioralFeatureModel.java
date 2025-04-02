@@ -2,18 +2,24 @@ package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
+import be.vibes.fexpression.configuration.ConfigurationSet;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.Group;
 import be.vibes.solver.SolverFacade;
+import be.vibes.solver.exception.ConstraintSolvingException;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Table;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> implements FeaturedEventStructure<BehavioralFeature> {
 
     private final Table<Set<Event>, Event, CausalityRelation> causalityTable;
+
+    private Map<Set<Event>, FExpression> configFexpressions;
 
     protected BehavioralFeatureModel() {
         super();
@@ -76,14 +82,20 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
 
     @Override
     public BehavioralFeature getFeature(Event event){
+        Preconditions.checkNotNull(event, "Event may not be null!");
         return getRecursiveFeature(this.getRootFeature(), event);
     }
 
     @Override
     public FExpression getFExpression(Event event){
+        Preconditions.checkNotNull(event, "Event may not be null!");
+        BehavioralFeature parent = this.getFeature(event);
+        return parent.getFExpression(event);
+    }
 
-        FExpression fexpr = this.getRootFeature().getFExpression(event);
-        return Objects.requireNonNullElseGet(fexpr, FExpression::trueValue);
+    @Override
+    public FExpression getFExpression(Set<Event> config) {
+        return this.configFexpressions.get(config);
     }
 
     @Override
@@ -164,21 +176,125 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
         return this.getRootFeature().getAllRecursiveConflicts().iterator();
     }
 
-    // TODO: Implement
-
     @Override
-    public Set<List<Event>> getAllConfigurations() {
-        return Set.of();
+    public TreeMap<Integer, Set<Set<Event>>> getAllConfigurations() {
+        TreeMap<Integer, Set<Set<Event>>> configurationsBySize = new TreeMap<>();
+        this.configFexpressions = new HashMap<>();
+        this.configFexpressions.put(new HashSet<>(), FExpression.trueValue());
+        try {
+            buildProductConfigurations(new LinkedHashSet<>(), new ArrayList<>(this.getAllEvents()), configurationsBySize);
+            this.resetSolver();
+        } catch (ConstraintSolvingException e) {
+            throw new IllegalStateException("Error solving constraints: " + e.getMessage(), e.getCause());
+        }
+        return configurationsBySize;
     }
 
+    private void buildProductConfigurations(Set<Event> currentConfig, List<Event> remainingEvents, TreeMap<Integer, Set<Set<Event>>> configurationsBySize) throws ConstraintSolvingException {
 
-    @Override
-    public FExpression getFexpression(List<Event> config) { //TODO: getFExpr related to a specific config
-        return null;
+        // Store a copy of the current configuration
+        Set<Event> configSet = new HashSet<>(currentConfig);
+        // Add to TreeMap based on its size
+        configurationsBySize.computeIfAbsent(configSet.size(), k -> new HashSet<>()).add(configSet);
+
+        // Create a copy of remaining events to avoid concurrent modification
+        List<Event> remainingEventsList = new ArrayList<>(remainingEvents);
+        for (Event e : remainingEventsList) {
+            if (isConflictFree(e, currentConfig)) {
+                List<FExpression> products = getValidProducts(e, currentConfig); // The products containing e parent feature,  satisfying the fexpr associated to e AND the fexpr associated to currentConfig
+                for (FExpression productFExp : products) {
+                    if (respectsCausality(e, currentConfig, productFExp)) {
+                        // If both conditions are satisfied, add the event to the current configuration.
+                        currentConfig.add(e);
+                        // Remove event 'e' from remaining events to prevent re-selection in this configuration.
+                        remainingEvents.remove(e);
+                        // Concatenate FExpression
+                        this.configFexpressions.merge(new HashSet<>(currentConfig), productFExp, (oldValue, newValue) -> oldValue.or(newValue).applySimplification().toCnf());
+                        // Recursively build configurations with the updated current configuration and remaining events.
+                        buildProductConfigurations(currentConfig, remainingEvents, configurationsBySize);
+                        // Backtrack: Remove event 'e' from the current configuration to explore other possible configurations.
+                        currentConfig.remove(e);
+                        // Add event 'e' back to the remaining events for further exploration.
+                        remainingEvents.add(e);
+                    }
+                }
+            }
+        }
     }
 
-    // TODO: END Implementation
+    //TODO: Check correctness
+    protected boolean isConflictFree(Event e, Set<Event> config) {
+        for (Event other : config) {
+            if (this.isInConflict(e, other)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    protected boolean respectsCausality(Event e, Set<Event> config, FExpression productFexpr) {
+        Set<Set<Event>> causes = this.getAllBundles(e); // All X such as X ↦ e
+
+        for (Set<Event> bundle : causes) {
+
+            // Restrict bundle to only events whose features are in the product
+            Set<Event> restrictedBundle = bundle.stream()
+                    .filter(event -> {
+                        FExpression fexpr = this.getFExpression(event).and(productFexpr);
+                        return !fexpr.applySimplification().isFalse();
+                    })
+                    .collect(Collectors.toSet());
+
+            // If the intersection is empty, causality is not respected
+            if (!restrictedBundle.isEmpty() & Collections.disjoint(config, restrictedBundle)) { // X inter {𝑒1, . . . , 𝑒𝑖−1} = ∅
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private List<FExpression> getValidProducts(Event event, Set<Event> config) {
+
+        Collection<BehavioralFeature> allFeatures = this.getFeatures();
+        FExpression configFexpr = this.configFexpressions.get(config);
+        FExpression eventFexpr = this.getFExpression(event);
+        FExpression constraint = eventFexpr.and(configFexpr);
+        ConfigurationSet allProducts = new ConfigurationSet(this, constraint);
+
+        List<FExpression> allFExps = allProducts.stream().map(product -> {
+            // Construct the product feature expression
+            FExpression productFExp = FExpression.trueValue();
+
+            List<BehavioralFeature> featuresTMP = new ArrayList<>();
+            BehavioralFeature f1 = null;
+            for (Feature<?> f : product) { //TODO: To remove once Feature.hashcode() is debugged
+                for(BehavioralFeature f2: this.getFeatures()){
+                    if (f.getFeatureName().equals(f2.getFeatureName())){
+                        f1 = f2;
+                    }
+                }
+                assert (f1 != null);
+                featuresTMP.add(f1);
+            }
+
+            for (BehavioralFeature f : allFeatures) {
+                FExpression fFexpr= new FExpression(f);
+                if(featuresTMP.contains(f)){
+                    //if(product.isSelected(f)){
+                    productFExp.andWith(fFexpr);
+                } else {
+                    productFExp.andWith(fFexpr.not());
+                }
+            }
+            return productFExp.applySimplification();
+        }).toList();
+
+        return allFExps;
+    }
+
+    protected Set<Set<Event>> getAllBundles(Event var1){
+        return this.causalityTable.column(var1).keySet();
+    }
 
     @Override
     public int getEventsCount() {

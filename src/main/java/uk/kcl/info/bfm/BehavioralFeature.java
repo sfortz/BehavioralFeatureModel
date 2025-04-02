@@ -1,7 +1,9 @@
 package uk.kcl.info.bfm;
 
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.FExpressionVisitorWithReturn;
 import be.vibes.fexpression.Feature;
+import be.vibes.fexpression.exception.FExpressionException;
 import be.vibes.solver.Group;
 import com.google.common.base.Preconditions;
 
@@ -54,19 +56,87 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
     }
 
     protected Event addEvent(String eventName, FExpression fexpr) {
-
+        Preconditions.checkNotNull(eventName, "Event name may not be null!");
+        Preconditions.checkNotNull(fexpr, "FExpression name may not be null!");
         Event ev = new Event(eventName);
-        if (this.events.containsKey(ev)){
-            this.setFExpression(ev,fexpr);
-        } else {
-            this.events.put(ev,fexpr);
-        }
+        FExpression fe = getBFexpFromFM(fexpr);
+        this.events.put(ev,fe);
         return ev;
     }
 
-    protected void setFExpression(Event event, FExpression fexpr) {
-        Preconditions.checkArgument(this.events.containsKey(event), "Event does not belong to this behavioral feature model!");
-        this.events.put(event,fexpr);
+    private BehavioralFeature getFeatureFromFM(Feature<?> feature){
+        for(BehavioralFeature bf: this.getAllRecursiveFeatures()){
+            if(bf.getFeatureName().equalsIgnoreCase(feature.getFeatureName())){
+                return bf;
+            }
+        }
+        return null;
+    }
+
+    private class BFexpFromFMBuilder implements FExpressionVisitorWithReturn<FExpression> {
+
+        private FExpression fexp;
+
+        public BFexpFromFMBuilder() {}
+
+        @Override
+        public FExpression constant(boolean val) {
+            if (val) {
+                return FExpression.trueValue();
+            } else {
+                return FExpression.falseValue();
+            }
+        }
+
+        @Override
+        public FExpression feature(Feature<?> feature) {
+            return new FExpression(getFeatureFromFM(feature));
+        }
+
+        @Override
+        public FExpression not(FExpression expr) {
+            try {
+                FExpression operand = expr.accept(this);
+                return operand.not();
+            } catch (FExpressionException ex) {
+                throw new IllegalStateException("No exception should happen while using this visitor!", ex);
+            }
+        }
+
+        @Override
+        public FExpression and(List<FExpression> operands) {
+            try {
+                FExpression conj = FExpression.trueValue();
+                for (FExpression e : operands) {
+                    conj = conj.and(e.accept(this));
+                }
+                return conj;
+            } catch (FExpressionException ex) {
+                throw new IllegalStateException("No exception should happen while using this visitor!", ex);
+            }
+        }
+
+        @Override
+        public FExpression or(List<FExpression> operands) {
+            try {
+                FExpression disj = FExpression.falseValue();
+                for (FExpression e : operands) {
+                    disj = disj.or(e.accept(this));
+                }
+                return disj;
+            } catch (FExpressionException ex) {
+                throw new IllegalStateException("No exception should happen while using this visitor!", ex);
+            }
+        }
+
+    }
+
+    private FExpression getBFexpFromFM(FExpression fexp) {
+        try {
+            return fexp.accept(new BFexpFromFMBuilder());
+        } catch (FExpressionException e) {
+            throw new NullPointerException(e.getMessage());
+        }
     }
 
     protected CausalityRelation addCausality(Set<Event> bundle, Event target) {
@@ -129,6 +199,15 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         }
 
         return features;
+    }
+
+    public BehavioralFeature getFeature(String name){
+        for(BehavioralFeature bf :this.getAllRecursiveFeatures()){
+            if(bf.getFeatureName().equals(name)){
+                return bf;
+            }
+        }
+        return null;
     }
 
     public Set<Event> getAllRecursiveEvents() {
@@ -201,18 +280,4 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
     }
 
     //TODO: Override toString to Add the behavioural part
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        BehavioralFeature that = (BehavioralFeature) o;
-        return Objects.equals(events, that.events) && Objects.equals(causalities, that.causalities) && Objects.equals(conflicts, that.conflicts);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() + Objects.hash(events, causalities, conflicts);
-    }
 }

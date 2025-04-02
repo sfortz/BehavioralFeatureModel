@@ -69,10 +69,10 @@ public class Translator {
                 String s1 = configToStateMap.get(c1);
                 for (Set<Event> c2 : nextConfigs) {
                     if (c2.size() == c1.size() + 1 && c2.containsAll(c1)) {
-                        Event addedEvent = getSingleDifference(c1, c2);
-                        if (addedEvent != null) {
+                        Event e = getSingleDifference(c1, c2);
+                        if (e != null) {
                             String s2 = configToStateMap.get(c2);
-                            factory.addTransition(s1, addedEvent.getName(), s2);
+                            factory.addTransition(s1, e.getName(), s2);
                         }
                     }
                 }
@@ -265,41 +265,47 @@ public class Translator {
 
     public static FeaturedTransitionSystem bfm2fts(BehavioralFeatureModel bfm){
 
+        TreeMap<Integer, Set<Set<Event>>> configurations = bfm.getAllConfigurations();
+        setConfigStateMapping(configurations);
+        String initialState = configToStateMap.getOrDefault(Collections.emptySet(), "State_0");
+        FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(initialState);
+
+        // Add actions and states
+        for (Event ev : bfm.getAllEvents()) {
+            factory.addAction(ev.getName());
+        }
+        factory.addStates(configToStateMap.values().toArray(new String[0]));
+
         Map<Event, FExpression> mu = new HashMap<>();
         for (BehavioralFeature bf : bfm.getFeatures()) {
             mu.putAll(bf.getEventMap());
         }
 
-        TreeMap<Integer, Set<Set<Event>>> configurations = bfm.getAllConfigurations();
+        // Create transitions efficiently
+        for (int size : configurations.keySet()) {
+            Set<Set<Event>> currentConfigs = configurations.get(size);
+            Set<Set<Event>> nextConfigs = configurations.get(size + 1);
 
-        String initialState = configToStateMap.get(new ArrayList<>());
-        FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(initialState);
+            if (nextConfigs == null) continue;
 
-/*
-        for (Event ev : bfm.getAllEvents()) {
-            factory.addAction(ev.getName());
-        }
-
-        factory.addStates(mapping.values().toArray(new String[0]));
-
-        for (List<Event> c1 : configurations) {
-            for (List<Event> c2 : configurations) {
-
-                String s1 = mapping.get(c1);
-                String s2 = mapping.get(c2);
-
-                // If c2 is c1 with exactly one more event at the end
-                if (c2.size() == c1.size() + 1) {
-                    Event e = c2.removeLast();
-                    // Check if the remaining part of c2 is equal to c1
-                    if (c1.equals(c2)) {
-                        factory.addTransition(s1, e.getName(), mu.get(e), s2);
+            for (Set<Event> c1 : currentConfigs) {
+                String s1 = configToStateMap.get(c1);
+                for (Set<Event> c2 : nextConfigs) {
+                    if (c2.size() == c1.size() + 1 && c2.containsAll(c1)) {
+                        Event e = getSingleDifference(c1, c2);
+                        if (e != null) {
+                            String s2 = configToStateMap.get(c2);
+                            FExpression f1 = bfm.getFExpression(c1);
+                            FExpression f2 = bfm.getFExpression(c2);
+                            FExpression fexpr = f1.and(f2).applySimplification().toCnf();
+                            if(!fexpr.isFalse()){
+                                factory.addTransition(s1, e.getName(), fexpr.applySimplification().toCnf(), s2);
+                            }
+                        }
                     }
-                    // Restore the last event back to c2
-                    c2.add(e);
                 }
             }
-        }*/
+        }
 
         return factory.build();
     }

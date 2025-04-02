@@ -2,20 +2,20 @@
 <bfm namespace="CleaningRobot">
     <feature name="Robot">
         <events>
-            <event id="liDet_1" fexpression="(!mapping &amp;&amp; lidar)"> </event>
+            <event id="liDet_1" fexpression="(Lidar &amp;&amp; !Mapping)"> </event>
             <event id="charge"> </event>
-            <event id="liDet_0" fexpression="(mapping &amp;&amp; lidar)"> </event>
-            <event id="caDet_0" fexpression="(camera &amp;&amp; mapping)"> </event>
-            <event id="caDet_1" fexpression="(camera &amp;&amp; !mapping)"> </event>
+            <event id="liDet_0" fexpression="(Lidar &amp;&amp; Mapping)"> </event>
+            <event id="caDet_0" fexpression="(Camera &amp;&amp; Mapping)"> </event>
+            <event id="caDet_1" fexpression="(Camera &amp;&amp; !Mapping)"> </event>
             <event id="clean"> </event>
             <event id="goAround"> </event>
         </events>
         <optional>
             <feature name="Mapping">
                 <events>
-                    <event id="move_1" fexpression="!mapping"> </event>
-                    <event id="move_0" fexpression="mapping"> </event>
-                    <event id="map" fexpression="mapping"> </event>
+                    <event id="move_1" fexpression="!Mapping"> </event>
+                    <event id="move_0" fexpression="Mapping"> </event>
+                    <event id="map" fexpression="Mapping"> </event>
                 </events>
                 <event_constraints>
                     <causalities>
