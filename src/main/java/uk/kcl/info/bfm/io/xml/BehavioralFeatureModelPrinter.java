@@ -1,8 +1,6 @@
 package uk.kcl.info.bfm.io.xml;
 
 import be.vibes.fexpression.FExpression;
-import be.vibes.solver.constraints.ExclusionConstraint;
-import be.vibes.solver.constraints.RequirementConstraint;
 import be.vibes.solver.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,15 +9,8 @@ import uk.kcl.info.bfm.*;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import static be.vibes.solver.io.xml.FeatureModelHandler.ALTERNATIVE_TAG;
-import static be.vibes.solver.io.xml.FeatureModelHandler.EXCLUSIONS_TAG;
-import static be.vibes.solver.io.xml.FeatureModelHandler.MANDATORY_TAG;
-import static be.vibes.solver.io.xml.FeatureModelHandler.OPTIONAL_TAG;
-import static be.vibes.solver.io.xml.FeatureModelHandler.OR_TAG;
-import static be.vibes.solver.io.xml.FeatureModelHandler.REQUIREMENTS_TAG;
 import static uk.kcl.info.bfm.io.xml.BehavioralFeatureModelHandler.*;
 import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.EVENTS_TAG;
 import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.EVENT_TAG;
@@ -58,13 +49,10 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         }
 
         //print F constraints
-        if(bf.getTotalNumberOfConstraints() > 0){
+        if(bf.getNumberOfConstraints() > 0){
             xtw.writeStartElement(FEATURE_CONSTRAINTS_TAG);
-            if(bf.getNumberOfExclusionConstraints() > 0){
-                this.printExclusions(xtw, bf.getExclusions());
-            }
-            if(bf.getNumberOfRequirementConstraints() > 0){
-                this.printRequirements(xtw, bf.getRequirements());
+            for (FExpression fexpr : bf.getConstraints()) {
+                printElement(xtw, fexpr);
             }
             xtw.writeEndElement();
         }
@@ -83,6 +71,14 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
             xtw.writeEndElement();
         }
 
+        xtw.writeEndElement();
+    }
+
+    @Override
+    public void printElement(XMLStreamWriter xtw, FExpression fexpr) throws XMLStreamException {
+        LOG.trace("Printing constraint element");
+        xtw.writeStartElement(FEATURE_CONSTRAINT_TAG);
+        xtw.writeAttribute(FEXPRESSION_ATTR, fexpr.toString());
         xtw.writeEndElement();
     }
 
@@ -125,6 +121,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         xtw.writeEndElement();
     }
 
+    /*
     @Override
     public void printExclusions(XMLStreamWriter xtw, List<ExclusionConstraint> exclusions) throws XMLStreamException {
         xtw.writeStartElement(EXCLUSIONS_TAG);
@@ -160,6 +157,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         xtw.writeAttribute(DEPENDENCY_ATTR, constraint.getLeft().getLiteral());
         xtw.writeEndElement();
     }
+*/
 
     @Override
     public void printCausalities(XMLStreamWriter xtw, BehavioralFeature bf) throws XMLStreamException {

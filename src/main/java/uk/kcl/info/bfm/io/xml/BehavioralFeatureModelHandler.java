@@ -25,17 +25,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     public static final String OR_TAG = "or";
 
     public static final String FEATURE_CONSTRAINTS_TAG = "feature_constraints";
-    public static final String EXCLUSIONS_TAG = "exclusions";
-    public static final String EXCLUDE_TAG = "exclude";
-    public static final String REQUIREMENTS_TAG = "requirements";
-    public static final String REQUIRES_TAG = "requires";
-
-    public static final String NAMESPACE_ATTR = "namespace";
-    public static final String NAME_ATTR = "name";
-    public static final String CONFLICT1_ATTR = "conflict1";
-    public static final String CONFLICT2_ATTR = "conflict2";
-    public static final String FEATURE_ATTR = "feature";
-    public static final String DEPENDENCY_ATTR = "dependency";
+    public static final String FEATURE_CONSTRAINT_TAG = "feature_constraint";
 
     public static final String EVENT_CONSTRAINTS_TAG = "event_constraints";
     public static final String EVENTS_TAG = "events";
@@ -46,6 +36,8 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     public static final String CONFLICTS_TAG = "conflicts";
     public static final String CONFLICT_TAG = "conflict";
 
+    public static final String NAMESPACE_ATTR = "namespace";
+    public static final String NAME_ATTR = "name";
     public static final String ID_ATTR = "id";
     public static final String FEXPRESSION_ATTR = "fexpression";
     public static final String TARGET_ATTR = "target";
@@ -108,19 +100,10 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
                 handleStartAlternativeTag(element);
                 break;
             case FEATURE_CONSTRAINTS_TAG:
-                handleStartFConstraintTag();
+                handleStartFConstraintsTag();
                 break;
-            case EXCLUSIONS_TAG:
-                handleStartExclusionsTag();
-                break;
-            case EXCLUDE_TAG:
-                handleStartExcludeTag(element);
-                break;
-            case REQUIREMENTS_TAG:
-                handleStartRequirementsTag();
-                break;
-            case REQUIRES_TAG:
-                handleStartRequiresTag(element);
+            case FEATURE_CONSTRAINT_TAG:
+                handleStartFConstraintTag(element);
                 break;
             case EVENT_CONSTRAINTS_TAG:
                 handleStartEConstraintTag();
@@ -189,30 +172,21 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
         this.featureStack.push(currentFeature);
     }
 
-    protected void handleStartFConstraintTag() throws XMLStreamException {
+    protected void handleStartFConstraintsTag() throws XMLStreamException {
         LOG.trace("Starting Feature Constraints");
     }
 
-    protected void handleStartExclusionsTag() throws XMLStreamException {
-        LOG.trace("Starting Exclusions");
-    }
-
-    protected void handleStartRequirementsTag() throws XMLStreamException {
-        LOG.trace("Starting Requirements");
-    }
-
-    protected void handleStartExcludeTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing Exclusion");
-        String c1 = element.getAttributeByName(QName.valueOf(CONFLICT1_ATTR)).getValue();
-        String c2 = element.getAttributeByName(QName.valueOf(CONFLICT2_ATTR)).getValue();
-        this.factory.addExclusionConstraint(featureStack.peek(), c1, c2);
-    }
-
-    protected void handleStartRequiresTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing Requirements");
-        String feature = element.getAttributeByName(QName.valueOf(FEATURE_ATTR)).getValue();
-        String dependency = element.getAttributeByName(QName.valueOf(DEPENDENCY_ATTR)).getValue();
-        this.factory.addRequirementConstraint(featureStack.peek(), feature, dependency);
+    protected void handleStartFConstraintTag(StartElement element) throws XMLStreamException {
+        LOG.trace("Processing Feature Expression");
+        String expr = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR)).getValue();
+        FExpression fexpr;
+        try {
+            fexpr = ParserUtil.getInstance().parse(expr);
+        } catch (ParserException e) {
+            LOG.error("Exception while parsing fexpression {}!", expr, e);
+            throw new XMLStreamException("Exception while parsing fexpression " + expr, e);
+        }
+        factory.addConstraint(featureStack.peek(), fexpr);
     }
 
     protected void handleStartEConstraintTag() throws XMLStreamException {
@@ -285,12 +259,6 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
             case MANDATORY_TAG, OPTIONAL_TAG, OR_TAG, ALTERNATIVE_TAG:
                 LOG.trace("Ending group");
                 groupStack.pop();
-                break;
-            case EXCLUDE_TAG:
-                LOG.trace("Ending Exclusion");
-                break;
-            case REQUIRES_TAG:
-                LOG.trace("Ending Requirement");
                 break;
             case EVENT_TAG:
                 LOG.trace("Ending event");

@@ -51,8 +51,9 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
             group.setParentFeature(this);
         }
 
-        this.getExclusions().addAll(old.getExclusions());
-        this.getRequirements().addAll(old.getRequirements());
+        this.getConstraints().addAll(old.getConstraints());
+        //this.getExclusions().addAll(old.getExclusions());
+        //this.getRequirements().addAll(old.getRequirements());
     }
 
     protected Event addEvent(String eventName, FExpression fexpr) {
@@ -279,5 +280,5 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return this.conflicts.size();
     }
 
-    //TODO: Override toString to Add the behavioural part
+    //TODO: Override toString, equals and hashcode to Add the behavioural part
 }

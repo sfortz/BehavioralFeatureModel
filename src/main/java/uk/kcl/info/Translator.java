@@ -312,14 +312,14 @@ public class Translator {
 
     public static FeatureModel<?> bfm2fm(BehavioralFeatureModel bfm){
         // TODO: This should probably not exist, but be a function "getUnderlyingFM" in the BFM.
-
         return new FeatureModelFactory<>(bfm).build();
     }
 
-    public static BehavioralFeatureModel fts2bfm(FeatureModel<?> fm, FeaturedTransitionSystem fts){
+    public static <F extends Feature<F>> BehavioralFeatureModel fts2bfm(FeatureModel<F> fm, FeaturedTransitionSystem fts){
+    //public static BehavioralFeatureModel fts2bfm(FeatureModel<?> fm, FeaturedTransitionSystem fts){
 
         BehavioralFeatureModelFactory factory = new BehavioralFeatureModelFactory(fm);
-        Map<Event, FExpression> fExprMap = new HashMap<>();
+        Map<Event, F> featureMap = new HashMap<>();
         Map<Transition, Event> tMap = new HashMap<>();
 
         // Step 1: Collect actions & add events
@@ -337,10 +337,10 @@ public class Translator {
             }
 
             fexpr = fexpr.applySimplification();
-            String ancestor = fm.getLeastCommonAncestor(fexpList).getFeatureName();
-            BehavioralFeature f = factory.getFeature(ancestor);
-            fExprMap.put(e,fexpr);
-            factory.addEvent(f, e.getName(), fexpr.applySimplification().toCnf());
+            F ancestor = fm.getLeastCommonAncestor(fexpList);
+            BehavioralFeature bf = factory.getFeature(ancestor.getFeatureName());
+            featureMap.put(e, ancestor);
+            factory.addEvent(bf, e.getName(), fexpr.applySimplification().toCnf());
         }
 
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
@@ -364,11 +364,8 @@ public class Translator {
 
                     // Conflict relation
                     if (!a1ToA2 && !a2ToA1) {
-                        List<FExpression> fexprs = new ArrayList<>();
-                        fexprs.add(fExprMap.get(e1));
-                        fexprs.add(fExprMap.get(e2));
-                        String lca = fm.getLeastCommonAncestor(fexprs).getFeatureName();
-                        factory.addConflict(lca, e1, e2);
+                        F lca = fm.getLeastCommonAncestor(featureMap.get(e1),featureMap.get(e2));
+                        factory.addConflict(lca.getFeatureName(), e1, e2);
                         conflicts.add(new ConflictRelation(e1, e2));
                     }
 
@@ -393,13 +390,11 @@ public class Translator {
                 .collect(Collectors.toSet());
 
         for(CausalityRelation causality: candidateBundles){
-            List<FExpression> fexprs = new ArrayList<>();
-            fexprs.add(fExprMap.get(causality.getTarget()));
+            F lca = featureMap.get(causality.getTarget());
             for(Event e2: causality.getBundle()){
-                fexprs.add(fExprMap.get(e2));
+                lca = fm.getLeastCommonAncestor(lca,featureMap.get(e2));
             }
-            String lca = fm.getLeastCommonAncestor(fexprs).getFeatureName();
-            factory.addCausality(lca, causality);
+            factory.addCausality(lca.getFeatureName(), causality);
         }
 
         return factory.build();

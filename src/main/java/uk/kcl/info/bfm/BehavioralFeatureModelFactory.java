@@ -8,6 +8,8 @@ import java.util.*;
 
 public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFeature, FeatureModel<BehavioralFeature>> {
 
+    private Map<Event, BehavioralFeature> featureMap = new HashMap<>();
+
     public BehavioralFeatureModelFactory() {
         super(BehavioralFeatureModel::new);
     }
@@ -38,7 +40,8 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
 
         BehavioralFeature feature = this.getFeature(feat.getFeatureName());
         if(feature != null){
-            feat.addEvent(event, fexpr);
+            Event ev = feat.addEvent(event, fexpr);
+            featureMap.put(ev, feature);
         } else {
             throw new BehavioralFeatureModelDefinitionException("Events should always be associated to one feature of the BFM.");
         }
@@ -148,6 +151,10 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
         } else {
             throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
         }
+    }
+
+    public Map<Event, BehavioralFeature> getFeatureMap() {
+        return featureMap;
     }
 
     @Override
