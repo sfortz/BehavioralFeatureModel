@@ -49,12 +49,12 @@
             </feature>
         </optional>
     </feature>
-    <feature_constraints>  <!--TODO: Move in the right feature! -->
-        <requirements>
-            <requires feature="CreditCard"  dependency="Identification"/>
-            <requires feature="DebitCard"  dependency="PIN"/>
-            <requires feature="PrepaidCard"  dependency="Chip or NFC"/> <!--TODO: Debug! -->
-            <requires feature="EPurse"  dependency="Chip or NFC"/> <!--TODO: Debug! -->
-        </requirements>
+    <feature_constraints>
+        <feature_constraints>
+            <feature_constraint fexpression="Identification || !CreditCard"/>
+            <feature_constraint fexpression="!DebitCard || PIN"/>
+            <feature_constraint fexpression="!EPurse || Chip || NFC"/>
+            <feature_constraint fexpression="!PrepaidCard || Chip || NFC"/>
+        </feature_constraints>
     </feature_constraints>
 </fm>

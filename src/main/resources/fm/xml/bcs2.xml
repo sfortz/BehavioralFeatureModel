@@ -56,18 +56,19 @@
                         </optional>
                     </feature>
                 </optional>
+
                 <feature_constraints>
-                    <requirements>
-                        <requires feature="CAS"  dependency="AS"/>
-                        <requires feature="RCK"  dependency="CLS"/>
-                    </requirements>
+                    <feature_constraints>
+                        <feature_constraint fexpression="!CAS || AS"/>
+                        <feature_constraint fexpression="!RCK || CLS"/>
+                    </feature_constraints>
                 </feature_constraints>
             </feature>
         </mandatory>
         <feature_constraints>
-            <requirements>
-                <requires feature="LEDCLS"  dependency="CLS"/>
-            </requirements>
+            <feature_constraints>
+                <feature_constraint fexpression="!LEDCLS || CLS"/>
+            </feature_constraints>
         </feature_constraints>
     </feature>
 </fm>

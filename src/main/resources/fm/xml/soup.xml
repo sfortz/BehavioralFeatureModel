@@ -35,6 +35,8 @@
         </alternative>
     </feature>
     <feature_constraints>
-        <requires feature="U" dependency="D"/>
+        <feature_constraints>
+            <feature_constraint fexpression="!(D &amp;&amp; SC) || U"/>
+        </feature_constraints>
     </feature_constraints>
 </fm>

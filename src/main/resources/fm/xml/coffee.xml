@@ -28,12 +28,10 @@
             </feature>
         </mandatory>
         <feature_constraints>
-            <exclusions>
-                <exclude conflict1="DOL"  conflict2="CAP"/>
-            </exclusions>
-            <requirements>
-                <requires feature="CAP"  dependency="TON"/>
-            </requirements>
+            <feature_constraints>
+                <feature_constraint fexpression="!DOL || !CAP"/>
+                <feature_constraint fexpression="!CAP || TON"/>
+            </feature_constraints>
         </feature_constraints>
     </feature>
 </fm>
