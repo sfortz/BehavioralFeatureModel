@@ -33,10 +33,10 @@
             <feature name="E"/>
             <feature name="D"/>
         </alternative>
-    </feature>
-    <feature_constraints>
         <feature_constraints>
-            <feature_constraint fexpression="!(D &amp;&amp; SC) || U"/>
+            <feature_constraints>
+                <feature_constraint fexpression="!(D &amp;&amp; SC) || U"/>
+            </feature_constraints>
         </feature_constraints>
-    </feature_constraints>
+    </feature>
 </fm>

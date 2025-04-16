@@ -52,8 +52,6 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         }
 
         this.getConstraints().addAll(old.getConstraints());
-        //this.getExclusions().addAll(old.getExclusions());
-        //this.getRequirements().addAll(old.getRequirements());
     }
 
     protected Event addEvent(String eventName, FExpression fexpr) {

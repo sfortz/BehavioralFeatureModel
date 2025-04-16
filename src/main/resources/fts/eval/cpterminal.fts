@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts xmlns:fts="http://www.unamur.be/xml/fts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <start>Init</start>
+    <states>
+        <state id="Init">
+            <transition action="insert_card" target="Card_in" />
+        </state>
+        <state id="Card_in">
+            <transition action="init_schema_0" fexpression="DirectDebit||CreditCard" target="state3" />
+        </state>
+        <state id="state3">
+            <transition action="init_schema_1" fexpression="DirectDebit||CreditCard" target="App_init" />
+            <transition action="abort_0" target="Aborted" />
+        </state>
+        <state id="App_init">
+            <transition action="check_signature" fexpression="!DirectDebit &amp;&amp; Signature" target="CH_verified" />
+            <transition action="check_PIN_online" fexpression="Online &amp;&amp; PIN" target="CH_verified" />
+            <transition action="check_PIN_offline" fexpression="Offline &amp;&amp; PIN" target="CH_verified" />
+        </state>
+        <state id="Aborted">
+            <transition action="remove_card_0" target="Aborted_End" />
+        </state>
+        <state id="CH_verified">
+            <transition action="no_go" target="NO_GO" />
+            <transition action="go_online" fexpression="Online" target="Go_online" />
+            <transition action="go_offline" fexpression="Offline" target="Go_offline" />
+        </state>
+        <state id="NO_GO">
+            <transition action="abort_1" target="Aborted" />
+        </state>
+        <state id="Go_online">
+            <transition action="ask_issuer" target="Issuer_responded" />
+        </state>
+        <state id="Issuer_responded">
+            <transition action="issuer_accepts" target="Completed" />
+            <transition action="issuer_rejects" target="Aborted" />
+        </state>
+        <state id="Completed">
+            <transition action="remove_card_1" target="Completed_End" />
+        </state>
+        <state id="Go_offline">
+            <transition action="accepts" target="Completed" />
+        </state>
+        <state id="Aborted_End" />
+        <state id="Completed_End" />
+    </states>
+</fts>

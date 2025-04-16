@@ -48,13 +48,11 @@
                 </mandatory>
             </feature>
         </optional>
-    </feature>
-    <feature_constraints>
         <feature_constraints>
             <feature_constraint fexpression="Identification || !CreditCard"/>
             <feature_constraint fexpression="!DebitCard || PIN"/>
             <feature_constraint fexpression="!EPurse || Chip || NFC"/>
             <feature_constraint fexpression="!PrepaidCard || Chip || NFC"/>
         </feature_constraints>
-    </feature_constraints>
+    </feature>
 </fm>

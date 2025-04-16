@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fes>
     <events>
-        <event id="move_1" feature="Mapping" fexpression="!Mapping"> </event>
+        <event id="move_1" feature="Robot" fexpression="!Mapping"> </event>
         <event id="move_0" feature="Mapping" fexpression="Mapping"> </event>
-        <event id="liDet_1" feature="Robot" fexpression="(Lidar &amp;&amp; !Mapping)"> </event>
+        <event id="liDet_1" feature="Robot" fexpression="(!Mapping &amp;&amp; Lidar)"> </event>
         <event id="charge" feature="Robot"> </event>
         <event id="goAround" feature="Robot"> </event>
-        <event id="caDet_0" feature="Robot" fexpression="(Camera &amp;&amp; Mapping)"> </event>
-        <event id="caDet_1" feature="Robot" fexpression="(Camera &amp;&amp; !Mapping)"> </event>
-        <event id="liDet_0" feature="Robot" fexpression="(Lidar &amp;&amp; Mapping)"> </event>
+        <event id="caDet_0" feature="Robot" fexpression="(Mapping &amp;&amp; Camera)"> </event>
+        <event id="caDet_1" feature="Robot" fexpression="(!Mapping &amp;&amp; Camera)"> </event>
+        <event id="liDet_0" feature="Robot" fexpression="(Mapping &amp;&amp; Lidar)"> </event>
         <event id="clean" feature="Robot"> </event>
         <event id="map" feature="Mapping" fexpression="Mapping"> </event>
     </events>

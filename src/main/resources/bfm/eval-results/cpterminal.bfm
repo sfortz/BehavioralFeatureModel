@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bfm namespace="Card_Payment_Terminal">
+    <feature name="CPTerminal">
+        <events>
+            <event id="accepts"> </event>
+            <event id="check_signature" fexpression="(Signature &amp;&amp; !DirectDebit)"> </event>
+            <event id="remove_card_0"> </event>
+            <event id="insert_card"> </event>
+            <event id="no_go"> </event>
+            <event id="abort_1"> </event>
+            <event id="abort_0"> </event>
+            <event id="issuer_accepts"> </event>
+            <event id="ask_issuer"> </event>
+            <event id="check_PIN_online" fexpression="(PIN &amp;&amp; Online)"> </event>
+            <event id="remove_card_1"> </event>
+            <event id="check_PIN_offline" fexpression="(PIN &amp;&amp; Offline)"> </event>
+            <event id="issuer_rejects"> </event>
+        </events>
+        <mandatory>
+            <feature name="PaymentSchema">
+                <events>
+                    <event id="init_schema_0" fexpression="(DirectDebit || CreditCard)"> </event>
+                    <event id="init_schema_1" fexpression="(DirectDebit || CreditCard)"> </event>
+                </events>
+                <or>
+                    <feature name="DirectDebit">
+                        <or>
+                            <feature name="DebitCard"></feature>
+                            <feature name="EPurse"></feature>
+                            <feature name="PrepaidCard"></feature>
+                        </or>
+                    </feature>
+                    <feature name="CreditCard"></feature>
+                </or>
+                <event_constraints>
+                    <causalities>
+                        <causality target="init_schema_0">
+                            <bundle>
+                                <event id="insert_card"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="init_schema_1">
+                            <bundle>
+                                <event id="init_schema_0"> </event>
+                            </bundle>
+                            <bundle>
+                                <event id="insert_card"> </event>
+                            </bundle>
+                        </causality>
+                    </causalities>
+                </event_constraints>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="Connectivity">
+                <or>
+                    <feature name="Online">
+                        <events>
+                            <event id="go_online" fexpression="Online"> </event>
+                        </events>
+                        <or>
+                            <feature name="PSTN"></feature>
+                            <feature name="Mobile3G"></feature>
+                            <feature name="VPN"></feature>
+                            <feature name="PrivateWAN"></feature>
+                        </or>
+                    </feature>
+                    <feature name="Offline">
+                        <events>
+                            <event id="go_offline" fexpression="Offline"> </event>
+                        </events>
+                    </feature>
+                </or>
+                <event_constraints>
+                    <conflicts>
+                        <conflict>
+                            <event id="go_online"> </event>
+                            <event id="go_offline"> </event>
+                        </conflict>
+                    </conflicts>
+                </event_constraints>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="CardReader">
+                <or>
+                    <feature name="Chip"></feature>
+                    <feature name="MagStrip"></feature>
+                    <feature name="NFC"></feature>
+                </or>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="Identification">
+                <optional>
+                    <feature name="PIN"></feature>
+                </optional>
+                <mandatory>
+                    <feature name="Signature"></feature>
+                </mandatory>
+            </feature>
+        </optional>
+        <feature_constraints>
+            <feature_constraint fexpression="(Identification || !CreditCard)"></feature_constraint>
+            <feature_constraint fexpression="(PIN || !DebitCard)"></feature_constraint>
+            <feature_constraint fexpression="(NFC || (Chip || !EPurse))"></feature_constraint>
+            <feature_constraint fexpression="(NFC || (Chip || !PrepaidCard))"></feature_constraint>
+        </feature_constraints>
+        <event_constraints>
+            <causalities>
+                <causality target="accepts">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_offline"> </event>
+                    </bundle>
+                </causality>
+                <causality target="go_online">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="check_signature">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="remove_card_0">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                        <event id="abort_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="no_go"> </event>
+                        <event id="abort_0"> </event>
+                        <event id="issuer_rejects"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                        <event id="abort_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="ask_issuer"> </event>
+                        <event id="abort_1"> </event>
+                        <event id="abort_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_online"> </event>
+                        <event id="no_go"> </event>
+                        <event id="abort_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="abort_1"> </event>
+                        <event id="abort_0"> </event>
+                        <event id="issuer_rejects"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_online"> </event>
+                        <event id="abort_1"> </event>
+                        <event id="abort_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="ask_issuer"> </event>
+                        <event id="no_go"> </event>
+                        <event id="abort_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="no_go">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="abort_1">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="no_go"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="abort_0">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="issuer_accepts">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="ask_issuer"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_online"> </event>
+                    </bundle>
+                </causality>
+                <causality target="init_schema_0">
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="init_schema_1">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="ask_issuer">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_online"> </event>
+                    </bundle>
+                </causality>
+                <causality target="check_PIN_online">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="remove_card_1">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="accepts"> </event>
+                        <event id="issuer_accepts"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="accepts"> </event>
+                        <event id="ask_issuer"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="issuer_accepts"> </event>
+                        <event id="go_offline"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_offline"> </event>
+                        <event id="go_online"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="accepts"> </event>
+                        <event id="go_online"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="ask_issuer"> </event>
+                        <event id="go_offline"> </event>
+                    </bundle>
+                </causality>
+                <causality target="go_offline">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="check_PIN_offline">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                </causality>
+                <causality target="issuer_rejects">
+                    <bundle>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="insert_card"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="ask_issuer"> </event>
+                    </bundle>
+                    <bundle>
+                        <event id="go_online"> </event>
+                    </bundle>
+                </causality>
+            </causalities>
+            <conflicts>
+                <conflict>
+                    <event id="ask_issuer"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="accepts"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="check_PIN_online"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_rejects"> </event>
+                    <event id="accepts"> </event>
+                </conflict>
+                <conflict>
+                    <event id="no_go"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_1"> </event>
+                    <event id="no_go"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_1"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_rejects"> </event>
+                    <event id="no_go"> </event>
+                </conflict>
+                <conflict>
+                    <event id="no_go"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="ask_issuer"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_rejects"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_1"> </event>
+                    <event id="issuer_rejects"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_0"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_accepts"> </event>
+                    <event id="abort_1"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_accepts"> </event>
+                    <event id="remove_card_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="check_signature"> </event>
+                    <event id="check_PIN_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="check_PIN_online"> </event>
+                    <event id="check_signature"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_rejects"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_1"> </event>
+                    <event id="go_online"> </event>
+                </conflict>
+                <conflict>
+                    <event id="check_signature"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="ask_issuer"> </event>
+                    <event id="abort_1"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_1"> </event>
+                    <event id="accepts"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_0"> </event>
+                    <event id="accepts"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_0"> </event>
+                    <event id="init_schema_1"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_accepts"> </event>
+                    <event id="no_go"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_accepts"> </event>
+                    <event id="accepts"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_1"> </event>
+                    <event id="abort_1"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_1"> </event>
+                    <event id="remove_card_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_1"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_rejects"> </event>
+                    <event id="abort_1"> </event>
+                </conflict>
+                <conflict>
+                    <event id="check_PIN_online"> </event>
+                    <event id="check_PIN_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_1"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_accepts"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_rejects"> </event>
+                    <event id="issuer_accepts"> </event>
+                </conflict>
+                <conflict>
+                    <event id="issuer_accepts"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="remove_card_0"> </event>
+                    <event id="go_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="no_go"> </event>
+                    <event id="go_online"> </event>
+                </conflict>
+                <conflict>
+                    <event id="ask_issuer"> </event>
+                    <event id="accepts"> </event>
+                </conflict>
+                <conflict>
+                    <event id="accepts"> </event>
+                    <event id="go_online"> </event>
+                </conflict>
+                <conflict>
+                    <event id="abort_0"> </event>
+                    <event id="check_PIN_offline"> </event>
+                </conflict>
+                <conflict>
+                    <event id="go_online"> </event>
+                    <event id="abort_0"> </event>
+                </conflict>
+                <conflict>
+                    <event id="ask_issuer"> </event>
+                    <event id="no_go"> </event>
+                </conflict>
+                <conflict>
+                    <event id="no_go"> </event>
+                    <event id="accepts"> </event>
+                </conflict>
+            </conflicts>
+        </event_constraints>
+    </feature>
+</bfm>
