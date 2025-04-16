@@ -316,7 +316,6 @@ public class Translator {
     }
 
     public static <F extends Feature<F>> BehavioralFeatureModel fts2bfm(FeatureModel<F> fm, FeaturedTransitionSystem fts){
-    //public static BehavioralFeatureModel fts2bfm(FeatureModel<?> fm, FeaturedTransitionSystem fts){
 
         BehavioralFeatureModelFactory factory = new BehavioralFeatureModelFactory(fm);
         Map<Event, F> featureMap = new HashMap<>();
@@ -370,7 +369,7 @@ public class Translator {
                     }
 
                     // Causality relation (candidate)
-                    if (a2ToA1 && !a1ToA2) {  ///TODO: Optimise, only looping once for each pair
+                    if (a2ToA1 && !a1ToA2) {
                         bundle.add(e2);
                     }
                 }
@@ -379,9 +378,6 @@ public class Translator {
                 candidateBundles.add(new CausalityRelation(bundle, e1));
             }
         }
-
-        System.out.println("Conflict Count: " + conflicts.size());
-        System.out.println("Causality candidate count: " + candidateBundles.size());
 
         // Step 4: Non-conflicting bundle splitting
         candidateBundles = candidateBundles.stream()
@@ -397,7 +393,15 @@ public class Translator {
             factory.addCausality(lca.getFeatureName(), causality);
         }
 
-        return factory.build();
+        BehavioralFeatureModel bfm = factory.build();
+
+        System.out.println("FTS Action count: " + fts.getActionsCount());
+        System.out.println("FTS Transitions count: " + fts.getTransitionsCount());
+        System.out.println("BFM Event count: " + bfm.getEventsCount());
+        System.out.println("BFM Conflict count: " + bfm.getConflictsCount());
+        System.out.println("BFM Causality count: " + bfm.getCausalitiesCount());
+
+        return bfm;
     }
 
 }
