@@ -15,113 +15,120 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class VendingMachine {
 
-    static Map<String, String> actionToFExpression = Map.<String, String>ofEntries(
-            Map.entry("commandMsg_0", "Command"),
-            Map.entry("palarmMsg_0", "MethaneDetect"),
-            Map.entry("levelMsg_0", "WaterRegulation"),
-            Map.entry("stopCmd_0", "Stop"),
-            Map.entry("startCmd_0", "Start"),
-            Map.entry("isNotRunning_0", "MethaneDetect"),
-            Map.entry("highLevel_0", "High"),
-            Map.entry("lowLevel_0", "Low"),
-            Map.entry("isNotRunning_1", "Stop"),
-            Map.entry("isNotRunning_2", "Start"),
-            Map.entry("setMethaneStop_0", "MethaneDetect"),
-            Map.entry("isStopped_0", "High"),
-            Map.entry("isNotRunning_3", "Low"),
-            Map.entry("setReady_0", "Start"),
-            Map.entry("commandMsg_1", "Command"),
-            Map.entry("palarmMsg_1", "MethaneDetect"),
-            Map.entry("levelMsg_1", "WaterRegulation"),
-            Map.entry("commandMsg_2", "Command"),
-            Map.entry("palarmMsg_2", "MethaneDetect"),
-            Map.entry("levelMsg_2", "WaterRegulation"),
-            Map.entry("stopCmd_1", "Stop"),
-            Map.entry("startCmd_1", "Start"),
-            Map.entry("isNotRunning_4", "MethaneDetect"),
-            Map.entry("highLevel_1", "High"),
-            Map.entry("lowLevel_1", "Low"),
-            Map.entry("stopCmd_2", "Stop"),
-            Map.entry("startCmd_2", "Start"),
-            Map.entry("isNotRunning_5", "MethaneDetect"),
-            Map.entry("highLevel_2", "High"),
-            Map.entry("lowLevel_2", "Low"),
-            Map.entry("isNotRunning_6", "Stop"),
-            Map.entry("isNotRunning_7", "Start"),
-            Map.entry("setMethaneStop_1", "MethaneDetect"),
-            Map.entry("isMethaneStop_0", "MethaneDetect"),
-            Map.entry("isNotRunning_8", "Low"),
-            Map.entry("isNotRunning_9", "Stop"),
-            Map.entry("isNotRunning_10", "Start"),
-            Map.entry("isReady_0", "Start"),
-            Map.entry("setMethaneStop_2", "MethaneDetect"),
-            Map.entry("isReady_1", "High"),
-            Map.entry("isNotRunning_11", "Low"),
-            Map.entry("setStop_0", "Stop"),
-            Map.entry("setReady_1", "Start"),
-            Map.entry("setStop_1", "Stop"),
-            Map.entry("setReady_2", "Start"),
-            Map.entry("setReady_3", "High"),
-            Map.entry("setMethaneStop_3", "MethaneDetect"),
-            Map.entry("isReady_2", "High"),
-            Map.entry("isNotReady_0", "High"),
-            Map.entry("pumpStart_0", "High"),
-            Map.entry("setRunning_0", "High"),
-            Map.entry("commandMsg_3", "Command"),
-            Map.entry("palarmMsg_3", "MethaneDetect"),
-            Map.entry("levelMsg_3", "WaterRegulation"),
-            Map.entry("stopCmd_3", "Stop"),
-            Map.entry("startCmd_3", "Start"),
-            Map.entry("isRunning_0", "MethaneDetect"),
-            Map.entry("highLevel_3", "High"),
-            Map.entry("lowLevel_3", "Low"),
-            Map.entry("isRunning_1", "Stop"),
-            Map.entry("isRunning_2", "Start"),
-            Map.entry("pumpStop_0", "MethaneDetect"),
-            Map.entry("isRunning_3", "High"),
-            Map.entry("isRunning_4", "Low"),
-            Map.entry("pumpStop_1", "Stop"),
-            Map.entry("setMethaneStop_4", "MethaneDetect"),
-            Map.entry("pumpStop_2", "Low"),
-            Map.entry("setStop_2", "Stop"),
-            Map.entry("setLowStop_0", "Low"),
-            Map.entry("commandMsg_4", "Command"),
-            Map.entry("palarmMsg_4", "MethaneDetect"),
-            Map.entry("levelMsg_4", "WaterRegulation"),
-            Map.entry("stopCmd_4", "Stop"),
-            Map.entry("startCmd_4", "Start"),
-            Map.entry("isNotRunning_12", "MethaneDetect"),
-            Map.entry("highLevel_4", "High"),
-            Map.entry("lowLevel_4", "Low"),
-            Map.entry("isNotRunning_13", "Stop"),
-            Map.entry("isNotRunning_14", "Start"),
-            Map.entry("isLowStop_0", "Low"),
-            Map.entry("isNotRunning_15", "Low"),
-            Map.entry("setReady_4", "High"),
-            Map.entry("setMethaneStop_5", "MethaneDetect"),
-            Map.entry("pumpStart", "High"),
-            Map.entry("palarmMsg", "MethaneDetect"),
-            Map.entry("commandMsg", "Command"),
-            Map.entry("highLevel", "High"),
-            Map.entry("lowLevel", "Low"),
-            Map.entry("isLowStop", "Low"),
-            Map.entry("setLowStop", "Low"),
-            Map.entry("levelMsg", "WaterRegulation"),
-            Map.entry("stopCmd", "Stop"),
-            Map.entry("startCmd", "Start"),
-            Map.entry("setStop", "Stop"),
-            Map.entry("isStopped", "High"),
-            Map.entry("setRunning", "High"),
-            Map.entry("isNotReady", "High"),
-            Map.entry("isMethaneStop", "MethaneDetect"),
-            Map.entry("pumpStop_3", "MethaneDetect"),
-            Map.entry("pumpStop_4", "Stop"),
-            Map.entry("pumpStop_5", "Low")
+    public static Map<String, FExpression> getMapping(){
+
+        Map<String, FExpression> actionToFExpression = new HashMap<>();
+        actionToFExpression.put("insert_Euro", FExpression.("E"));
+        actionToFExpression.put("insert_Dollar", new FExpression("D"));
+        actionToFExpression.put("cancelBev", new FExpression("X"));
+        actionToFExpression.put("sugar", new FExpression("B"));
+        actionToFExpression.put("no_sugar", new FExpression("B"));
+        actionToFExpression.put("coffee_0", new FExpression("C"));
+        actionToFExpression.put("tea_0", new FExpression("T"));
+        actionToFExpression.put("cappuccino_0", new FExpression("P"));
+        actionToFExpression.put("cappuccino_1", new FExpression("P"));
+        actionToFExpression.put("tea_1", new FExpression("T"));
+        actionToFExpression.put("coffee_1", new FExpression("C"));
+        actionToFExpression.put("pour_sugar_0", new FExpression("B"));
+        actionToFExpression.put("pour_sugar_1", new FExpression("B"));
+        actionToFExpression.put("pour_sugar_2", new FExpression("B"));
+        actionToFExpression.put("pour_milk_0", new FExpression("P"));
+        actionToFExpression.put("pour_coffee_0", new FExpression("P"));
+        actionToFExpression.put("pour_tea", new FExpression("T"));
+        actionToFExpression.put("pour_coffee_1", new FExpression("C"));
+        actionToFExpression.put("pour_coffee_2", new FExpression("P"));
+        actionToFExpression.put("pour_milk_1", new FExpression("P"));
+        actionToFExpression.put("ring", new FExpression("R"));
+        actionToFExpression.put("skip", new FExpression("not R"));
+        actionToFExpression.put("take_cup", new FExpression("M"));
+
+
+        Map<String, FExpression> actionToFExpression = new HashMap<>();
+
+        actionToFExpression.put("insert_Euro", new FExpression("E"));
+        actionToFExpression.put("insert_Dollar", new FExpression("D"));
+        actionToFExpression.put("cancelBev", new FExpression("X"));
+        actionToFExpression.put("sugar", new FExpression("B"));
+        actionToFExpression.put("no_sugar", new FExpression("B"));
+        actionToFExpression.put("coffee_0", new FExpression("C"));
+        actionToFExpression.put("tea_0", new FExpression("T"));
+        actionToFExpression.put("cappuccino_0", new FExpression("P"));
+        actionToFExpression.put("cappuccino_1", new FExpression("P"));
+        actionToFExpression.put("tea_1", new FExpression("T"));
+        actionToFExpression.put("coffee_1", new FExpression("C"));
+        actionToFExpression.put("pour_sugar_0", new FExpression("B"));
+        actionToFExpression.put("pour_sugar_1", new FExpression("B"));
+        actionToFExpression.put("pour_sugar_2", new FExpression("B"));
+        actionToFExpression.put("pour_milk_0", new FExpression("P"));
+        actionToFExpression.put("pour_coffee_0", new FExpression("P"));
+        actionToFExpression.put("pour_tea", new FExpression("T"));
+        actionToFExpression.put("pour_coffee_1", new FExpression("C"));
+        actionToFExpression.put("pour_coffee_2", new FExpression("P"));
+        actionToFExpression.put("pour_milk_1", new FExpression("P"));
+        actionToFExpression.put("ring", new FExpression("R"));
+        actionToFExpression.put("skip", new FExpression("not R"));
+        actionToFExpression.put("take_cup", new FExpression("M"));
+
+
+
+
+        return actionToFExpression;
+
+
+        Map<String, FExpression> actionToFExpression = new HashMap<>();
+
+        actionToFExpression.put("change", new FExpression("!FreeDrinks"));
+        actionToFExpression.put("pay", new FExpression("!FreeDrinks"));
+        actionToFExpression.put("free", new FExpression("FreeDrinks"));
+        actionToFExpression.put("cancel", new FExpression("CancelPurchase"));
+        actionToFExpression.put("tea", new FExpression("Tea"));
+        actionToFExpression.put("soda", new FExpression("Soda"));
+        actionToFExpression.put("return", new FExpression("CancelPurchase"));
+        actionToFExpression.put("serveSoda", new FExpression("Soda"));
+        actionToFExpression.put("serveTea", new FExpression("Tea"));
+        actionToFExpression.put("open", new FExpression("!FreeDrinks"));
+        actionToFExpression.put("take_0", new FExpression("FreeDrinks"));
+        actionToFExpression.put("take_1", new FExpression("!FreeDrinks"));
+        actionToFExpression.put("close", new FExpression("!FreeDrinks"));
+
+    }
+
+
+
+
+  0 -> 1 [ label = "insert_Euro | SC and E" ];
+  0 -> 1 [ label = "insert_Dollar | SC and D" ];
+  1 -> 13 [ label = "cancelSoup_0 | X" ];
+  1 -> 2 [ label = "tomato | TS" ];
+  1 -> 4 [ label = "chicken | CS" ];
+  1 -> 6 [ label = "pea | PS" ];
+  2 -> 3 [ label = "no_cup_0 | U" ];
+  2 -> 8 [ label = "cup_present_0 | U" ];
+  2 -> 8 [ label = "skip_0 | not U" ];
+  3 -> 13 [ label = "cancelSoup_1 | X" ];
+  4 -> 5 [ label = "no_cup_1 | U" ];
+  4 -> 9 [ label = "cup_present_1 | U" ];
+  4 -> 9 [ label = "skip_1 | not U" ];
+  5 -> 13 [ label = "cancelSoup_2 | X" ];
+  6 -> 7 [ label = "no_cup_2 | U" ];
+  6 -> 10 [ label = "cup_present_2 | U" ];
+  6 -> 10 [ label = "skip_2 | not U" ];
+  7 -> 13 [ label = "cancelSoup_3 | X" ];
+  8 -> 11 [ label = "pour_tomato | TS" ];
+  9 -> 11 [ label = "pour_chicken | CS" ];
+  10 -> 11 [ label = "pour_pea | PS" ];
+  11 -> 12 [ label = "skip_3 | not R" ];
+  11 -> 12 [ label = "ring | R" ];
+  12 -> 13 [ label = "take_soup | M" ];
+  12 -> 13 [ label = "bad_luck | not U" ];
+
+
     );
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException,
@@ -161,14 +168,12 @@ public class VendingMachine {
         for (Iterator<Transition> it = fts.transitions(); it.hasNext(); ) {
             Transition t = it.next();
             String act = t.getAction().getName();
-            FExpression fexpr = FExpression.trueValue();
             if(actionToFExpression.containsKey(act)){
-                fexpr = new FExpression(actionToFExpression.get(act));
+                factory.addTransition(t.getSource().getName(), act, actionToFExpression.get(act), t.getTarget().getName());
+            } else {
+                factory.addTransition(t.getSource().getName(), act, actionToFExpression.get(act), t.getTarget().getName());
             }
-            factory.addTransition(t.getSource().getName(), act, fexpr, t.getTarget().getName());
         }
         return factory.build();
     }
-
-
 }
