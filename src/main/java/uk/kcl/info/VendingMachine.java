@@ -159,7 +159,7 @@ public class VendingMachine {
             if(actionToFExpression.containsKey(act)){
                 factory.addTransition(t.getSource().getName(), act, actionToFExpression.get(act), t.getTarget().getName());
             } else {
-                factory.addTransition(t.getSource().getName(), act, actionToFExpression.get(act), t.getTarget().getName());
+                factory.addTransition(t.getSource().getName(), act, FExpression.trueValue(), t.getTarget().getName());
             }
         }
         return factory.build();
