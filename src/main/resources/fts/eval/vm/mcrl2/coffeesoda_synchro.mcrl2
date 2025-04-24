@@ -1,0 +1,76 @@
+act
+  insertBev_Euro, insertBev_Dollar, 
+  sugar, no_sugar, pour_sugar_0, pour_sugar_1, pour_sugar_2,
+  coffee_0, coffee_1, teaBev_0, teaBev_1, cappuccino_0, cappuccino_1,
+  pour_coffee_0, pour_coffee_1, pour_coffee_2, pour_tea, pour_milk_0, pour_milk_1,
+  no_cup_0, no_cup_1, no_cup_2, cup_present_0, cup_present_1, cup_present_2,
+  take_cup,
+  cancelBev, cancel,
+  skipBev,
+  bad_luck, ringBev,
+  insert_Euro, insert_Dollar, take,
+  pay_Euro, pay_Dollar, free, change,
+  cancelSoda, return,
+  teaSoda_0, teaSoda_1, soda, pourBev_tea,
+  serveTea, serveSoda, tea_0, tea_1,
+  open, take_0, take_1, close
+;
+
+proc
+  S1 = pay_Euro.S2 + pay_Dollar.S2 + free.S3;
+  S2 = change.S3;
+  S3 = cancelSoda.S4 + teaSoda_0.S6 + teaSoda_1.S6 + soda.S5;
+  S4 = return.S10;
+  S5 = serveSoda.S7;
+  S6 = serveTea.S7;
+  S7 = open.S8 + take_0.S10;
+  S8 = take_1.S9;
+  S9 = close.S10;
+  S10 = delta; 
+  SodaComponent = S1;
+
+
+proc
+  Bev_S0 = insertBev_Euro.Bev_S1 + insertBev_Dollar.Bev_S1;
+  Bev_S1 = cancelBev.Bev_S14 + sugar.Bev_S2 + no_sugar.Bev_S3;
+  Bev_S2 = coffee_0.Bev_S6 + teaBev_0.Bev_S5 + cappuccino_0.Bev_S4;
+  Bev_S3 = cappuccino_1.Bev_S9 + teaBev_1.Bev_S8 + coffee_1.Bev_S7;
+  Bev_S4 = pour_sugar_2.Bev_S9;
+  Bev_S5 = pour_sugar_1.Bev_S8;
+  Bev_S6 = pour_sugar_0.Bev_S7;
+  Bev_S7 = pour_coffee_1.Bev_S12;
+  Bev_S8 = pourBev_tea.Bev_S12;
+  Bev_S9 = pour_milk_0.Bev_S11 + pour_coffee_0.Bev_S10;
+  Bev_S10 = pour_milk_1.Bev_S12;
+  Bev_S11 = pour_coffee_2.Bev_S12;
+  Bev_S12 = ringBev.Bev_S13 + skipBev.Bev_S13;
+  Bev_S13 = take_cup.Bev_S15;
+  Bev_S14 = delta;
+  Bev_S15 = delta; 
+  BeverageComponent = Bev_S0;
+
+
+% Final system with communication and filtering
+VendingMachine = allow({
+  cancel,
+  sugar, no_sugar, pour_sugar_0, pour_sugar_1, pour_sugar_2,
+  coffee_0, coffee_1, tea_0, tea_1, cappuccino_0, cappuccino_1,
+  pour_coffee_0, pour_coffee_1, pour_coffee_2, pour_tea, pour_milk_0, pour_milk_1,
+  no_cup_0, no_cup_1, no_cup_2, cup_present_0, cup_present_1, cup_present_2,
+  skipBev, bad_luck, insert_Euro, insert_Dollar, take, ringBev,
+  free, change, return, soda, serveSoda, 
+  open, take_0, close
+},
+comm({
+  insertBev_Euro | pay_Euro -> insert_Euro,
+  insertBev_Dollar | pay_Dollar -> insert_Dollar,
+  take_cup | take_1 -> take,
+  pourBev_tea | serveTea -> pour_tea,
+  teaBev_0 | teaSoda_0 -> tea_0,
+  teaBev_1 | teaSoda_1 -> tea_1,
+  cancelBev | cancelSoda -> cancel
+},
+BeverageComponent || SodaComponent)
+);
+
+init VendingMachine;

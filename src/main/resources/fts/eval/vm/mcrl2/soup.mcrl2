@@ -1,0 +1,33 @@
+act
+  insertSoup_Euro, insertSoup_Dollar,
+  tomato, chicken, pea, pour_tomato, pour_chicken, pour_pea,
+  no_cup_0, cup_present_0, no_cup_1, cup_present_1, no_cup_2, cup_present_2,
+  skip_1, skip_2, skip_3, skip_4,
+  cancelSoup_0, cancelSoup_1, cancelSoup_2,cancelSoup_3,
+  ringSoup, take_soup, bad_luck;
+
+proc
+  Soup_S0 = insertSoup_Euro.Soup_S1 + insertSoup_Dollar.Soup_S1;
+
+  Soup_S1 = cancelSoup_0.Soup_S13 + tomato.Soup_S2 + chicken.Soup_S4 + pea.Soup_S6;
+
+  Soup_S2 = no_cup_0.Soup_S3 + cup_present_0.Soup_S8 + skip_4.Soup_S8;
+  Soup_S3 = cancelSoup_1.Soup_S13;
+
+  Soup_S4 = no_cup_1.Soup_S5 + cup_present_1.Soup_S9 + skip_1.Soup_S9;
+  Soup_S5 = cancelSoup_2.Soup_S13;
+
+  Soup_S6 = no_cup_2.Soup_S7 + cup_present_2.Soup_S10 + skip_2.Soup_S10;
+  Soup_S7 = cancelSoup_3.Soup_S13;
+
+  Soup_S8 = pour_tomato.Soup_S11;
+  Soup_S9 = pour_chicken.Soup_S11;
+  Soup_S10 = pour_pea.Soup_S11;
+
+  Soup_S11 = ringSoup.Soup_S12 + skip_3.Soup_S12;
+  Soup_S12 = take_soup.Soup_S13 + bad_luck.Soup_S13;
+
+  Soup_S13 = delta; 
+
+init
+  Soup_S0;

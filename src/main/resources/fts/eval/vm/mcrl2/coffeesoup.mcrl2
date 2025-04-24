@@ -1,0 +1,54 @@
+act
+  insertBev_Euro, insertBev_Dollar, insertSoup_Euro, insertSoup_Dollar,
+  cancelBev, cancelSoup_0, cancelSoup_1, cancelSoup_2, cancelSoup_3,
+  sugar, no_sugar, pour_sugar_0, pour_sugar_1, pour_sugar_2,
+  tomato, chicken, pea,
+  coffee_0, coffee_1, tea_0, tea_1, cappuccino_0, cappuccino_1,
+  pour_coffee_0, pour_coffee_1, pour_coffee_2, pour_tea, pour_milk_0, pour_milk_1,
+  pour_tomato, pour_chicken, pour_pea,
+  no_cup_0, no_cup_1, no_cup_2, cup_present_0, cup_present_1, cup_present_2,
+  take_cup, take_soup,
+  skip_0, skip_1, skip_2, skip_3, skip_4,
+  bad_luck, ringBev, ringSoup
+;
+
+
+proc
+  Bev_S0 = insertBev_Euro.Bev_S1 + insertBev_Dollar.Bev_S1;
+  Bev_S1 = cancelBev.Bev_S14 + sugar.Bev_S2 + no_sugar.Bev_S3;
+  Bev_S2 = coffee_0.Bev_S6 + tea_0.Bev_S5 + cappuccino_0.Bev_S4;
+  Bev_S3 = cappuccino_1.Bev_S9 + tea_1.Bev_S8 + coffee_1.Bev_S7;
+  Bev_S4 = pour_sugar_2.Bev_S9;
+  Bev_S5 = pour_sugar_1.Bev_S8;
+  Bev_S6 = pour_sugar_0.Bev_S7;
+  Bev_S7 = pour_coffee_1.Bev_S12;
+  Bev_S8 = pour_tea.Bev_S12;
+  Bev_S9 = pour_milk_0.Bev_S11 + pour_coffee_0.Bev_S10;
+  Bev_S10 = pour_milk_1.Bev_S12;
+  Bev_S11 = pour_coffee_2.Bev_S12;
+  Bev_S12 = ringBev.Bev_S13 + skip_0.Bev_S13;
+  Bev_S13 = take_cup.Bev_S15;
+  Bev_S14 = delta;
+  Bev_S15 = delta; 
+  BeverageComponent = Bev_S0;
+
+proc
+  Soup_S0 = insertSoup_Euro.Soup_S1 + insertSoup_Dollar.Soup_S1;
+  Soup_S1 = cancelSoup_0.Soup_S13 + tomato.Soup_S2 + chicken.Soup_S4 + pea.Soup_S6;
+  Soup_S2 = no_cup_0.Soup_S3 + cup_present_0.Soup_S8 + skip_4.Soup_S8;
+  Soup_S3 = cancelSoup_1.Soup_S13;
+  Soup_S4 = no_cup_1.Soup_S5 + cup_present_1.Soup_S9 + skip_1.Soup_S9;
+  Soup_S5 = cancelSoup_2.Soup_S13;
+  Soup_S6 = no_cup_2.Soup_S7 + cup_present_2.Soup_S10 + skip_2.Soup_S10;
+  Soup_S7 = cancelSoup_3.Soup_S13;
+  Soup_S8 = pour_tomato.Soup_S11;
+  Soup_S9 = pour_chicken.Soup_S11;
+  Soup_S10 = pour_pea.Soup_S11;
+  Soup_S11 = ringSoup.Soup_S12 + skip_3.Soup_S12;
+  Soup_S12 = take_soup.Soup_S13 + bad_luck.Soup_S13;
+  Soup_S13 = delta; 
+  SoupComponent = Soup_S0;
+
+proc VendingMachine = BeverageComponent || SoupComponent;
+
+init VendingMachine;
