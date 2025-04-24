@@ -2,15 +2,14 @@ package uk.kcl.info;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.exception.DimacsFormatException;
-import be.vibes.ts.Action;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.FeaturedTransitionSystemFactory;
 import be.vibes.ts.Transition;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
+import be.vibes.ts.io.dot.FeaturedTransitionSystemDotHandler;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
 import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
-import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -104,20 +103,56 @@ public class Minepump {
             Map.entry("isLowStop_0", "Low"),
             Map.entry("isNotRunning_15", "Low"),
             Map.entry("setReady_4", "High"),
-            Map.entry("setMethaneStop_5", "MethaneDetect")
+            Map.entry("setMethaneStop_5", "MethaneDetect"),
+            Map.entry("pumpStart", "High"),
+            Map.entry("palarmMsg", "MethaneDetect"),
+            Map.entry("commandMsg", "Command"),
+            Map.entry("highLevel", "High"),
+            Map.entry("lowLevel", "Low"),
+            Map.entry("isLowStop", "Low"),
+            Map.entry("setLowStop", "Low"),
+            Map.entry("levelMsg", "WaterRegulation"),
+            Map.entry("stopCmd", "Stop"),
+            Map.entry("startCmd", "Start"),
+            Map.entry("setStop", "Stop"),
+            Map.entry("isStopped", "High"),
+            Map.entry("setRunning", "High"),
+            Map.entry("isNotReady", "High"),
+            Map.entry("isMethaneStop", "MethaneDetect"),
+            Map.entry("pumpStop_3", "MethaneDetect"),
+            Map.entry("pumpStop_4", "Stop"),
+            Map.entry("pumpStop_5", "Low")
     );
 
-    public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
+    public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException,
+            TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
 
-        String dirPath = "src/main/resources/";
-        File file = new File(dirPath + "fts/eval/minepump_controller.fts");
-        FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
+        String inDirPath = "src/main/resources/fts/eval/minepump/old/";
+        String outDirPath = "src/main/resources/fts/eval/minepump/new/";
+        File dir = new File(inDirPath);
 
+        File[] ftsFiles = dir.listFiles((d, name) -> name.endsWith(".dot"));
 
-        PrintStream output = new PrintStream(new FileOutputStream(dirPath + "fts/eval/minepump_controller.dot"));
-        FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(fts, output);
-        printer.printDot();
-        printer.flush();
+        if (ftsFiles == null) {
+            System.err.println("Directory not found or IO error: " + inDirPath);
+            return;
+        }
+
+        for (File file : ftsFiles) {
+            String system = file.getName();
+            System.out.println("Processing: " + system);
+
+            FeaturedTransitionSystem fts = FeaturedTransitionSystemDotHandler.parseDotFile(inDirPath + system);
+            //FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
+            FeaturedTransitionSystem newFts = getFts(fts);
+
+            File outFile = new File(outDirPath + system);
+            try (PrintStream output = new PrintStream(new FileOutputStream(outFile))) {
+                FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(newFts, output);
+                printer.printDot();
+                printer.flush();
+            }
+        }
     }
 
     public static FeaturedTransitionSystem getFts(FeaturedTransitionSystem fts) throws BehavioralFeatureModelDefinitionException {
