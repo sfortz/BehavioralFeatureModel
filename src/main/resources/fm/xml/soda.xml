@@ -1,0 +1,26 @@
+<fm namespace="VendingMachineModel">
+    <feature name="VendingMachine">
+        <mandatory>
+            <feature name="Beverages">
+                <or>
+                    <feature name="Soda"/>
+                    <feature name="Tea"/>
+                </or>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="Currency">
+                <alternative>
+                    <feature name="Euro"/>
+                    <feature name="Dollar"/>
+                </alternative>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="FreeDrinks"/>
+        </optional>
+        <optional>
+            <feature name="CancelPurchase"/>
+        </optional>
+    </feature>
+</fm>
