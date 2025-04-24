@@ -2,7 +2,7 @@ digraph COFFEE_MACHINE {
   0 [initial=True];
 
   0 -> 1 [ label = "insert_Euro | EUR" ];
-  0 -> 1 [ label = "insert_Dollar) | DOL" ];
+  0 -> 1 [ label = "insert_Dollar | DOL" ];
   1 -> 14 [ label = "cancelBev | X" ];
   1 -> 2 [ label = "sugar | BEV" ];
   1 -> 3 [ label = "no_sugar | BEV" ];
