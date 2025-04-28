@@ -143,7 +143,6 @@ public class Minepump {
             System.out.println("Processing: " + system);
 
             FeaturedTransitionSystem fts = FeaturedTransitionSystemDotHandler.parseDotFile(inDirPath + system);
-            //FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
             FeaturedTransitionSystem newFts = getFts(fts);
 
             File outFile = new File(outDirPath + system);
