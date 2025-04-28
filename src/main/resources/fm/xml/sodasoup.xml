@@ -19,7 +19,7 @@
                 <mandatory>
                     <feature name="B">
                         <or>
-                            <feature name="S"/>
+                            <feature name="SD"/>
                             <feature name="T"/>
                         </or>
                     </feature>

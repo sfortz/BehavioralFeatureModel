@@ -28,7 +28,7 @@
                             <feature name="P"/>
                         </optional>
                         <optional>
-                            <feature name="S"/>
+                            <feature name="SD"/>
                         </optional>
                     </feature>
                 </mandatory>
