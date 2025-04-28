@@ -1,7 +1,12 @@
 package uk.kcl.info;
 
 import be.vibes.fexpression.FExpression;
+import be.vibes.fexpression.FExpressionVisitorWithReturn;
+import be.vibes.fexpression.Feature;
 import be.vibes.fexpression.exception.DimacsFormatException;
+import be.vibes.fexpression.exception.FExpressionException;
+import be.vibes.solver.FeatureModel;
+import be.vibes.solver.io.xml.XmlLoaders;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.FeaturedTransitionSystemFactory;
 import be.vibes.ts.Transition;
@@ -15,9 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class VendingMachine {
 
@@ -104,8 +107,8 @@ public class VendingMachine {
         actionToFExpression.put("teaSoda", FExpression.featureExpr("T"));
         actionToFExpression.put("teaSoda_0", FExpression.featureExpr("T"));
         actionToFExpression.put("teaSoda_1", FExpression.featureExpr("T"));
-        actionToFExpression.put("soda", FExpression.featureExpr("S"));
-        actionToFExpression.put("serveSoda", FExpression.featureExpr("S"));
+        actionToFExpression.put("soda", FExpression.featureExpr("SD"));
+        actionToFExpression.put("serveSoda", FExpression.featureExpr("SD"));
         actionToFExpression.put("serveTea", FExpression.featureExpr("T"));
         actionToFExpression.put("return", FExpression.featureExpr("X"));
         actionToFExpression.put("cancel", FExpression.featureExpr("X"));
@@ -119,7 +122,7 @@ public class VendingMachine {
     }
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException,
-            TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
+            TransitionSystemDefinitionException, FExpressionException, BehavioralFeatureModelDefinitionException {
 
         String inDirPath = "src/main/resources/fts/eval/vm/old/";
         String outDirPath = "src/main/resources/fts/eval/vm/new/";
@@ -132,13 +135,25 @@ public class VendingMachine {
             return;
         }
 
+
+        Map<String, String> systems = new HashMap<>();
+        systems.put("coffeesoda_synchro.dot","coffeesoda");
+        systems.put("coffeesoup.dot","coffeesoup");
+        systems.put("sodasoup.dot","sodasoup");
+        systems.put("coffeesoda.dot","coffeesoda");
+        systems.put("svm.dot","svm");
+        systems.put("coffeesoup_synchro.dot","coffeesoup");
+        systems.put("sodasoup_synchro.dot","sodasoup");
+        systems.put("svm_synchro.dot","svm");
+        
         for (File file : ftsFiles) {
             String system = file.getName();
             System.out.println("Processing: " + system);
-
+            String fmName = systems.get(system);
             FeaturedTransitionSystem fts = FeaturedTransitionSystemDotHandler.parseDotFile(inDirPath + system);
-            //FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
-            FeaturedTransitionSystem newFts = getFts(fts);
+            File fmFile = new File("src/main/resources/fm/xml/" + fmName + ".xml");
+            FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
+            FeaturedTransitionSystem newFts = getFts((Collection<Feature<?>>) fm.getFeatures(), fts);
 
             File outFile = new File(outDirPath + system);
             try (PrintStream output = new PrintStream(new FileOutputStream(outFile))) {
@@ -149,7 +164,7 @@ public class VendingMachine {
         }
     }
 
-    public static FeaturedTransitionSystem getFts(FeaturedTransitionSystem fts) throws BehavioralFeatureModelDefinitionException {
+    public static FeaturedTransitionSystem getFts(Collection<Feature<?>> features, FeaturedTransitionSystem fts) throws BehavioralFeatureModelDefinitionException, FExpressionException {
         FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(fts.getInitialState().getName());
         Map<String, FExpression> actionToFExpression = getMapping();
 
@@ -157,11 +172,94 @@ public class VendingMachine {
             Transition t = it.next();
             String act = t.getAction().getName();
             if(actionToFExpression.containsKey(act)){
-                factory.addTransition(t.getSource().getName(), act, actionToFExpression.get(act), t.getTarget().getName());
+                RestrictedFexp visitor = new RestrictedFexp(features);
+                FExpression fexp = actionToFExpression.get(act).accept(visitor);
+                factory.addTransition(t.getSource().getName(), act, fexp, t.getTarget().getName());
             } else {
                 factory.addTransition(t.getSource().getName(), act, FExpression.trueValue(), t.getTarget().getName());
             }
         }
         return factory.build();
+    }
+
+    private static class RestrictedFexp implements FExpressionVisitorWithReturn<FExpression> {
+
+        private final Set<String> allowedFeatureNames;
+        private boolean inNegation = false;
+
+        public RestrictedFexp(Collection<Feature<?>> features) {
+            this.allowedFeatureNames = new HashSet<>();
+            for (Feature<?> f : features) {
+                allowedFeatureNames.add(f.getFeatureName());
+            }
+        }
+
+        @Override
+        public FExpression constant(boolean val) {
+            return val ? FExpression.trueValue() : FExpression.falseValue();
+        }
+
+        @Override
+        public FExpression feature(Feature<?> feature) {
+            if (allowedFeatureNames.contains(feature.getFeatureName())) {
+                return FExpression.featureExpr(feature.getFeatureName());
+            } else if(inNegation) {
+                return FExpression.falseValue();
+            } else {
+                return FExpression.trueValue();
+            }
+        }
+
+        @Override
+        public FExpression not(FExpression expr) {
+            try {
+                inNegation = !inNegation; // flip negation flag
+                FExpression operand = expr.accept(this);
+                inNegation = !inNegation; // restore state
+                return operand.not();
+            } catch (FExpressionException ex) {
+                throw new IllegalStateException("No exception should happen while using this visitor!", ex);
+            }
+        }
+
+        @Override
+        public FExpression and(List<FExpression> operands) {
+            try {
+                FExpression result = FExpression.trueValue();
+                for (FExpression e : operands) {
+                    FExpression simplified = e.accept(this);
+                    if (simplified.isTrue()) {
+                        continue; // ignore true
+                    }
+                    if (simplified.isFalse()) {
+                        return FExpression.falseValue(); // short-circuit: false dominates AND
+                    }
+                    result = result.and(simplified);
+                }
+                return result;
+            } catch (FExpressionException ex) {
+                throw new IllegalStateException("No exception should happen while using this visitor!", ex);
+            }
+        }
+
+        @Override
+        public FExpression or(List<FExpression> operands) {
+            try {
+                FExpression result = FExpression.falseValue();
+                for (FExpression e : operands) {
+                    FExpression simplified = e.accept(this);
+                    if (simplified.isFalse()) {
+                        continue; // ignore false
+                    }
+                    if (simplified.isTrue()) {
+                        return FExpression.trueValue(); // short-circuit: true dominates OR
+                    }
+                    result = result.or(simplified);
+                }
+                return result;
+            } catch (FExpressionException ex) {
+                throw new IllegalStateException("No exception should happen while using this visitor!", ex);
+            }
+        }
     }
 }
