@@ -36,3 +36,4 @@ build/
 
 ### Selected project files ###
 /src/main/java/uk/kcl/info/archives/
+/src/main/resources/bfm/archives-eval/
