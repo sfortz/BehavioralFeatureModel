@@ -1,7 +1,7 @@
 package uk.kcl.info.bfm.io.xml;
 
 import uk.kcl.info.bfm.BundleEventStructure;
-import uk.kcl.info.bfm.ConflictRelation;
+import uk.kcl.info.bfm.ConflictSet;
 import uk.kcl.info.bfm.Event;
 import java.util.Iterator;
 import javax.xml.stream.XMLStreamException;
@@ -14,6 +14,6 @@ public interface BundleEventStructureElementPrinter {
 
     void printCausalities(XMLStreamWriter writer) throws XMLStreamException;
 
-    void printConflicts(XMLStreamWriter writer, Iterator<ConflictRelation> conflicts) throws XMLStreamException;
+    void printConflicts(XMLStreamWriter writer, ConflictSet conflicts) throws XMLStreamException;
 
 }

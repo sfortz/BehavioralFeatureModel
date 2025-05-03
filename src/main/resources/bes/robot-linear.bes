@@ -59,89 +59,49 @@
 
 	<conflicts>
 		<conflict>
-			<event id="liDet_0" />
-			<event id="caDet_0" />
+			<events>
+				<event id="liDet_0"/>
+				<event id="liDet_1"/>
+				<event id="caDet_0"/>
+				<event id="caDet_1"/>
+				<event id="goAround"/>
+			</events>
+			<events>
+				<event id="move_0"/>
+				<event id="move_1"/>
+			</events>
 		</conflict>
 		<conflict>
-			<event id="liDet_0" />
-			<event id="caDet_1" />
+			<events>
+				<event id="liDet_0"/>
+				<event id="liDet_1"/>
+			</events>
+			<events>
+				<event id="caDet_0"/>
+				<event id="caDet_1"/>
+			</events>
 		</conflict>
 		<conflict>
-			<event id="liDet_1" />
-			<event id="caDet_0" />
+			<events>
+				<event id="liDet_0"/>
+				<event id="caDet_0"/>
+				<event id="move_0"/>
+			</events>
+			<events>
+				<event id="liDet_1"/>
+				<event id="caDet_1"/>
+				<event id="move_1"/>
+			</events>
 		</conflict>
 		<conflict>
-			<event id="liDet_1" />
-			<event id="caDet_1" />
-		</conflict>
-
-		<conflict>
-			<event id="liDet_0"/>
-			<event id="move_0" />
-		</conflict>
-		<conflict>
-			<event id="liDet_0"/>
-			<event id="move_1" />
-		</conflict>
-		<conflict>
-			<event id="liDet_1"/>
-			<event id="move_0" />
-		</conflict>
-		<conflict>
-			<event id="liDet_1"/>
-			<event id="move_1" />
-		</conflict>
-
-		<conflict>
-			<event id="caDet_0"/>
-			<event id="move_0" />
-		</conflict>
-		<conflict>
-			<event id="caDet_0"/>
-			<event id="move_1" />
-		</conflict>
-		<conflict>
-			<event id="caDet_1"/>
-			<event id="move_0" />
-		</conflict>
-		<conflict>
-			<event id="caDet_1"/>
-			<event id="move_1" />
-		</conflict>
-
-		<conflict>
-			<event id="map" />
-			<event id="liDet_1"/>
-		</conflict>
-		<conflict>
-			<event id="map" />
-			<event id="caDet_1" />
-		</conflict>
-		<conflict>
-			<event id="map"/>
-			<event id="move_1" />
-		</conflict>
-
-		<conflict>
-			<event id="move_0"/>
-			<event id="move_1" />
-		</conflict>
-		<conflict>
-			<event id="liDet_0" />
-			<event id="liDet_1" />
-		</conflict>
-		<conflict>
-			<event id="caDet_0" />
-			<event id="caDet_1" />
-		</conflict>
-
-		<conflict>
-			<event id="goAround"/>
-			<event id="move_0" />
-		</conflict>
-		<conflict>
-			<event id="goAround"/>
-			<event id="move_1" />
+			<events>
+				<event id="map"/>
+			</events>
+			<events>
+				<event id="liDet_1"/>
+				<event id="caDet_1"/>
+				<event id="move_1"/>
+			</events>
 		</conflict>
 	</conflicts>
 </bes>

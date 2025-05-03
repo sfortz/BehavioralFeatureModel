@@ -31,8 +31,12 @@
                 <event_constraints>
                     <conflicts>
                         <conflict>
-                            <event id="liDet"> </event>
-                            <event id="caDet"> </event>
+                            <events>
+                                <event id="caDet"> </event>
+                            </events>
+                            <events>
+                                <event id="liDet"> </event>
+                            </events>
                         </conflict>
                     </conflicts>
                 </event_constraints>
@@ -44,18 +48,6 @@
         <event_constraints>
             <causalities>
                 <causality target="charge">
-                    <bundle>
-                        <event id="move"> </event>
-                        <event id="caDet"> </event>
-                        <event id="liDet"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="move"> </event>
-                        <event id="goAround"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="map"> </event>
-                    </bundle>
                     <bundle>
                         <event id="clean"> </event>
                     </bundle>
@@ -73,21 +65,10 @@
                 <causality target="clean">
                     <bundle>
                         <event id="move"> </event>
-                        <event id="caDet"> </event>
-                        <event id="liDet"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="move"> </event>
                         <event id="goAround"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="map"> </event>
                     </bundle>
                 </causality>
                 <causality target="goAround">
-                    <bundle>
-                        <event id="map"> </event>
-                    </bundle>
                     <bundle>
                         <event id="caDet"> </event>
                         <event id="liDet"> </event>
@@ -101,16 +82,14 @@
             </causalities>
             <conflicts>
                 <conflict>
-                    <event id="move"> </event>
-                    <event id="goAround"> </event>
-                </conflict>
-                <conflict>
-                    <event id="move"> </event>
-                    <event id="caDet"> </event>
-                </conflict>
-                <conflict>
-                    <event id="liDet"> </event>
-                    <event id="move"> </event>
+                    <events>
+                        <event id="move"> </event>
+                    </events>
+                    <events>
+                        <event id="caDet"> </event>
+                        <event id="goAround"> </event>
+                        <event id="liDet"> </event>
+                    </events>
                 </conflict>
             </conflicts>
         </event_constraints>

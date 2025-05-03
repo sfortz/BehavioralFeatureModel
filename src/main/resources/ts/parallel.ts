@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ts xmlns:ts="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<start>state4</start>
+	<start>state0</start>
 	<states>
-		<state id="state4">
-			<transition action="c" target="state0" />
-		</state>
 		<state id="state0">
+			<transition action="c" target="state4" />
+		</state>
+		<state id="state4">
 			<transition action="a" target="state1" />
 			<transition action="b" target="state2" />
+            <transition action="e" target="state5" />
 		</state>
 		<state id="state1">
 			<transition action="b" target="state3" />
@@ -18,8 +19,5 @@
 		<state id="state3">
 			<transition action="d" target="state5" />
 		</state>
-        <state id="state0">
-            <transition action="e" target="state5" />
-        </state>
 	</states>
 </ts>

@@ -17,18 +17,6 @@
         </causality>
         <causality target="charge">
             <bundle>
-                <event id="move"> </event>
-                <event id="caDet"> </event>
-                <event id="liDet"> </event>
-            </bundle>
-            <bundle>
-                <event id="move"> </event>
-                <event id="goAround"> </event>
-            </bundle>
-            <bundle>
-                <event id="map"> </event>
-            </bundle>
-            <bundle>
                 <event id="clean"> </event>
             </bundle>
         </causality>
@@ -44,9 +32,6 @@
         </causality>
         <causality target="goAround">
             <bundle>
-                <event id="map"> </event>
-            </bundle>
-            <bundle>
                 <event id="caDet"> </event>
                 <event id="liDet"> </event>
             </bundle>
@@ -54,35 +39,29 @@
         <causality target="clean">
             <bundle>
                 <event id="move"> </event>
-                <event id="caDet"> </event>
-                <event id="liDet"> </event>
-            </bundle>
-            <bundle>
-                <event id="move"> </event>
                 <event id="goAround"> </event>
             </bundle>
-            <bundle>
-                <event id="map"> </event>
-            </bundle>
         </causality>
-        <causality target="map"></causality>
     </causalities>
     <conflicts>
         <conflict>
-            <event id="move"> </event>
-            <event id="goAround"> </event>
+            <events>
+                <event id="move"> </event>
+            </events>
+            <events>
+                <event id="caDet"> </event>
+                <event id="goAround"> </event>
+                <event id="liDet"> </event>
+            </events>
         </conflict>
         <conflict>
-            <event id="move"> </event>
-            <event id="caDet"> </event>
-        </conflict>
-        <conflict>
-            <event id="move"> </event>
-            <event id="liDet"> </event>
-        </conflict>
-        <conflict>
-            <event id="caDet"> </event>
-            <event id="liDet"> </event>
+            <events>
+                <event id="move"> </event>
+                <event id="caDet"> </event>
+            </events>
+            <events>
+                <event id="liDet"> </event>
+            </events>
         </conflict>
     </conflicts>
 </bes>

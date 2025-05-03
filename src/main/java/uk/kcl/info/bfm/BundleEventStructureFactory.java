@@ -1,5 +1,8 @@
 package uk.kcl.info.bfm;
 
+import com.google.common.base.Preconditions;
+
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,11 +46,53 @@ public class BundleEventStructureFactory {
     }
 
     public void addConflict(Event event1, Event event2) {
-        this.bes.addConflict(event1, event2);
+        Set<Event> allEvents = new HashSet<>(this.bes.getAllEvents());
+        Preconditions.checkArgument(allEvents.contains(event1), event1 + " does not belong to this bundle event structure!");
+        Preconditions.checkArgument(allEvents.contains(event2), event2 + " does not belong to this bundle event structure!");
+        this.bes.getConflictSet().addConflict(event1, event2);
     }
 
-    public void addConflict(ConflictRelation conflictRelation) {
-        this.bes.addConflict(conflictRelation);
+    public void addConflicts(Event event1, Collection<Event> group) {
+        Set<Event> allEvents = new HashSet<>(this.bes.getAllEvents());
+        Preconditions.checkArgument(allEvents.contains(event1), event1 + " does not belong to this bundle event structure!");
+        Preconditions.checkArgument(allEvents.containsAll(group), "All events of a conflict should belong to the bundle event structure!");
+        this.bes.getConflictSet().addConflicts(event1, group);
+    }
+
+    public void addConflicts(Collection<?> group1, Collection<?> group2) {
+        Set<Event> allEvents = new HashSet<>(this.bes.getAllEvents());
+
+        Set<Event> events1 = toEventSet(group1, allEvents);
+        Set<Event> events2 = toEventSet(group2, allEvents);
+
+        this.bes.getConflictSet().addConflicts(events1, events2);
+    }
+
+    private Set<Event> toEventSet(Collection<?> group, Set<Event> allEvents) {
+        Set<Event> events = new HashSet<>();
+        for (Object o : group) {
+            Event e;
+            if (o instanceof Event) {
+                e = (Event) o;
+            } else if (o instanceof String) {
+                e = new Event((String) o);
+            } else {
+                throw new IllegalArgumentException(
+                        "Conflict collections must contain only Event or String elements.");
+            }
+            Preconditions.checkArgument(allEvents.contains(e),
+                    "All events of a conflict should belong to the bundle event structure!");
+            events.add(e);
+        }
+        return events;
+    }
+
+    public void addConflicts(ConflictSet set) {
+        Set<Event> allEvents = new HashSet<>(this.bes.getAllEvents());
+        Preconditions.checkArgument(allEvents.containsAll(set.getAllEvents()),
+                "All events of a conflict should belong to the bundle event structure!");
+
+        this.bes.getConflictSet().addConflicts(set);
     }
 
     public BundleEventStructure build() {

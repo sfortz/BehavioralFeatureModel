@@ -53,20 +53,22 @@
 
 	<conflicts>
 		<conflict>
-			<event id="liDet"/>
-			<event id="move" />
+			<events>
+				<event id="liDet"/>
+				<event id="caDet"/>
+				<event id="goAround"/>
+			</events>
+			<events>
+				<event id="move"/>
+			</events>
 		</conflict>
 		<conflict>
-			<event id="caDet"/>
-			<event id="move" />
-		</conflict>
-		<conflict>
-			<event id="goAround"/>
-			<event id="move" />
-		</conflict>
-		<conflict>
-			<event id="liDet"/>
-			<event id="caDet" />
+			<events>
+				<event id="liDet"/>
+			</events>
+			<events>
+				<event id="caDet"/>
+			</events>
 		</conflict>
 	</conflicts>
 </bes>

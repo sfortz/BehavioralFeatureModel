@@ -3,6 +3,7 @@ package uk.kcl.info.bfm;
 import java.util.*;
 
 public interface BundleEventStructure {
+
     Iterator<Event> events();
 
     List<Event> getAllEvents();
@@ -11,15 +12,11 @@ public interface BundleEventStructure {
 
     Iterator<CausalityRelation> causalities();
 
-    Iterator<ConflictRelation> conflicts();
+    ConflictSet getConflictSetCopy();
 
     Iterator<CausalityRelation> getAllCausalitiesOfEvent(Event event);
 
     CausalityRelation getCausality(Set<Event> bundle, Event event);
-
-    ConflictRelation getConflict(Event var1, Event var2);
-
-    Set<ConflictRelation> getAllConflictsOfEvent(Event var1);
 
     Iterator<CausalityRelation> getOutgoingCausalities(Event var1);
 
@@ -28,6 +25,8 @@ public interface BundleEventStructure {
     Iterator<CausalityRelation> getIncomingCausalities(Event var1);
 
     int getIncomingCausalityCount(Event var1);
+
+    Set<Event> getAllConflictsOfEvent(Event event);
 
     Set<Event> getInitialEvents();
 
@@ -39,6 +38,6 @@ public interface BundleEventStructure {
 
     int getConflictsCount();
 
-    boolean isInConflict(Event var1, Event var2);
+    boolean areInConflict(Event var1, Event var2);
 
 }

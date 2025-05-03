@@ -123,7 +123,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
         }
     }
 
-    void addFeature(Event event, Feature<?> feature, FExpression fexpr) {
+    protected void addFeature(Event event, Feature<?> feature, FExpression fexpr) {
         Preconditions.checkNotNull(event, "Event may not be null!");
         Preconditions.checkNotNull(feature, "Feature may not be null!");
         this.features.put(event, getFeatureFromFM((F) feature));

@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import static uk.kcl.info.bfm.io.xml.BehavioralFeatureModelHandler.*;
+import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.CONFLICTS_TAG;
+import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.CONFLICT_TAG;
 import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.EVENTS_TAG;
 import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.EVENT_TAG;
 import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.ID_ATTR;
@@ -65,7 +67,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
                 this.printCausalities(xtw, bf);
             }
             if (bf.getConflictsCount() > 0) {
-                this.printConflicts(xtw, bf.getConflicts().iterator());
+                this.printConflicts(xtw, bf.getRootConflictSetCopy());
             }
 
             xtw.writeEndElement();
@@ -121,44 +123,6 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         xtw.writeEndElement();
     }
 
-    /*
-    @Override
-    public void printExclusions(XMLStreamWriter xtw, List<ExclusionConstraint> exclusions) throws XMLStreamException {
-        xtw.writeStartElement(EXCLUSIONS_TAG);
-        for (ExclusionConstraint constraint : exclusions) {
-            printElement(xtw, constraint);
-        }
-        xtw.writeEndElement();
-    }
-
-    @Override
-    public void printRequirements(XMLStreamWriter xtw, List<RequirementConstraint> requirements) throws XMLStreamException {
-        xtw.writeStartElement(REQUIREMENTS_TAG);
-        for (RequirementConstraint constraint : requirements) {
-            printElement(xtw, constraint);
-        }
-        xtw.writeEndElement();
-    }
-
-    @Override
-    public void printElement(XMLStreamWriter xtw, ExclusionConstraint constraint) throws XMLStreamException {
-        LOG.trace("Printing exclusion element");
-        xtw.writeStartElement(EXCLUDE_TAG);
-        xtw.writeAttribute(CONFLICT1_ATTR, constraint.getLeft().getLiteral());
-        xtw.writeAttribute(CONFLICT2_ATTR, constraint.getRight().getLiteral());
-        xtw.writeEndElement();
-    }
-
-    @Override
-    public void printElement(XMLStreamWriter xtw, RequirementConstraint constraint) throws XMLStreamException {
-        LOG.trace("Printing requirement element");
-        xtw.writeStartElement(REQUIRES_TAG);
-        xtw.writeAttribute(FEATURE_ATTR, constraint.getRight().getLiteral());
-        xtw.writeAttribute(DEPENDENCY_ATTR, constraint.getLeft().getLiteral());
-        xtw.writeEndElement();
-    }
-*/
-
     @Override
     public void printCausalities(XMLStreamWriter xtw, BehavioralFeature bf) throws XMLStreamException {
         LOG.trace("Starting Causalities");
@@ -193,25 +157,39 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
         xtw.writeEndElement();
     }
 
-
     @Override
-    public void printConflicts(XMLStreamWriter xtw, Iterator<ConflictRelation> iterator) throws XMLStreamException {
+    public void printConflicts(XMLStreamWriter xtw, ConflictSet conflicts) throws XMLStreamException {
         LOG.trace("Starting Conflicts");
         xtw.writeStartElement(CONFLICTS_TAG);
-        while(iterator.hasNext()) {
-            ConflictRelation conflict = iterator.next();
+        Set<ConflictSet.Biclique> cliques = conflicts.findMinimalBicliqueEdgeCover();
+
+        for (ConflictSet.Biclique c: cliques){
             LOG.trace("Printing conflict element");
             xtw.writeStartElement(CONFLICT_TAG);
-            xtw.writeStartElement(EVENT_TAG);
-            xtw.writeAttribute(ID_ATTR, conflict.getEvent1().getName());
-            xtw.writeCharacters(" ");
+
+            // Printing Set A
+            xtw.writeStartElement(EVENTS_TAG);
+            for(Event e: c.getA()){
+                xtw.writeStartElement(EVENT_TAG);
+                xtw.writeAttribute(ID_ATTR, e.getName());
+                xtw.writeCharacters(" ");
+                xtw.writeEndElement();
+            }
             xtw.writeEndElement();
-            xtw.writeStartElement(EVENT_TAG);
-            xtw.writeAttribute(ID_ATTR, conflict.getEvent2().getName());
-            xtw.writeCharacters(" ");
+
+            // Printing Set B
+            xtw.writeStartElement(EVENTS_TAG);
+            for(Event e: c.getB()){
+                xtw.writeStartElement(EVENT_TAG);
+                xtw.writeAttribute(ID_ATTR, e.getName());
+                xtw.writeCharacters(" ");
+                xtw.writeEndElement();
+            }
             xtw.writeEndElement();
+
             xtw.writeEndElement();
         }
+
         xtw.writeEndElement();
         LOG.trace("End Conflicts");
     }

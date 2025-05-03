@@ -3,27 +3,27 @@
     <start>State_0</start>
     <states>
         <state id="State_2">
-            <transition action="goAround" target="State_5" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="goAround" target="State_5" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
         </state>
         <state id="State_20"></state>
         <state id="State_3">
-            <transition action="goAround" target="State_6" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="goAround" target="State_6" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_10">
-            <transition action="goAround" target="State_13" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="goAround" target="State_13" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_21"></state>
         <state id="State_4">
-            <transition action="caDet" target="State_7" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="caDet" target="State_7" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
             <transition action="move" target="State_8" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
-            <transition action="liDet" target="State_10" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="liDet" target="State_10" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_11">
-            <transition action="charge" target="State_21" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="charge" target="State_21" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
         </state>
         <state id="State_22"></state>
         <state id="State_5">
-            <transition action="clean" target="State_11" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="clean" target="State_11" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
         </state>
         <state id="State_12">
             <transition action="charge" target="State_20" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
@@ -31,18 +31,18 @@
         <state id="State_23"></state>
         <state id="State_0">
             <transition action="move" target="State_1" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
-            <transition action="caDet" target="State_2" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
-            <transition action="liDet" target="State_3" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="caDet" target="State_2" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
+            <transition action="liDet" target="State_3" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
             <transition action="map" target="State_4" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
         </state>
         <state id="State_1">
             <transition action="clean" target="State_9" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
         </state>
         <state id="State_6">
-            <transition action="clean" target="State_15" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="clean" target="State_15" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_7">
-            <transition action="goAround" target="State_16" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="goAround" target="State_16" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
         </state>
         <state id="State_8">
             <transition action="clean" target="State_12" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
@@ -51,21 +51,21 @@
             <transition action="charge" target="State_14" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Cleaning &amp;&amp; (Lidar || Camera) &amp;&amp; (!Lidar || !Camera) &amp;&amp; Robot)"></transition>
         </state>
         <state id="State_17">
-            <transition action="charge" target="State_22" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="charge" target="State_22" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_18">
-            <transition action="charge" target="State_23" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="charge" target="State_23" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
         </state>
         <state id="State_19"></state>
         <state id="State_13">
-            <transition action="clean" target="State_17" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="clean" target="State_17" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_14"></state>
         <state id="State_15">
-            <transition action="charge" target="State_19" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; !Camera &amp;&amp; Robot)"></transition>
+            <transition action="charge" target="State_19" fexpression="(ObstacleDetection &amp;&amp; !Mapping &amp;&amp; Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; !Camera)"></transition>
         </state>
         <state id="State_16">
-            <transition action="clean" target="State_18" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Camera &amp;&amp; Robot)"></transition>
+            <transition action="clean" target="State_18" fexpression="(ObstacleDetection &amp;&amp; Mapping &amp;&amp; !Lidar &amp;&amp; Cleaning &amp;&amp; Robot &amp;&amp; Camera)"></transition>
         </state>
     </states>
 </fts>

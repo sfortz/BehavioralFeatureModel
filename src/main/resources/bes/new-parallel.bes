@@ -20,9 +20,6 @@
         </causality>
         <causality target="d">
             <bundle>
-                <event id="c"> </event>
-            </bundle>
-            <bundle>
                 <event id="a"> </event>
             </bundle>
             <bundle>
@@ -37,16 +34,14 @@
     </causalities>
     <conflicts>
         <conflict>
-            <event id="a"> </event>
-            <event id="e"> </event>
-        </conflict>
-        <conflict>
-            <event id="b"> </event>
-            <event id="e"> </event>
-        </conflict>
-        <conflict>
-            <event id="d"> </event>
-            <event id="e"> </event>
+            <events>
+                <event id="a"> </event>
+                <event id="b"> </event>
+                <event id="d"> </event>
+            </events>
+            <events>
+                <event id="e"> </event>
+            </events>
         </conflict>
     </conflicts>
 </bes>

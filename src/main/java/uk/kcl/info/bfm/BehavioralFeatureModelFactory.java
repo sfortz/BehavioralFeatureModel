@@ -3,12 +3,13 @@ package uk.kcl.info.bfm;
 import be.vibes.fexpression.FExpression;
 import be.vibes.solver.*;
 import be.vibes.solver.XMLModelFactory;
+import com.google.common.base.Preconditions;
 import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
 import java.util.*;
 
 public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFeature, FeatureModel<BehavioralFeature>> {
 
-    private Map<Event, BehavioralFeature> featureMap = new HashMap<>();
+    private final Map<Event, BehavioralFeature> featureMap = new HashMap<>();
 
     public BehavioralFeatureModelFactory() {
         super(BehavioralFeatureModel::new);
@@ -113,44 +114,88 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
         this.addConflict(featName, new Event(event1), new Event(event2));
     }
 
-    public void addConflict(String featName, Event event1, Event event2) {
-        BehavioralFeature feature = this.getFeature(featName);
-        if(feature != null){
-            feature.addConflict(event1, event2);
-        } else {
-            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
-        }
-    }
-
-    public void addConflict(String featName, ConflictRelation conflictRelation) {
-        BehavioralFeature feature = this.getFeature(featName);
-        if(feature != null){
-            feature.addConflict(conflictRelation);
-        } else {
-            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
-        }
-    }
-
     public void addConflict(BehavioralFeature feat, String event1, String event2) {
         this.addConflict(feat, new Event(event1), new Event(event2));
     }
 
-    public void addConflict(BehavioralFeature feat, Event event1, Event event2) {
-        BehavioralFeature feature = this.getFeature(feat.getFeatureName());
+    public void addConflict(String featName, Event event1, Event event2) {
+        BehavioralFeature feature = this.getFeature(featName);
         if(feature != null){
-            feat.addConflict(event1, event2);
+            this.addConflict(feature, event1, event2);
         } else {
             throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
         }
     }
 
-    public void addConflict(BehavioralFeature feat, ConflictRelation conflictRelation) {
+    public void addConflict(BehavioralFeature feat, Event event1, Event event2) {
+
+        Set<Event> ev = feat.getAllRecursiveEvents();
+        Preconditions.checkArgument(ev.contains(event1), event1 + " does not belong to this behavioral feature model or any of its subtree!");
+        Preconditions.checkArgument(ev.contains(event2), event2 + " does not belong to this behavioral feature model or any of its subtree!");
+
         BehavioralFeature feature = this.getFeature(feat.getFeatureName());
         if(feature != null){
-            feat.addConflict(conflictRelation);
+            feat.getConflictSet().addConflict(event1, event2);
         } else {
             throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
         }
+    }
+
+    public void addConflicts(BehavioralFeature feat, Event event1, Collection<?> group) {
+        Set<Event> allEvents = feat.getAllRecursiveEvents();
+        Preconditions.checkArgument(allEvents.contains(event1), event1 + " does not belong to this BFM!");
+        Set<Event> events = toEventSet(group, allEvents);
+
+        BehavioralFeature feature = this.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.getConflictSet().addConflicts(event1, events);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
+        }
+    }
+
+    public void addConflicts(BehavioralFeature feat, Collection<?> group1, Collection<?> group2) {
+        Set<Event> allEvents = feat.getAllRecursiveEvents();
+        Set<Event> events1 = toEventSet(group1, allEvents);
+        Set<Event> events2 = toEventSet(group2, allEvents);
+
+        BehavioralFeature feature = this.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.getConflictSet().addConflicts(events1, events2);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
+        }
+    }
+
+    public void addConflicts(BehavioralFeature feat, ConflictSet set) {
+        Set<Event> allEvents = feat.getAllRecursiveEvents();
+        Preconditions.checkArgument(allEvents.containsAll(set.getAllEvents()), "All events of a conflict should belong to the BFM!");
+
+        BehavioralFeature feature = this.getFeature(feat.getFeatureName());
+        if(feature != null){
+            feat.getConflictSet().addConflicts(set);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
+        }
+    }
+
+    private static Set<Event> toEventSet(Collection<?> group, Set<Event> allEvents) {
+        Set<Event> events = new HashSet<>();
+        for (Object o : group) {
+            Event e;
+            if (o instanceof Event) {
+                e = (Event) o;
+            } else if (o instanceof String) {
+                e = new Event((String) o);
+            } else {
+                throw new IllegalArgumentException(
+                        "Conflict collections must contain only Event or String elements.");
+            }
+            Preconditions.checkArgument(allEvents.contains(e),
+                    "All events of a conflict should belong to the BFM!");
+            events.add(e);
+        }
+        return events;
     }
 
     public Map<Event, BehavioralFeature> getFeatureMap() {

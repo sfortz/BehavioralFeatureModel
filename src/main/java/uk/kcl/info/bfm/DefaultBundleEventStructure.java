@@ -8,21 +8,21 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
     private final Map<String, Event> events;
     private final Set<CausalityRelation> allCausalities;
-    private final Set<ConflictRelation> allConflicts;
+    private final ConflictSet allConflicts;
     private final Table<Set<Event>, Event, CausalityRelation> causalities;
 
-    DefaultBundleEventStructure() {
+    protected DefaultBundleEventStructure() {
         this.events = new HashMap<>();
         this.allCausalities = new HashSet<>();
-        this.allConflicts = new HashSet<>();
+        this.allConflicts = new ConflictSet();
         this.causalities = HashBasedTable.create();
     }
 
-    Event addEvent(String eventName) {
+    protected Event addEvent(String eventName) {
         return this.events.computeIfAbsent(eventName, Event::new);
     }
 
-    CausalityRelation addCausality(Set<Event> bundle, Event target) {
+    protected CausalityRelation addCausality(Set<Event> bundle, Event target) {
         Preconditions.checkNotNull(bundle, "Bundle may not be null!");
         Preconditions.checkNotNull(target, "Targeted event may not be null!");
         Preconditions.checkArgument(this.events.containsValue(target), "Event does not belong to this bundle event structure!");
@@ -41,26 +41,20 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return causality;
     }
 
-    CausalityRelation addCausality(CausalityRelation causality) {
+    protected CausalityRelation addCausality(CausalityRelation causality) {
         Preconditions.checkNotNull(causality, "Causality may not be null!");
         return addCausality(causality.getBundle(), causality.getTarget());
     }
 
-    ConflictRelation addConflict(Event event1, Event event2) {
-        Preconditions.checkNotNull(event1, "Event may not be null!");
-        Preconditions.checkNotNull(event2, "Event may not be null!");
-        Preconditions.checkArgument(this.events.containsValue(event1), event1 + " does not belong to this bundle event structure!");
-        Preconditions.checkArgument(this.events.containsValue(event2), event2 + " does not belong to this bundle event structure!");
-
-        ConflictRelation conflict = new ConflictRelation(event1, event2);
-        this.allConflicts.add(conflict);
-
-        return conflict;
+    protected ConflictSet getConflictSet(){
+        return this.allConflicts;
     }
 
-    ConflictRelation addConflict(ConflictRelation conflict) {
-        Preconditions.checkNotNull(conflict, "Conflict may not be null!");
-        return addConflict(conflict.getEvent1(), conflict.getEvent2());
+    @Override
+    public ConflictSet getConflictSetCopy() {
+        ConflictSet copy = new ConflictSet();
+        copy.addConflicts(this.allConflicts);
+        return copy;
     }
 
     @Override
@@ -81,11 +75,6 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     @Override
     public Iterator<CausalityRelation> causalities() {
         return this.allCausalities.iterator();
-    }
-
-    @Override
-    public Iterator<ConflictRelation> conflicts() {
-        return this.allConflicts.iterator();
     }
 
     @Override
@@ -137,28 +126,8 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
-    public ConflictRelation getConflict(Event var1, Event var2) {
-
-        ConflictRelation conflict = new ConflictRelation(var1, var2);
-        if(this.allConflicts.contains(conflict)){
-            return conflict;
-        }else{
-            return null;
-        }
-    }
-
-    @Override
-    public Set<ConflictRelation> getAllConflictsOfEvent(Event event) {
-
-        Set<ConflictRelation> conflicts = new HashSet<>();
-
-        for(ConflictRelation conflict: this.allConflicts){
-            if(conflict.getEvent1().equals(event) || conflict.getEvent2().equals(event)){
-                conflicts.add(conflict);
-            }
-        }
-
-        return conflicts;
+    public Set<Event> getAllConflictsOfEvent(Event event) {
+        return this.allConflicts.getConflicts(event);
     }
 
     @Override
@@ -175,7 +144,7 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
     protected boolean isConflictFree(Event e, Set<Event> config) {
         for (Event other : config) {
-            if (this.isInConflict(e, other)) {
+            if (this.areInConflict(e, other)) {
                 return false;
             }
         }
@@ -237,12 +206,12 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
     @Override
     public int getConflictsCount() {
-        return this.allConflicts.size();
+        return allConflicts.size();
     }
 
     @Override
-    public boolean isInConflict(Event var1, Event var2){
-        return this.allConflicts.contains(new ConflictRelation(var1, var2));
+    public boolean areInConflict(Event var1, Event var2){
+        return this.allConflicts.areInConflict(var1, var2);
     }
 
     protected Set<Set<Event>> getAllBundles(Event var1){

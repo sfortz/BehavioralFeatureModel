@@ -12,13 +12,13 @@ import java.util.*;
 public class BehavioralFeature extends Feature<BehavioralFeature> {
     private final Map<Event, FExpression> events;
     private final Set<CausalityRelation> causalities;
-    private final Set<ConflictRelation> conflicts;
+    private final ConflictSet conflicts;
 
     public BehavioralFeature(String name, Map<Event, FExpression> events) {
         super(name);
         this.events = events;
         this.causalities = new HashSet<>();
-        this.conflicts = new HashSet<>();
+        this.conflicts = new ConflictSet();
     }
 
     public BehavioralFeature(String name) {
@@ -156,31 +156,18 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return addCausality(causality.getBundle(), causality.getTarget());
     }
 
-    protected ConflictRelation addConflict(Event event1, Event event2) {
-        Preconditions.checkNotNull(event1, "Event may not be null!");
-        Preconditions.checkNotNull(event2, "Event may not be null!");
-
-        Set<Event> ev = this.getAllRecursiveEvents();
-        Preconditions.checkArgument(ev.contains(event1), event1 + " does not belong to this behavioral feature model or any of its subtree!");
-        Preconditions.checkArgument(ev.contains(event2), event2 + " does not belong to this behavioral feature model or any of its subtree!");
-
-        ConflictRelation conflict = new ConflictRelation(event1, event2);
-        this.conflicts.add(conflict);
-
-        return conflict;
+    ConflictSet getConflictSet(){
+        return this.conflicts;
     }
 
-    protected ConflictRelation addConflict(ConflictRelation conflict) {
-        Preconditions.checkNotNull(conflict, "Conflict may not be null!");
-        return addConflict(conflict.getEvent1(), conflict.getEvent2());
+    public ConflictSet getRootConflictSetCopy() {
+        ConflictSet copy = new ConflictSet();
+        copy.addConflicts(this.conflicts);
+        return copy;
     }
 
     public Set<CausalityRelation> getCausalities() {
         return causalities;
-    }
-
-    public Set<ConflictRelation> getConflicts() {
-        return conflicts;
     }
 
     public Map<Event, FExpression> getEventMap() {
@@ -235,17 +222,18 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return causes;
     }
 
-    public Set<ConflictRelation> getAllRecursiveConflicts() {
-        Set<ConflictRelation> conflicts = new HashSet<>(this.conflicts);
+    public ConflictSet getAllRecursiveConflicts() {
+        ConflictSet allConflicts = new ConflictSet();
+        allConflicts.addConflicts(this.conflicts);
 
-        for (Group<BehavioralFeature> g : this.getChildren()) {
-            for(BehavioralFeature f: g.getFeatures()){
-                conflicts.addAll(f.getConflicts());
-                conflicts.addAll(f.getAllRecursiveConflicts());
-            }
-        }
+        this.getChildren().stream()
+                .flatMap(group -> group.getFeatures().stream())
+                .forEach(feature -> {
+                    allConflicts.addConflicts(feature.getConflictSet());
+                    allConflicts.addConflicts(feature.getAllRecursiveConflicts());
+                });
 
-        return conflicts;
+        return allConflicts;
     }
 
     public FExpression getFExpression(Event event) {
@@ -275,7 +263,7 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
     }
 
     public int getConflictsCount() {
-        return this.conflicts.size();
+        return conflicts.size();
     }
 
     //TODO: Override toString, equals and hashcode to Add the behavioural part

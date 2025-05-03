@@ -36,10 +36,10 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
     protected void handleStartEventTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing event");
         String id = element.getAttributeByName(QName.valueOf(ID_ATTR)).getValue();
-        if (!bundleStack.isEmpty()) {
+        if (bundleStack != null) {
             // If inside a bundle, add to the current bundle
             bundleStack.peek().add(id);
-        } else if (!conflictStack.isEmpty()) {
+        } else if (conflictStack != null) {
             // If inside a conflict, add to the current conflict
             conflictStack.peek().add(id);
         } else {

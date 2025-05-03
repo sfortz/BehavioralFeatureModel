@@ -4,18 +4,21 @@ import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.FeatureModelFactory;
+import be.vibes.solver.Sat4JSolverFacade;
 import be.vibes.ts.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
-import uk.kcl.info.bfm.ConflictPartition;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Translator {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Translator.class);
     static BiMap<Set<Event>, String> configToStateMap;
 
     private static void setConfigStateMapping(TreeMap<Integer, Set<Set<Event>>> configurations) {
@@ -81,6 +84,22 @@ public class Translator {
         return factory.build();
     }
 
+    private static boolean isPredecessor(TransitionSystem ts, Action source, Action target) {
+
+        for (Iterator<Transition> it1 = ts.getTransitions(source); it1.hasNext(); ) {
+            Transition t1 = it1.next();
+            State s = t1.getTarget();
+            for (Iterator<Transition> it2 = ts.getOutgoing(s); it2.hasNext(); ) {
+                Transition t2 = it2.next();
+                if (t2.getAction().equals(target)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private static boolean isReachable(TransitionSystem ts, State current, Action destination, Set<State> visited) {
         if (visited.contains(current)) {
             return false;
@@ -126,7 +145,8 @@ public class Translator {
         }
 
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
-        Set<ConflictRelation> conflicts = new HashSet<>();
+        ConflictSet conflicts = new ConflictSet();
+        //Set<ConflictRelation> conflicts = new HashSet<>();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
 
         for (Map.Entry<Action, Event> entry1: eventMap.entrySet()){
@@ -146,11 +166,11 @@ public class Translator {
                     // Conflict relation
                     if (!a1ToA2 && !a2ToA1) {
                         factory.addConflict(e1, e2);
-                        conflicts.add(new ConflictRelation(e1, e2));
+                        conflicts.addConflict(e1, e2);
                     }
 
                     // Causality relation (candidate)
-                    if (a2ToA1 && !a1ToA2) {
+                    if (isPredecessor(ts, a2, a1) && !a1ToA2) {
                         bundle.add(e2);
                     }
                 }
@@ -163,7 +183,7 @@ public class Translator {
 
         // Step 4: Optimize non-conflicting bundle splitting
         candidateBundles = candidateBundles.stream()
-                .flatMap(causality -> ConflictPartition.findMaximalCliques(causality.getBundle(), conflicts)
+                .flatMap(causality -> conflicts.findMaximalCliques(causality.getBundle())
                         .stream().map(newBundle -> new CausalityRelation(newBundle, causality.getTarget())))
                 .collect(Collectors.toSet());
 
@@ -171,6 +191,30 @@ public class Translator {
 
         return factory.build();
     }
+
+
+    private static boolean isPredecessor(FeaturedTransitionSystem fts, Action source, Action target) {
+
+        for (Iterator<Transition> it1 = fts.getTransitions(source); it1.hasNext(); ) {
+            Transition t1 = it1.next();
+            FExpression fexpr1 = fts.getFExpression(t1);
+            State s = t1.getTarget();
+            for (Iterator<Transition> it2 = fts.getOutgoing(s); it2.hasNext(); ) {
+                Transition t2 = it2.next();
+
+                if (t2.getAction().equals(target)) {
+                    FExpression fexpr2 = fts.getFExpression(t2);
+                    FExpression combined = fexpr1.and(fexpr2).applySimplification();
+                    if (!combined.isFalse()) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     private static FExpression isReachable(FeaturedTransitionSystem fts, State current, FExpression f1, Action destination, Set<State> visited) {
         if (visited.contains(current)) {
@@ -255,10 +299,7 @@ public class Translator {
             factory.addCausality(c.getBundle(),c.getTarget());
         }
 
-        for (Iterator<ConflictRelation> it = bes.conflicts(); it.hasNext(); ) {
-            ConflictRelation c = it.next();
-            factory.addConflict(c.getEvent1(), c.getEvent2());
-        }
+        factory.addConflicts(bes.getConflictSetCopy());
 
         return factory.build();
     }
@@ -321,8 +362,16 @@ public class Translator {
         Map<Event, F> featureMap = new HashMap<>();
         Map<Transition, Event> tMap = new HashMap<>();
 
+        int totAct = fts.getActionsCount();
+        LOG.trace("FTS Action count: {}", totAct);
+        LOG.trace("FTS Transitions count: {}", fts.getTransitionsCount());
+
+        int i = 0;
+        LOG.trace("************************** STEP 1 ***************************");
+
         // Step 1: Collect actions & add events
         for (Iterator<Action> it = fts.actions(); it.hasNext(); ) {
+
             Action a = it.next();
             Event e = new Event(a.getName());
 
@@ -340,11 +389,19 @@ public class Translator {
             BehavioralFeature bf = factory.getFeature(ancestor.getFeatureName());
             featureMap.put(e, ancestor);
             factory.addEvent(bf, e.getName(), fexpr.applySimplification().toCnf());
+
+            i++;
+            LOG.trace("Actions treated: " + i + "/" + totAct);
         }
 
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
-        Set<ConflictRelation> conflicts = new HashSet<>();
+        LOG.trace("************************** STEP 2 & 3 ***************************");
+        //Set<ConflictRelation> conflicts = new HashSet<>();
+        ConflictSet conflicts = new ConflictSet();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
+
+        i = 0;
+        int nbTrans = tMap.size();
 
         for (Map.Entry<Transition, Event> entry1: tMap.entrySet()){
             Action a1 = entry1.getKey().getAction();
@@ -365,11 +422,11 @@ public class Translator {
                     if (!a1ToA2 && !a2ToA1) {
                         F lca = fm.getLeastCommonAncestor(featureMap.get(e1),featureMap.get(e2));
                         factory.addConflict(lca.getFeatureName(), e1, e2);
-                        conflicts.add(new ConflictRelation(e1, e2));
+                        conflicts.addConflict(e1, e2);
                     }
 
                     // Causality relation (candidate)
-                    if (a2ToA1 && !a1ToA2) {
+                    if (isPredecessor(fts, a2, a1) && !a1ToA2) {
                         bundle.add(e2);
                     }
                 }
@@ -377,21 +434,32 @@ public class Translator {
             if (!bundle.isEmpty()) {
                 candidateBundles.add(new CausalityRelation(bundle, e1));
             }
+
+            i++;
+            LOG.trace("Transitions treated: {}/{}", i, nbTrans);
         }
 
         // Step 4: Non-conflicting bundle splitting
+        LOG.trace("************************** STEP 4 ***************************");
+        i = 0;
+
         candidateBundles = candidateBundles.stream()
-                .flatMap(causality -> ConflictPartition.findMaximalCliques(causality.getBundle(), conflicts)
+                .flatMap(causality -> conflicts.findMaximalCliques(causality.getBundle())
                         .stream().map(newBundle -> new CausalityRelation(newBundle, causality.getTarget())))
                 .collect(Collectors.toSet());
 
+        int nbCandidates = candidateBundles.size();
         for(CausalityRelation causality: candidateBundles){
             F lca = featureMap.get(causality.getTarget());
             for(Event e2: causality.getBundle()){
                 lca = fm.getLeastCommonAncestor(lca,featureMap.get(e2));
             }
             factory.addCausality(lca.getFeatureName(), causality);
+            i++;
+            LOG.trace("Candidates causalities treated: {}/{}", i, nbCandidates);
         }
+
+        LOG.trace("*****************************************************");
 
         BehavioralFeatureModel bfm = factory.build();
 

@@ -133,33 +133,13 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     }
 
     @Override
-    public boolean isInConflict(Event var1, Event var2) {
-        return this.getRootFeature().getAllRecursiveConflicts().contains(new ConflictRelation(var1, var2));
+    public boolean areInConflict(Event var1, Event var2) {
+        return this.getRootFeature().getAllRecursiveConflicts().areInConflict(var1, var2);
     }
 
     @Override
-    public Set<ConflictRelation> getAllConflictsOfEvent(Event event) {
-
-        Set<ConflictRelation> conflicts = new HashSet<>();
-
-        for(ConflictRelation conflict: this.getRootFeature().getAllRecursiveConflicts()){
-            if(conflict.getEvent1().equals(event) || conflict.getEvent2().equals(event)){
-                conflicts.add(conflict);
-            }
-        }
-
-        return conflicts;
-    }
-
-    @Override
-    public ConflictRelation getConflict(Event var1, Event var2) {
-
-        ConflictRelation conflict = new ConflictRelation(var1, var2);
-        if(this.getRootFeature().getAllRecursiveConflicts().contains(conflict)){
-            return conflict;
-        }else{
-            return null;
-        }
+    public Set<Event> getAllConflictsOfEvent(Event event) {
+        return this.getRootFeature().getAllRecursiveConflicts().getConflicts(event);
     }
 
     @Override
@@ -172,8 +152,8 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     }
 
     @Override
-    public Iterator<ConflictRelation> conflicts() {
-        return this.getRootFeature().getAllRecursiveConflicts().iterator();
+    public ConflictSet getConflictSetCopy() {
+        return this.getRootFeature().getRootConflictSetCopy();
     }
 
     @Override
@@ -225,7 +205,7 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     //TODO: Check correctness
     protected boolean isConflictFree(Event e, Set<Event> config) {
         for (Event other : config) {
-            if (this.isInConflict(e, other)) {
+            if (this.areInConflict(e, other)) {
                 return false;
             }
         }
@@ -308,7 +288,7 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
 
     @Override
     public int getConflictsCount() {
-        return this.getRootFeature().getAllRecursiveConflicts().size();
+        return this.getRootFeature().getAllRecursiveFeatures().stream().mapToInt(BehavioralFeature::getConflictsCount).sum();
     }
 
     @Override

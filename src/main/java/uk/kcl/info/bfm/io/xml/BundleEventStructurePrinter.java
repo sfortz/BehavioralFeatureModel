@@ -2,7 +2,7 @@ package uk.kcl.info.bfm.io.xml;
 
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.CausalityRelation;
-import uk.kcl.info.bfm.ConflictRelation;
+import uk.kcl.info.bfm.ConflictSet;
 import uk.kcl.info.bfm.Event;
 import java.util.Iterator;
 import java.util.Set;
@@ -26,7 +26,7 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
         this.bes = bes;
         this.printEvents(xtw, bes.events());
         this.printCausalities(xtw);
-        this.printConflicts(xtw, bes.conflicts());
+        this.printConflicts(xtw, bes.getConflictSetCopy());
         xtw.writeEndElement();
         this.bes = null;
     }
@@ -80,23 +80,37 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
     }
 
     @Override
-    public void printConflicts(XMLStreamWriter xtw, Iterator<ConflictRelation> iterator) throws XMLStreamException {
+    public void printConflicts(XMLStreamWriter xtw, ConflictSet conflicts) throws XMLStreamException {
         LOG.trace("Starting Conflicts");
         xtw.writeStartElement(CONFLICTS_TAG);
-        while(iterator.hasNext()) {
-            ConflictRelation conflict = iterator.next();
+        Set<ConflictSet.Biclique> cliques = conflicts.findMinimalBicliqueEdgeCover();
+        for (ConflictSet.Biclique c: cliques){
             LOG.trace("Printing conflict element");
             xtw.writeStartElement(CONFLICT_TAG);
-            xtw.writeStartElement(EVENT_TAG);
-            xtw.writeAttribute(ID_ATTR, conflict.getEvent1().getName());
-            xtw.writeCharacters(" ");
+
+            // Printing Set A
+            xtw.writeStartElement(EVENTS_TAG);
+            for(Event e: c.getA()){
+                xtw.writeStartElement(EVENT_TAG);
+                xtw.writeAttribute(ID_ATTR, e.getName());
+                xtw.writeCharacters(" ");
+                xtw.writeEndElement();
+            }
             xtw.writeEndElement();
-            xtw.writeStartElement(EVENT_TAG);
-            xtw.writeAttribute(ID_ATTR, conflict.getEvent2().getName());
-            xtw.writeCharacters(" ");
+
+            // Printing Set B
+            xtw.writeStartElement(EVENTS_TAG);
+            for(Event e: c.getB()){
+                xtw.writeStartElement(EVENT_TAG);
+                xtw.writeAttribute(ID_ATTR, e.getName());
+                xtw.writeCharacters(" ");
+                xtw.writeEndElement();
+            }
             xtw.writeEndElement();
+
             xtw.writeEndElement();
         }
+
         xtw.writeEndElement();
         LOG.trace("End Conflicts");
     }

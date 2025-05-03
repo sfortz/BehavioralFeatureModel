@@ -50,19 +50,16 @@
 			</bundle>
 		</causality>
 	</causalities>
-
 	<conflicts>
 		<conflict>
-			<event id="liDet"/>
-			<event id="move" />
-		</conflict>
-		<conflict>
-			<event id="caDet"/>
-			<event id="move" />
-		</conflict>
-		<conflict>
-			<event id="goAround"/>
-			<event id="move" />
+			<events>
+				<event id="liDet"/>
+				<event id="caDet"/>
+				<event id="goAround"/>
+			</events>
+			<events>
+				<event id="move"/>
+			</events>
 		</conflict>
 	</conflicts>
 </fes>

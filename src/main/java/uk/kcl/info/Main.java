@@ -1,15 +1,17 @@
 package uk.kcl.info;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import be.vibes.fexpression.exception.DimacsFormatException;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.io.xml.XmlLoaders;
 import be.vibes.solver.io.xml.XmlSavers;
 import be.vibes.ts.FeaturedTransitionSystem;
-import be.vibes.ts.FeaturedTransitionSystemFactory;
 import be.vibes.ts.TransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
+import be.vibes.ts.io.dot.FeaturedTransitionSystemDotHandler;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
 import be.vibes.ts.io.dot.TransitionSystemDotPrinter;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
@@ -24,6 +26,12 @@ public class Main {
 
     public static void testts2bes() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
         String dirPath = "src/main/resources/";
+
+        File file1 = new File(dirPath + "ts/robot.ts");
+        TransitionSystem ts1 = XmlLoaderUtility.loadTransitionSystem(file1);
+        BundleEventStructure bes1 = Translator.ts2bes(ts1);
+        XmlSaverUtility.save(bes1, dirPath + "bes/new.bes");
+
         File file = new File(dirPath + "ts/robot-linear.ts");
         TransitionSystem ts = XmlLoaderUtility.loadTransitionSystem(file);
         BundleEventStructure bes = Translator.ts2bes(ts);
@@ -58,7 +66,7 @@ public class Main {
     public static void testfts2fes() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
         String dirPath = "src/main/resources/";
 
-        File fmFile = new File(dirPath + "bfm/fm2xml/robot.xml");
+        File fmFile = new File(dirPath + "fm/xml/robot.xml");
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
 
         File file0 = new File(dirPath + "fts/robot.fts");
@@ -117,7 +125,7 @@ public class Main {
 
         System.out.println("-- END --"); //TODO: Debug SAT4J Solver initialisation */
 
-        File fmFile = new File(dirPath + "bfm/fm2xml/robot.xml");
+        File fmFile = new File(dirPath + "fm/xml/robot.xml");
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
 
         File file0 = new File(dirPath + "fes/robot.fes");
@@ -156,7 +164,7 @@ public class Main {
     public static void testfts2bfm() throws TransitionSystemDefinitionException {
         String dirPath = "src/main/resources/";
 
-        File fmFile = new File(dirPath + "bfm/fm2xml/robot.xml");
+        File fmFile = new File(dirPath + "fm/xml/robot.xml");
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
 
         File file0 = new File(dirPath + "fts/robot.fts");
@@ -180,9 +188,8 @@ public class Main {
         File fileBFM0 = new File(dirPath + "bfm/robot.bfm");
         BehavioralFeatureModel bfm0 = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM0);
 
-        /*
         FeatureModel<?> fm0 =Translator.bfm2fm(bfm0);
-        File file0 = new File(dirPath + "bfm/fm2xml/new.xml");
+        File file0 = new File(dirPath + "fm/xml/new.xml");
         XmlSavers.save(fm0, file0);
 
         FeaturedTransitionSystem fts0 = Translator.bfm2fts(bfm0);
@@ -194,15 +201,18 @@ public class Main {
         FeaturedTransitionSystemDotPrinter printer0 = new FeaturedTransitionSystemDotPrinter(fts0, output0);
         printer0.printDot();
         printer0.flush();
-        XmlSaverUtility.save(fts0, dirPath + "fts/new-fromBFM.fts");*/
+        XmlSaverUtility.save(fts0, dirPath + "fts/new-fromBFM.fts");
 
-        /*  LINEAR  */
-
-        File fileBFM = new File(dirPath + "bfm/robot.bfm");
+        /*  LINEAR */
+        /*
+            TODO: Buggy since renaming implies moving events to their parents (e.g., liDet should be in root as it is
+             associated to lidet && mapping) */
+/*
+        File fileBFM = new File(dirPath + "bfm/robot-linear.bfm");
         BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM);
 
         FeatureModel<?> fm =Translator.bfm2fm(bfm);
-        File file = new File(dirPath + "bfm/fm2xml/new-linear.xml");
+        File file = new File(dirPath + "fm/xml/new-linear.xml");
         XmlSavers.save(fm, file);
 
         FeaturedTransitionSystem fts = Translator.bfm2fts(bfm);
@@ -214,19 +224,23 @@ public class Main {
         FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(fts, output);
         printer.printDot();
         printer.flush();
-        XmlSaverUtility.save(fts, dirPath + "fts/new-fromBFM-linear.fts");
+        XmlSaverUtility.save(fts, dirPath + "fts/new-fromBFM-linear.fts");*/
 
     }
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
-        //toDot();
-        testts2bes();
+        //testts2bes();
         testbes2ts();
-        testfts2fes();
+        //testfts2fes();
         testfes2fts();
-        testfts2bfm();
-        //testbfm2fts();
-        //testparallel();
+        //testfts2bfm();
+        testbfm2fts();
+        testparallel();
+
+        /*
+        for(Map.Entry<String,String> entry: getSystems().entrySet()){
+            testfts2bfm(entry.getValue(), entry.getKey());
+        }*/
     }
 
     public static void testparallel() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
@@ -238,17 +252,75 @@ public class Main {
     }
 
 
-    public static void toDot() throws TransitionSystemDefinitionException, FileNotFoundException {
+    public static void testfts2bfm(String fmName, String ftsName) throws IOException, TransitionSystemDefinitionException {
+        System.out.println("********************************** " + ftsName+ " ******************************");
+
         String dirPath = "src/main/resources/";
-        File file = new File(dirPath + "fts/aerouc5.fts");
-        FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(file);
+
+        File fmFile = new File(dirPath + "fm/xml/" + fmName + ".xml");
+        FeatureModel<?> fm = XmlLoaders.loadFeatureModel(fmFile);
+
+        FeaturedTransitionSystem fts;
+
+        String basePath = dirPath + "fts/eval/" + ftsName;
+        File ftsFile = new File(basePath + ".fts");
+        File dotFile = new File(basePath + ".dot");
+
+        if (ftsFile.exists()) {
+            fts = XmlLoaderUtility.loadFeaturedTransitionSystem(ftsFile);
+        } else if (dotFile.exists()) {
+            fts = FeaturedTransitionSystemDotHandler.parseDotFile(dotFile.getAbsolutePath());
+        } else {
+            throw new FileNotFoundException("Neither .fts nor .dot file found for " + ftsName);
+        }
+
+        long startTime = System.nanoTime();
+        BehavioralFeatureModel bfm = Translator.fts2bfm(fm, fts);
+        long endTime = System.nanoTime();
+        long durationInNanoseconds = endTime - startTime;
+        double durationInMilliseconds = durationInNanoseconds / 1_000_000.0;
+        System.out.println("Execution time: " + durationInMilliseconds + " ms");
 
 
-        PrintStream output = new PrintStream(new FileOutputStream(dirPath + "fts/dot/aerouc5.dot"));
-        FeaturedTransitionSystemDotPrinter printer = new FeaturedTransitionSystemDotPrinter(fts, output);
-        printer.printDot();
-        printer.flush();
+        XmlSaverUtility.save(bfm, dirPath + "bfm/eval-results/" + ftsName + ".bfm");
     }
 
+    public static Map<String, String> getSystems() {
+        Map<String, String> systems = new HashMap<>();/*
+        systems.put("cpterminal","cpterminal");
+        systems.put("robot-linear","robot");
+        systems.put("coffee","coffee");
+        systems.put("soup","soup");
+        systems.put("soda","soda");
+        systems.put("/vm/new/coffeesoda_synchro","coffeesoda");
+        systems.put("/vm/new/coffeesoup","coffeesoup");
+        systems.put("/vm/new/sodasoup","sodasoup");
+        systems.put("/vm/new/coffeesoda","coffeesoda");
+        systems.put("/vm/new/coffeesoup_synchro","coffeesoup");
+        systems.put("/vm/new/sodasoup_synchro","sodasoup");*/
+
+        //systems.put("/vm/new/svm","svm");
+        systems.put("/vm/new/svm_synchro","svm");
+
+
+/*
+        String minepumpPath = "minepump/new/";
+        File minepumpDir = new File("src/main/resources/fts/eval/" + minepumpPath);
+
+        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith(".dot"));
+        //File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith("synchro.dot"));
+
+        if (ftsFiles == null) {
+            System.err.println("Directory not found or IO error: " + minepumpDir);
+            return null;
+        }
+
+        for (File file : ftsFiles) {
+            String filename = file.getName().substring(0, file.getName().length() - 4);
+            systems.put(minepumpPath + filename,"minepump");
+        }*/
+
+        return systems;
+    }
 }
 

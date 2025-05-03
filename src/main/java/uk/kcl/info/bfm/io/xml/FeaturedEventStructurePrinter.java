@@ -24,7 +24,7 @@ public class FeaturedEventStructurePrinter extends BundleEventStructurePrinter {
         this.bes = bes;
         this.printEvents(xtw, bes.events());
         this.printCausalities(xtw);
-        this.printConflicts(xtw, bes.conflicts());
+        this.printConflicts(xtw, bes.getConflictSetCopy());
         xtw.writeEndElement();
         this.bes = null;
     }

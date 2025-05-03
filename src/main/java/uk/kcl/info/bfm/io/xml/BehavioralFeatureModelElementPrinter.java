@@ -4,7 +4,7 @@ import be.vibes.fexpression.FExpression;
 import be.vibes.solver.Group;
 import uk.kcl.info.bfm.BehavioralFeature;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
-import uk.kcl.info.bfm.ConflictRelation;
+import uk.kcl.info.bfm.ConflictSet;
 import uk.kcl.info.bfm.Event;
 
 import javax.xml.stream.XMLStreamException;
@@ -24,5 +24,5 @@ public interface BehavioralFeatureModelElementPrinter {
 
     void printCausalities(XMLStreamWriter xtw, BehavioralFeature bf) throws XMLStreamException;
 
-    void printConflicts(XMLStreamWriter writer, Iterator<ConflictRelation> conflicts) throws XMLStreamException;
+    void printConflicts(XMLStreamWriter writer, ConflictSet conflicts) throws XMLStreamException;
 }

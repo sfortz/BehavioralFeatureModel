@@ -52,16 +52,16 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     protected Stack<BehavioralFeature> featureStack = new Stack<>();
 
     // Stack to track nested bundles
-    protected Stack<Set<String>> bundleStack = new Stack<>();
+    protected Stack<Set<String>> bundleStack = null;
     protected String currentCausalityTarget = null;
-    protected Stack<Set<String>> conflictStack = new Stack<>();
+    protected Stack<Set<String>> conflictStack = null;
 
     public BehavioralFeatureModelHandler() {
         this.factory = new BehavioralFeatureModelFactory();
     }
 
     public BehavioralFeatureModel getBehavioralFeatureModel() {
-        return (BehavioralFeatureModel) this.factory.build();
+        return this.factory.build();
     }
 
     public void handleStartDocument() {
@@ -203,15 +203,18 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
 
     protected void handleStartEventsTag() throws XMLStreamException {
         LOG.trace("Starting Events");
+        if (conflictStack != null) {
+            conflictStack.push(new HashSet<>()); // Create new Conflict set
+        }
     }
 
     protected void handleStartEventTag(StartElement element) throws XMLStreamException {
         LOG.trace("Processing event");
         String id = element.getAttributeByName(QName.valueOf(ID_ATTR)).getValue();
-        if (!bundleStack.isEmpty()) {
+        if (bundleStack != null) {
             // If inside a bundle, add to the current bundle
             bundleStack.peek().add(id);
-        } else if (!conflictStack.isEmpty()) {
+        } else if (conflictStack != null) {
             // If inside a conflict, add to the current conflict
             conflictStack.peek().add(id);
         } else {
@@ -241,12 +244,13 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
 
     protected void handleStartBundleTag() throws XMLStreamException {
         LOG.trace("Processing bundle");
+        bundleStack = new Stack<>();
         bundleStack.push(new HashSet<>()); // Create new bundle set
     }
 
     protected void handleStartConflictTag() throws XMLStreamException {
         LOG.trace("Processing conflict");
-        conflictStack.push(new HashSet<>()); // Create new Conflict set
+        conflictStack = new Stack<>();
     }
 
     public void handleEndElement(EndElement element) throws XMLStreamException {
@@ -275,15 +279,17 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
                 break;
             case CONFLICT_TAG:
                 LOG.trace("Ending conflict");
-                if (!conflictStack.isEmpty()) {
-                    Set<String> conflictEvents = conflictStack.pop();
-                    if (conflictEvents.size() == 2) {
-                        Iterator<String> it = conflictEvents.iterator();
-                        factory.addConflict(featureStack.peek(), it.next(), it.next());
-                    } else {
-                        LOG.warn("Invalid conflict definition: {}", conflictEvents);
-                    }
+                if (conflictStack.size() == 2) {
+                    Set<String> conflictSet1 = conflictStack.pop();
+                    Set<String> conflictSet2 = conflictStack.pop();
+                    factory.addConflicts(featureStack.peek(), conflictSet1, conflictSet2);
+                } else {
+                    LOG.warn("Invalid conflict definition!");
                 }
+                conflictStack = null;
+                break;
+            case CAUSALITIES_TAG:
+                bundleStack = null;
                 break;
             case BFM_TAG:
                 LOG.trace("Ending behavioral feature model");
