@@ -127,20 +127,13 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
     public void printCausalities(XMLStreamWriter xtw, BehavioralFeature bf) throws XMLStreamException {
         LOG.trace("Starting Causalities");
         xtw.writeStartElement(CAUSALITIES_TAG);
-        for(Event ev: bf.getAllRecursiveEvents()){
-            Iterator<CausalityRelation> causalities = bfm.getAllCausalitiesOfEvent(ev);
-            if(causalities.hasNext()){
-                LOG.trace("Printing causality element");
-                xtw.writeStartElement(CAUSALITY_TAG);
-                xtw.writeAttribute(TARGET_ATTR, ev.getName());
-                while(causalities.hasNext()) {
-                    CausalityRelation causality = causalities.next();
-                    if (!causality.getBundle().isEmpty()) {
-                        printBundle(xtw, causality.getBundle());
-                    }
-                }
-                xtw.writeEndElement();
-            }
+
+        for(CausalityRelation causality: bf.getCausalities()){
+            LOG.trace("Printing causality element");
+            xtw.writeStartElement(CAUSALITY_TAG);
+            xtw.writeAttribute(TARGET_ATTR, causality.getTarget().getName());
+            printBundle(xtw, causality.getBundle());
+            xtw.writeEndElement();
         }
         xtw.writeEndElement();
         LOG.trace("End Causalities");

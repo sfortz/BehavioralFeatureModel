@@ -34,11 +34,6 @@
                 </or>
                 <event_constraints>
                     <causalities>
-                        <causality target="init_schema_0">
-                            <bundle>
-                                <event id="insert_card"> </event>
-                            </bundle>
-                        </causality>
                         <causality target="init_schema_1">
                             <bundle>
                                 <event id="init_schema_0"> </event>
@@ -109,21 +104,37 @@
         </feature_constraints>
         <event_constraints>
             <causalities>
-                <causality target="accepts">
+                <causality target="issuer_accepts">
                     <bundle>
-                        <event id="go_offline"> </event>
+                        <event id="ask_issuer"> </event>
                     </bundle>
                 </causality>
-                <causality target="go_online">
+                <causality target="abort_1">
+                    <bundle>
+                        <event id="no_go"> </event>
+                    </bundle>
+                </causality>
+                <causality target="check_PIN_online">
+                    <bundle>
+                        <event id="init_schema_1"> </event>
+                    </bundle>
+                </causality>
+                <causality target="go_offline">
                     <bundle>
                         <event id="check_PIN_online"> </event>
                         <event id="check_PIN_offline"> </event>
                         <event id="check_signature"> </event>
                     </bundle>
                 </causality>
-                <causality target="check_signature">
+                <causality target="abort_0">
                     <bundle>
-                        <event id="init_schema_1"> </event>
+                        <event id="init_schema_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="remove_card_1">
+                    <bundle>
+                        <event id="accepts"> </event>
+                        <event id="issuer_accepts"> </event>
                     </bundle>
                 </causality>
                 <causality target="remove_card_0">
@@ -133,36 +144,9 @@
                         <event id="issuer_rejects"> </event>
                     </bundle>
                 </causality>
-                <causality target="no_go">
+                <causality target="check_signature">
                     <bundle>
-                        <event id="check_PIN_online"> </event>
-                        <event id="check_PIN_offline"> </event>
-                        <event id="check_signature"> </event>
-                    </bundle>
-                </causality>
-                <causality target="abort_1">
-                    <bundle>
-                        <event id="no_go"> </event>
-                    </bundle>
-                </causality>
-                <causality target="abort_0">
-                    <bundle>
-                        <event id="init_schema_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="issuer_accepts">
-                    <bundle>
-                        <event id="ask_issuer"> </event>
-                    </bundle>
-                </causality>
-                <causality target="init_schema_0">
-                    <bundle>
-                        <event id="insert_card"> </event>
-                    </bundle>
-                </causality>
-                <causality target="init_schema_1">
-                    <bundle>
-                        <event id="init_schema_0"> </event>
+                        <event id="init_schema_1"> </event>
                     </bundle>
                 </causality>
                 <causality target="ask_issuer">
@@ -170,18 +154,29 @@
                         <event id="go_online"> </event>
                     </bundle>
                 </causality>
-                <causality target="check_PIN_online">
+                <causality target="accepts">
                     <bundle>
-                        <event id="init_schema_1"> </event>
+                        <event id="go_offline"> </event>
                     </bundle>
                 </causality>
-                <causality target="remove_card_1">
+                <causality target="init_schema_0">
                     <bundle>
-                        <event id="accepts"> </event>
-                        <event id="issuer_accepts"> </event>
+                        <event id="insert_card"> </event>
                     </bundle>
                 </causality>
-                <causality target="go_offline">
+                <causality target="issuer_rejects">
+                    <bundle>
+                        <event id="ask_issuer"> </event>
+                    </bundle>
+                </causality>
+                <causality target="no_go">
+                    <bundle>
+                        <event id="check_PIN_online"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="check_signature"> </event>
+                    </bundle>
+                </causality>
+                <causality target="go_online">
                     <bundle>
                         <event id="check_PIN_online"> </event>
                         <event id="check_PIN_offline"> </event>
@@ -193,13 +188,42 @@
                         <event id="init_schema_1"> </event>
                     </bundle>
                 </causality>
-                <causality target="issuer_rejects">
-                    <bundle>
-                        <event id="ask_issuer"> </event>
-                    </bundle>
-                </causality>
             </causalities>
             <conflicts>
+                <conflict>
+                    <events>
+                        <event id="accepts"> </event>
+                        <event id="go_offline"> </event>
+                        <event id="no_go"> </event>
+                        <event id="abort_1"> </event>
+                        <event id="abort_0"> </event>
+                    </events>
+                    <events>
+                        <event id="issuer_accepts"> </event>
+                        <event id="ask_issuer"> </event>
+                        <event id="issuer_rejects"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="abort_0"> </event>
+                    </events>
+                    <events>
+                        <event id="accepts"> </event>
+                        <event id="go_online"> </event>
+                        <event id="check_signature"> </event>
+                        <event id="no_go"> </event>
+                        <event id="abort_1"> </event>
+                        <event id="issuer_accepts"> </event>
+                        <event id="init_schema_1"> </event>
+                        <event id="check_PIN_online"> </event>
+                        <event id="ask_issuer"> </event>
+                        <event id="remove_card_1"> </event>
+                        <event id="go_offline"> </event>
+                        <event id="check_PIN_offline"> </event>
+                        <event id="issuer_rejects"> </event>
+                    </events>
+                </conflict>
                 <conflict>
                     <events>
                         <event id="accepts"> </event>
@@ -231,46 +255,12 @@
                 </conflict>
                 <conflict>
                     <events>
-                        <event id="accepts"> </event>
-                        <event id="go_offline"> </event>
-                        <event id="no_go"> </event>
-                        <event id="abort_1"> </event>
-                        <event id="abort_0"> </event>
-                    </events>
-                    <events>
-                        <event id="issuer_accepts"> </event>
-                        <event id="ask_issuer"> </event>
-                        <event id="issuer_rejects"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
                         <event id="check_PIN_online"> </event>
                         <event id="check_signature"> </event>
                         <event id="abort_0"> </event>
                     </events>
                     <events>
                         <event id="check_PIN_offline"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="abort_0"> </event>
-                    </events>
-                    <events>
-                        <event id="accepts"> </event>
-                        <event id="go_online"> </event>
-                        <event id="check_signature"> </event>
-                        <event id="no_go"> </event>
-                        <event id="abort_1"> </event>
-                        <event id="issuer_accepts"> </event>
-                        <event id="init_schema_1"> </event>
-                        <event id="check_PIN_online"> </event>
-                        <event id="ask_issuer"> </event>
-                        <event id="remove_card_1"> </event>
-                        <event id="go_offline"> </event>
-                        <event id="check_PIN_offline"> </event>
-                        <event id="issuer_rejects"> </event>
                     </events>
                 </conflict>
                 <conflict>

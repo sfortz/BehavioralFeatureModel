@@ -23,12 +23,6 @@
                                         <event id="soda"> </event>
                                     </bundle>
                                 </causality>
-                                <causality target="soda">
-                                    <bundle>
-                                        <event id="change"> </event>
-                                        <event id="free"> </event>
-                                    </bundle>
-                                </causality>
                             </causalities>
                         </event_constraints>
                     </feature>
@@ -39,12 +33,6 @@
                         </events>
                         <event_constraints>
                             <causalities>
-                                <causality target="tea">
-                                    <bundle>
-                                        <event id="change"> </event>
-                                        <event id="free"> </event>
-                                    </bundle>
-                                </causality>
                                 <causality target="serveTea">
                                     <bundle>
                                         <event id="tea"> </event>
@@ -94,12 +82,6 @@
                 </events>
                 <event_constraints>
                     <causalities>
-                        <causality target="cancel">
-                            <bundle>
-                                <event id="change"> </event>
-                                <event id="free"> </event>
-                            </bundle>
-                        </causality>
                         <causality target="return">
                             <bundle>
                                 <event id="cancel"> </event>
@@ -117,14 +99,15 @@
                         <event id="serveTea"> </event>
                     </bundle>
                 </causality>
-                <causality target="change">
+                <causality target="soda">
                     <bundle>
-                        <event id="pay"> </event>
+                        <event id="change"> </event>
+                        <event id="free"> </event>
                     </bundle>
                 </causality>
-                <causality target="serveSoda">
+                <causality target="close">
                     <bundle>
-                        <event id="soda"> </event>
+                        <event id="take_1"> </event>
                     </bundle>
                 </causality>
                 <causality target="take_1">
@@ -132,27 +115,9 @@
                         <event id="open"> </event>
                     </bundle>
                 </causality>
-                <causality target="cancel">
+                <causality target="change">
                     <bundle>
-                        <event id="change"> </event>
-                        <event id="free"> </event>
-                    </bundle>
-                </causality>
-                <causality target="soda">
-                    <bundle>
-                        <event id="change"> </event>
-                        <event id="free"> </event>
-                    </bundle>
-                </causality>
-                <causality target="tea">
-                    <bundle>
-                        <event id="change"> </event>
-                        <event id="free"> </event>
-                    </bundle>
-                </causality>
-                <causality target="serveTea">
-                    <bundle>
-                        <event id="tea"> </event>
+                        <event id="pay"> </event>
                     </bundle>
                 </causality>
                 <causality target="open">
@@ -161,27 +126,20 @@
                         <event id="serveTea"> </event>
                     </bundle>
                 </causality>
-                <causality target="return">
+                <causality target="tea">
                     <bundle>
-                        <event id="cancel"> </event>
+                        <event id="change"> </event>
+                        <event id="free"> </event>
                     </bundle>
                 </causality>
-                <causality target="close">
+                <causality target="cancel">
                     <bundle>
-                        <event id="take_1"> </event>
+                        <event id="change"> </event>
+                        <event id="free"> </event>
                     </bundle>
                 </causality>
             </causalities>
             <conflicts>
-                <conflict>
-                    <events>
-                        <event id="change"> </event>
-                        <event id="pay"> </event>
-                    </events>
-                    <events>
-                        <event id="free"> </event>
-                    </events>
-                </conflict>
                 <conflict>
                     <events>
                         <event id="take_0"> </event>
@@ -192,6 +150,15 @@
                         <event id="take_1"> </event>
                         <event id="open"> </event>
                         <event id="close"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="take_0"> </event>
+                        <event id="free"> </event>
+                    </events>
+                    <events>
+                        <event id="pay"> </event>
                     </events>
                 </conflict>
                 <conflict>
@@ -212,11 +179,11 @@
                 </conflict>
                 <conflict>
                     <events>
-                        <event id="take_0"> </event>
-                        <event id="free"> </event>
+                        <event id="change"> </event>
+                        <event id="pay"> </event>
                     </events>
                     <events>
-                        <event id="pay"> </event>
+                        <event id="free"> </event>
                     </events>
                 </conflict>
             </conflicts>

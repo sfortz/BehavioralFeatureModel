@@ -7,7 +7,7 @@
             <event id="insert_Dollar" fexpression="(D &amp;&amp; !F)"> </event>
             <event id="skipBev"> </event>
             <event id="open" fexpression="!F"> </event>
-            <event id="take" fexpression="(M &amp;&amp; !F)"> </event>
+            <event id="take" fexpression="(!F &amp;&amp; M)"> </event>
             <event id="close" fexpression="!F"> </event>
         </events>
         <mandatory>
@@ -98,42 +98,14 @@
                                 </events>
                                 <event_constraints>
                                     <causalities>
-                                        <causality target="cappuccino_1">
-                                            <bundle>
-                                                <event id="no_sugar"> </event>
-                                            </bundle>
-                                        </causality>
-                                        <causality target="pour_coffee_0">
-                                            <bundle>
-                                                <event id="pour_sugar_2"> </event>
-                                                <event id="cappuccino_1"> </event>
-                                            </bundle>
-                                        </causality>
-                                        <causality target="cappuccino_0">
-                                            <bundle>
-                                                <event id="take_0"> </event>
-                                            </bundle>
-                                            <bundle>
-                                                <event id="sugar"> </event>
-                                            </bundle>
-                                        </causality>
-                                        <causality target="pour_milk_1">
-                                            <bundle>
-                                                <event id="pour_coffee_0"> </event>
-                                            </bundle>
-                                        </causality>
                                         <causality target="pour_coffee_2">
                                             <bundle>
                                                 <event id="pour_milk_0"> </event>
                                             </bundle>
                                         </causality>
-                                        <causality target="pour_milk_0">
+                                        <causality target="pour_milk_1">
                                             <bundle>
-                                                <event id="take_0"> </event>
-                                            </bundle>
-                                            <bundle>
-                                                <event id="pour_sugar_2"> </event>
-                                                <event id="cappuccino_1"> </event>
+                                                <event id="pour_coffee_0"> </event>
                                             </bundle>
                                         </causality>
                                     </causalities>
@@ -173,32 +145,20 @@
                                                 <event id="soda"> </event>
                                             </bundle>
                                         </causality>
-                                        <causality target="soda">
-                                            <bundle>
-                                                <event id="change"> </event>
-                                                <event id="free"> </event>
-                                            </bundle>
-                                        </causality>
                                     </causalities>
                                 </event_constraints>
                             </feature>
                         </optional>
                         <event_constraints>
                             <causalities>
-                                <causality target="pour_sugar_1">
+                                <causality target="tea_0">
                                     <bundle>
-                                        <event id="tea_0"> </event>
+                                        <event id="sugar"> </event>
                                     </bundle>
                                 </causality>
                                 <causality target="pour_sugar_2">
                                     <bundle>
                                         <event id="cappuccino_0"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="pour_tea">
-                                    <bundle>
-                                        <event id="pour_sugar_1"> </event>
-                                        <event id="tea_1"> </event>
                                     </bundle>
                                 </causality>
                                 <causality target="coffee_1">
@@ -211,39 +171,10 @@
                                         <event id="no_sugar"> </event>
                                     </bundle>
                                 </causality>
-                                <causality target="coffee_0">
+                                <causality target="pour_coffee_1">
                                     <bundle>
-                                        <event id="sugar"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="serveSoda">
-                                    <bundle>
-                                        <event id="soda"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="no_sugar">
-                                    <bundle>
-                                        <event id="insert_Euro"> </event>
-                                        <event id="insert_Dollar"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="soda">
-                                    <bundle>
-                                        <event id="change"> </event>
-                                        <event id="free"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="cappuccino_0">
-                                    <bundle>
-                                        <event id="take_0"> </event>
-                                    </bundle>
-                                    <bundle>
-                                        <event id="sugar"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="pour_milk_1">
-                                    <bundle>
-                                        <event id="pour_coffee_0"> </event>
+                                        <event id="coffee_1"> </event>
+                                        <event id="pour_sugar_0"> </event>
                                     </bundle>
                                 </causality>
                                 <causality target="pour_sugar_0">
@@ -251,35 +182,36 @@
                                         <event id="coffee_0"> </event>
                                     </bundle>
                                 </causality>
-                                <causality target="pour_milk_0">
+                                <causality target="tea_1">
                                     <bundle>
-                                        <event id="take_0"> </event>
+                                        <event id="no_sugar"> </event>
                                     </bundle>
+                                </causality>
+                                <causality target="pour_tea">
+                                    <bundle>
+                                        <event id="pour_sugar_1"> </event>
+                                        <event id="tea_1"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="pour_milk_0">
                                     <bundle>
                                         <event id="pour_sugar_2"> </event>
                                         <event id="cappuccino_1"> </event>
                                     </bundle>
                                 </causality>
-                                <causality target="sugar">
-                                    <bundle>
-                                        <event id="insert_Euro"> </event>
-                                        <event id="insert_Dollar"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="tea_0">
-                                    <bundle>
-                                        <event id="change"> </event>
-                                    </bundle>
+                                <causality target="cappuccino_0">
                                     <bundle>
                                         <event id="sugar"> </event>
                                     </bundle>
                                 </causality>
-                                <causality target="tea_1">
+                                <causality target="pour_sugar_1">
                                     <bundle>
-                                        <event id="no_sugar"> </event>
+                                        <event id="tea_0"> </event>
                                     </bundle>
+                                </causality>
+                                <causality target="coffee_0">
                                     <bundle>
-                                        <event id="change"> </event>
+                                        <event id="sugar"> </event>
                                     </bundle>
                                 </causality>
                                 <causality target="pour_coffee_0">
@@ -288,19 +220,42 @@
                                         <event id="cappuccino_1"> </event>
                                     </bundle>
                                 </causality>
-                                <causality target="pour_coffee_2">
-                                    <bundle>
-                                        <event id="pour_milk_0"> </event>
-                                    </bundle>
-                                </causality>
-                                <causality target="pour_coffee_1">
-                                    <bundle>
-                                        <event id="coffee_1"> </event>
-                                        <event id="pour_sugar_0"> </event>
-                                    </bundle>
-                                </causality>
                             </causalities>
                             <conflicts>
+                                <conflict>
+                                    <events>
+                                        <event id="pour_sugar_1"> </event>
+                                        <event id="pour_sugar_2"> </event>
+                                        <event id="pour_tea"> </event>
+                                        <event id="cappuccino_1"> </event>
+                                        <event id="tea_0"> </event>
+                                        <event id="no_sugar"> </event>
+                                        <event id="tea_1"> </event>
+                                        <event id="pour_coffee_0"> </event>
+                                        <event id="cappuccino_0"> </event>
+                                        <event id="pour_coffee_2"> </event>
+                                        <event id="pour_milk_1"> </event>
+                                        <event id="pour_milk_0"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="coffee_0"> </event>
+                                        <event id="pour_sugar_0"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="pour_sugar_1"> </event>
+                                        <event id="pour_sugar_2"> </event>
+                                        <event id="sugar"> </event>
+                                        <event id="coffee_0"> </event>
+                                        <event id="tea_0"> </event>
+                                        <event id="cappuccino_0"> </event>
+                                        <event id="pour_sugar_0"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="no_sugar"> </event>
+                                    </events>
+                                </conflict>
                                 <conflict>
                                     <events>
                                         <event id="pour_sugar_1"> </event>
@@ -324,46 +279,6 @@
                                 </conflict>
                                 <conflict>
                                     <events>
-                                        <event id="pour_sugar_1"> </event>
-                                        <event id="pour_sugar_2"> </event>
-                                        <event id="pour_tea"> </event>
-                                        <event id="cappuccino_1"> </event>
-                                        <event id="cappuccino_0"> </event>
-                                        <event id="pour_milk_1"> </event>
-                                        <event id="pour_milk_0"> </event>
-                                        <event id="pour_sugar_0"> </event>
-                                        <event id="sugar"> </event>
-                                        <event id="tea_0"> </event>
-                                        <event id="tea_1"> </event>
-                                        <event id="pour_coffee_0"> </event>
-                                        <event id="pour_coffee_2"> </event>
-                                    </events>
-                                    <events>
-                                        <event id="coffee_1"> </event>
-                                    </events>
-                                </conflict>
-                                <conflict>
-                                    <events>
-                                        <event id="pour_sugar_1"> </event>
-                                        <event id="pour_sugar_2"> </event>
-                                        <event id="pour_tea"> </event>
-                                        <event id="cappuccino_1"> </event>
-                                        <event id="tea_0"> </event>
-                                        <event id="no_sugar"> </event>
-                                        <event id="tea_1"> </event>
-                                        <event id="pour_coffee_0"> </event>
-                                        <event id="cappuccino_0"> </event>
-                                        <event id="pour_coffee_2"> </event>
-                                        <event id="pour_milk_1"> </event>
-                                        <event id="pour_milk_0"> </event>
-                                    </events>
-                                    <events>
-                                        <event id="coffee_0"> </event>
-                                        <event id="pour_sugar_0"> </event>
-                                    </events>
-                                </conflict>
-                                <conflict>
-                                    <events>
                                         <event id="cappuccino_1"> </event>
                                         <event id="coffee_1"> </event>
                                         <event id="no_sugar"> </event>
@@ -380,14 +295,20 @@
                                     <events>
                                         <event id="pour_sugar_1"> </event>
                                         <event id="pour_sugar_2"> </event>
-                                        <event id="sugar"> </event>
-                                        <event id="coffee_0"> </event>
-                                        <event id="tea_0"> </event>
+                                        <event id="pour_tea"> </event>
+                                        <event id="cappuccino_1"> </event>
                                         <event id="cappuccino_0"> </event>
+                                        <event id="pour_milk_1"> </event>
+                                        <event id="pour_milk_0"> </event>
                                         <event id="pour_sugar_0"> </event>
+                                        <event id="sugar"> </event>
+                                        <event id="tea_0"> </event>
+                                        <event id="tea_1"> </event>
+                                        <event id="pour_coffee_0"> </event>
+                                        <event id="pour_coffee_2"> </event>
                                     </events>
                                     <events>
-                                        <event id="no_sugar"> </event>
+                                        <event id="coffee_1"> </event>
                                     </events>
                                 </conflict>
                                 <conflict>
@@ -430,11 +351,6 @@
                 </events>
                 <event_constraints>
                     <causalities>
-                        <causality target="cancel">
-                            <bundle>
-                                <event id="change"> </event>
-                            </bundle>
-                        </causality>
                         <causality target="return">
                             <bundle>
                                 <event id="cancel"> </event>
@@ -450,31 +366,21 @@
         </feature_constraints>
         <event_constraints>
             <causalities>
-                <causality target="take_0">
+                <causality target="change">
                     <bundle>
-                        <event id="pour_tea"> </event>
-                        <event id="serveSoda"> </event>
+                        <event id="insert_Euro"> </event>
+                        <event id="insert_Dollar"> </event>
                     </bundle>
                 </causality>
-                <causality target="pour_tea">
+                <causality target="take">
                     <bundle>
-                        <event id="pour_sugar_1"> </event>
-                        <event id="tea_1"> </event>
+                        <event id="ringBev"> </event>
+                        <event id="skipBev"> </event>
                     </bundle>
                 </causality>
-                <causality target="coffee_1">
+                <causality target="cancel">
                     <bundle>
-                        <event id="no_sugar"> </event>
-                    </bundle>
-                </causality>
-                <causality target="cappuccino_1">
-                    <bundle>
-                        <event id="no_sugar"> </event>
-                    </bundle>
-                </causality>
-                <causality target="coffee_0">
-                    <bundle>
-                        <event id="sugar"> </event>
+                        <event id="change"> </event>
                     </bundle>
                 </causality>
                 <causality target="no_sugar">
@@ -483,73 +389,10 @@
                         <event id="insert_Dollar"> </event>
                     </bundle>
                 </causality>
-                <causality target="cancel">
+                <causality target="soda">
                     <bundle>
                         <event id="change"> </event>
-                    </bundle>
-                </causality>
-                <causality target="cappuccino_0">
-                    <bundle>
-                        <event id="take_0"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="sugar"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_milk_1">
-                    <bundle>
-                        <event id="pour_coffee_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_milk_0">
-                    <bundle>
-                        <event id="take_0"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="cappuccino_1"> </event>
-                    </bundle>
-                </causality>
-                <causality target="tea_0">
-                    <bundle>
-                        <event id="change"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="sugar"> </event>
-                    </bundle>
-                </causality>
-                <causality target="tea_1">
-                    <bundle>
-                        <event id="no_sugar"> </event>
-                    </bundle>
-                    <bundle>
-                        <event id="change"> </event>
-                    </bundle>
-                </causality>
-                <causality target="close">
-                    <bundle>
-                        <event id="take"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_sugar_1">
-                    <bundle>
-                        <event id="tea_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_sugar_2">
-                    <bundle>
-                        <event id="cappuccino_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="change">
-                    <bundle>
-                        <event id="insert_Euro"> </event>
-                        <event id="insert_Dollar"> </event>
-                    </bundle>
-                </causality>
-                <causality target="serveSoda">
-                    <bundle>
-                        <event id="soda"> </event>
+                        <event id="free"> </event>
                     </bundle>
                 </causality>
                 <causality target="skipBev">
@@ -560,21 +403,9 @@
                         <event id="pour_coffee_1"> </event>
                     </bundle>
                 </causality>
-                <causality target="soda">
+                <causality target="cappuccino_0">
                     <bundle>
-                        <event id="change"> </event>
-                        <event id="free"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_sugar_0">
-                    <bundle>
-                        <event id="coffee_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="sugar">
-                    <bundle>
-                        <event id="insert_Euro"> </event>
-                        <event id="insert_Dollar"> </event>
+                        <event id="take_0"> </event>
                     </bundle>
                 </causality>
                 <causality target="ringBev">
@@ -585,10 +416,31 @@
                         <event id="pour_coffee_1"> </event>
                     </bundle>
                 </causality>
-                <causality target="pour_coffee_0">
+                <causality target="take_0">
                     <bundle>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="cappuccino_1"> </event>
+                        <event id="pour_tea"> </event>
+                        <event id="serveSoda"> </event>
+                    </bundle>
+                </causality>
+                <causality target="tea_1">
+                    <bundle>
+                        <event id="change"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_milk_0">
+                    <bundle>
+                        <event id="take_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="sugar">
+                    <bundle>
+                        <event id="insert_Euro"> </event>
+                        <event id="insert_Dollar"> </event>
+                    </bundle>
+                </causality>
+                <causality target="close">
+                    <bundle>
+                        <event id="take"> </event>
                     </bundle>
                 </causality>
                 <causality target="open">
@@ -599,31 +451,93 @@
                 </causality>
                 <causality target="take">
                     <bundle>
-                        <event id="ringBev"> </event>
-                        <event id="skipBev"> </event>
-                    </bundle>
-                    <bundle>
                         <event id="open"> </event>
                     </bundle>
                 </causality>
-                <causality target="return">
+                <causality target="tea_0">
                     <bundle>
-                        <event id="cancel"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_coffee_2">
-                    <bundle>
-                        <event id="pour_milk_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_coffee_1">
-                    <bundle>
-                        <event id="coffee_1"> </event>
-                        <event id="pour_sugar_0"> </event>
+                        <event id="change"> </event>
                     </bundle>
                 </causality>
             </causalities>
             <conflicts>
+                <conflict>
+                    <events>
+                        <event id="cancel"> </event>
+                        <event id="ringBev"> </event>
+                        <event id="return"> </event>
+                        <event id="free"> </event>
+                    </events>
+                    <events>
+                        <event id="skipBev"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="insert_Euro"> </event>
+                        <event id="insert_Dollar"> </event>
+                        <event id="cancel"> </event>
+                        <event id="open"> </event>
+                        <event id="take"> </event>
+                        <event id="return"> </event>
+                        <event id="close"> </event>
+                    </events>
+                    <events>
+                        <event id="take_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="cancel"> </event>
+                        <event id="return"> </event>
+                        <event id="free"> </event>
+                    </events>
+                    <events>
+                        <event id="pour_sugar_1"> </event>
+                        <event id="pour_tea"> </event>
+                        <event id="pour_sugar_2"> </event>
+                        <event id="coffee_1"> </event>
+                        <event id="cappuccino_1"> </event>
+                        <event id="coffee_0"> </event>
+                        <event id="no_sugar"> </event>
+                        <event id="skipBev"> </event>
+                        <event id="cappuccino_0"> </event>
+                        <event id="pour_milk_1"> </event>
+                        <event id="pour_milk_0"> </event>
+                        <event id="pour_sugar_0"> </event>
+                        <event id="sugar"> </event>
+                        <event id="tea_0"> </event>
+                        <event id="tea_1"> </event>
+                        <event id="ringBev"> </event>
+                        <event id="pour_coffee_0"> </event>
+                        <event id="take"> </event>
+                        <event id="close"> </event>
+                        <event id="pour_coffee_2"> </event>
+                        <event id="pour_coffee_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="take_0"> </event>
+                        <event id="insert_Dollar"> </event>
+                        <event id="free"> </event>
+                    </events>
+                    <events>
+                        <event id="insert_Euro"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="take_0"> </event>
+                        <event id="cancel"> </event>
+                        <event id="return"> </event>
+                    </events>
+                    <events>
+                        <event id="open"> </event>
+                        <event id="take"> </event>
+                        <event id="close"> </event>
+                    </events>
+                </conflict>
                 <conflict>
                     <events>
                         <event id="pour_tea"> </event>
@@ -655,29 +569,6 @@
                     </events>
                     <events>
                         <event id="free"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="take_0"> </event>
-                        <event id="cancel"> </event>
-                        <event id="return"> </event>
-                    </events>
-                    <events>
-                        <event id="open"> </event>
-                        <event id="take"> </event>
-                        <event id="close"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="cancel"> </event>
-                        <event id="ringBev"> </event>
-                        <event id="return"> </event>
-                        <event id="free"> </event>
-                    </events>
-                    <events>
-                        <event id="skipBev"> </event>
                     </events>
                 </conflict>
                 <conflict>
@@ -712,60 +603,6 @@
                         <event id="take"> </event>
                         <event id="pour_coffee_2"> </event>
                         <event id="pour_coffee_1"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="take_0"> </event>
-                        <event id="insert_Dollar"> </event>
-                        <event id="free"> </event>
-                    </events>
-                    <events>
-                        <event id="insert_Euro"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="cancel"> </event>
-                        <event id="return"> </event>
-                        <event id="free"> </event>
-                    </events>
-                    <events>
-                        <event id="pour_sugar_1"> </event>
-                        <event id="pour_tea"> </event>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="coffee_1"> </event>
-                        <event id="cappuccino_1"> </event>
-                        <event id="coffee_0"> </event>
-                        <event id="no_sugar"> </event>
-                        <event id="skipBev"> </event>
-                        <event id="cappuccino_0"> </event>
-                        <event id="pour_milk_1"> </event>
-                        <event id="pour_milk_0"> </event>
-                        <event id="pour_sugar_0"> </event>
-                        <event id="sugar"> </event>
-                        <event id="tea_0"> </event>
-                        <event id="tea_1"> </event>
-                        <event id="ringBev"> </event>
-                        <event id="pour_coffee_0"> </event>
-                        <event id="take"> </event>
-                        <event id="close"> </event>
-                        <event id="pour_coffee_2"> </event>
-                        <event id="pour_coffee_1"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="insert_Euro"> </event>
-                        <event id="insert_Dollar"> </event>
-                        <event id="cancel"> </event>
-                        <event id="open"> </event>
-                        <event id="take"> </event>
-                        <event id="return"> </event>
-                        <event id="close"> </event>
-                    </events>
-                    <events>
-                        <event id="take_0"> </event>
                     </events>
                 </conflict>
             </conflicts>
