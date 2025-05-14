@@ -266,5 +266,9 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return conflicts.size();
     }
 
+    public int getMaxConflictSize(){
+        return conflicts.maxConflictSize();
+    }
+
     //TODO: Override toString, equals and hashcode to Add the behavioural part
 }

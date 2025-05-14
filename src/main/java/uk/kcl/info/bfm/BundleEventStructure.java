@@ -38,6 +38,8 @@ public interface BundleEventStructure {
 
     int getConflictsCount();
 
+    int getMaxConflictSize();
+
     boolean areInConflict(Event var1, Event var2);
 
 }

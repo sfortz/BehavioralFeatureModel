@@ -292,6 +292,11 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     }
 
     @Override
+    public int getMaxConflictSize() {
+        return this.getRootFeature().getAllRecursiveFeatures().stream().mapToInt(BehavioralFeature::getMaxConflictSize).max().orElse(0);
+    }
+
+    @Override
     public Iterator<CausalityRelation> getOutgoingCausalities(Event event) {
 
         Set<CausalityRelation> causalities = new HashSet<>();

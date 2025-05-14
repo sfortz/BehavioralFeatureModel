@@ -210,6 +210,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
+    public int getMaxConflictSize() {
+        return allConflicts.maxConflictSize();
+    }
+
+    @Override
     public boolean areInConflict(Event var1, Event var2){
         return this.allConflicts.areInConflict(var1, var2);
     }

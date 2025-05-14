@@ -229,18 +229,24 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException, TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
-        //testts2bes();
+        /*testts2bes();
         testbes2ts();
-        //testfts2fes();
+        testfts2fes();
         testfes2fts();
-        //testfts2bfm();
+        testfts2bfm();
         testbfm2fts();
-        testparallel();
+        testparallel();*/
 
-        /*
+
         for(Map.Entry<String,String> entry: getSystems().entrySet()){
             testfts2bfm(entry.getValue(), entry.getKey());
-        }*/
+        }
+
+        System.out.println("============================================");
+        for(String key: getSystems().keySet()){
+            testbfmMetrics(key);
+        }
+
     }
 
     public static void testparallel() throws TransitionSystemDefinitionException, BundleEventStructureDefinitionException {
@@ -286,25 +292,26 @@ public class Main {
     }
 
     public static Map<String, String> getSystems() {
-        Map<String, String> systems = new HashMap<>();/*
+        Map<String, String> systems = new HashMap<>();
+
+        /*
         systems.put("cpterminal","cpterminal");
         systems.put("robot-linear","robot");
         systems.put("coffee","coffee");
         systems.put("soup","soup");
         systems.put("soda","soda");
         systems.put("/vm/new/coffeesoda_synchro","coffeesoda");
+        systems.put("/vm/new/coffeesoup_synchro","coffeesoup");
+        systems.put("/vm/new/sodasoup_synchro","sodasoup");
+        systems.put("/vm/new/svm_synchro","svm");
         systems.put("/vm/new/coffeesoup","coffeesoup");
         systems.put("/vm/new/sodasoup","sodasoup");
-        systems.put("/vm/new/coffeesoda","coffeesoda");
-        systems.put("/vm/new/coffeesoup_synchro","coffeesoup");
-        systems.put("/vm/new/sodasoup_synchro","sodasoup");*/
+        systems.put("/vm/new/coffeesoda","coffeesoda");*/
 
         //systems.put("/vm/new/svm","svm");
-        systems.put("/vm/new/svm_synchro","svm");
 
-
-/*
         String minepumpPath = "minepump/new/";
+        //File minepumpDir = new File("src/main/resources/fts/eval/" + minepumpPath + "done/");
         File minepumpDir = new File("src/main/resources/fts/eval/" + minepumpPath);
 
         File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith(".dot"));
@@ -318,9 +325,24 @@ public class Main {
         for (File file : ftsFiles) {
             String filename = file.getName().substring(0, file.getName().length() - 4);
             systems.put(minepumpPath + filename,"minepump");
-        }*/
+        }
 
         return systems;
+    }
+
+    public static void testbfmMetrics(String bfmName) {
+
+        System.out.println("********************************** " + bfmName+ " ******************************");
+
+        String dirPath = "src/main/resources/";
+        String basePath = dirPath + "bfm/eval-results/" + bfmName;
+        File fileBFM = new File(basePath + ".bfm");
+        BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM);
+
+        System.out.println("BFM Event count: " + bfm.getEventsCount());
+        System.out.println("BFM Conflict count: " + bfm.getConflictsCount());
+        System.out.println("BFM Causality count: " + bfm.getCausalitiesCount());
+        System.out.println("BFM Max Conflict size: " + bfm.getMaxConflictSize());
     }
 }
 

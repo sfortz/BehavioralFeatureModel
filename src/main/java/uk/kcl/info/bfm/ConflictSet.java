@@ -134,6 +134,18 @@ public class ConflictSet {
         }
     }
 
+    public int maxConflictSize() {
+        if (conflictMap.isEmpty()) {
+            return 0;
+        }
+
+        Set<Biclique> bicliques = findMinimalBicliqueEdgeCover();
+        return bicliques.stream()
+                .mapToInt(clique -> clique.getA().size() + clique.getB().size())
+                .max()
+                .orElse(0);
+    }
+
     public Set<Biclique> findMinimalBicliqueEdgeCover() {
         Set<Event> allEvents = getAllEvents();
         Set<Edge> uncoveredEdges = new HashSet<>();
