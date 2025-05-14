@@ -1,0 +1,1444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bfm namespace="MinePumpSystem">
+    <feature name="MinePumpSys">
+        <events>
+            <event id="pumpStopped"> </event>
+            <event id="end_0"> </event>
+            <event id="end_3"> </event>
+            <event id="end_4"> </event>
+            <event id="end_1"> </event>
+            <event id="end_2"> </event>
+            <event id="pumpStarted"> </event>
+            <event id="end_5"> </event>
+            <event id="waterRise_1"> </event>
+            <event id="waterRise_0"> </event>
+            <event id="receiveMsg"> </event>
+            <event id="pumpRunning_1"> </event>
+            <event id="pumpRunning_0"> </event>
+        </events>
+        <optional>
+            <feature name="Command">
+                <events>
+                    <event id="commandMsg" fexpression="Command"> </event>
+                </events>
+                <or>
+                    <feature name="Start">
+                        <events>
+                            <event id="setReady_0" fexpression="Start"> </event>
+                            <event id="setReady_1" fexpression="Start"> </event>
+                            <event id="isRunning_2" fexpression="Start"> </event>
+                            <event id="startCmd" fexpression="Start"> </event>
+                            <event id="isReady_0" fexpression="Start"> </event>
+                            <event id="isNotRunning_2" fexpression="Start"> </event>
+                        </events>
+                        <event_constraints>
+                            <causalities>
+                                <causality target="setReady_0">
+                                    <bundle>
+                                        <event id="isNotRunning_1"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="setReady_1">
+                                    <bundle>
+                                        <event id="isReady_1"> </event>
+                                        <event id="isLowStop"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isRunning_2">
+                                    <bundle>
+                                        <event id="palarmMsg"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="startCmd">
+                                    <bundle>
+                                        <event id="commandMsg"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isReady_0">
+                                    <bundle>
+                                        <event id="startCmd"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isNotRunning_2">
+                                    <bundle>
+                                        <event id="palarmMsg"> </event>
+                                    </bundle>
+                                </causality>
+                            </causalities>
+                            <conflicts>
+                                <conflict>
+                                    <events>
+                                        <event id="setReady_0"> </event>
+                                        <event id="setReady_1"> </event>
+                                        <event id="isRunning_2"> </event>
+                                        <event id="isNotRunning_2"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isReady_0"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="setReady_0"> </event>
+                                        <event id="setReady_1"> </event>
+                                        <event id="startCmd"> </event>
+                                        <event id="isReady_0"> </event>
+                                        <event id="isNotRunning_2"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isRunning_2"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="setReady_1"> </event>
+                                        <event id="isRunning_2"> </event>
+                                        <event id="isNotRunning_2"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="setReady_0"> </event>
+                                        <event id="startCmd"> </event>
+                                        <event id="isReady_0"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="setReady_0"> </event>
+                                        <event id="isRunning_2"> </event>
+                                        <event id="startCmd"> </event>
+                                        <event id="isReady_0"> </event>
+                                        <event id="isNotRunning_2"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="setReady_1"> </event>
+                                    </events>
+                                </conflict>
+                            </conflicts>
+                        </event_constraints>
+                    </feature>
+                    <feature name="Stop">
+                        <events>
+                            <event id="pumpStop_1" fexpression="Stop"> </event>
+                            <event id="stopCmd" fexpression="Stop"> </event>
+                            <event id="setStop" fexpression="Stop"> </event>
+                            <event id="isRunning_1" fexpression="Stop"> </event>
+                            <event id="isNotRunning_1" fexpression="Stop"> </event>
+                        </events>
+                        <event_constraints>
+                            <conflicts>
+                                <conflict>
+                                    <events>
+                                        <event id="stopCmd"> </event>
+                                        <event id="setStop"> </event>
+                                        <event id="isRunning_1"> </event>
+                                        <event id="isNotRunning_1"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="pumpStop_1"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="pumpStop_1"> </event>
+                                        <event id="stopCmd"> </event>
+                                        <event id="setStop"> </event>
+                                        <event id="isNotRunning_1"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isRunning_1"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="pumpStop_1"> </event>
+                                        <event id="stopCmd"> </event>
+                                        <event id="isRunning_1"> </event>
+                                        <event id="setStop"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isNotRunning_1"> </event>
+                                    </events>
+                                </conflict>
+                            </conflicts>
+                        </event_constraints>
+                    </feature>
+                </or>
+                <event_constraints>
+                    <causalities>
+                        <causality target="setReady_0">
+                            <bundle>
+                                <event id="isNotRunning_1"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="setReady_1">
+                            <bundle>
+                                <event id="isReady_1"> </event>
+                                <event id="isLowStop"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="commandMsg">
+                            <bundle>
+                                <event id="receiveMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="pumpStop_1">
+                            <bundle>
+                                <event id="isRunning_2"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="stopCmd">
+                            <bundle>
+                                <event id="commandMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isRunning_2">
+                            <bundle>
+                                <event id="palarmMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="startCmd">
+                            <bundle>
+                                <event id="commandMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="setStop">
+                            <bundle>
+                                <event id="pumpStop_0"> </event>
+                                <event id="isNotRunning_0"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isRunning_1">
+                            <bundle>
+                                <event id="startCmd"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isReady_0">
+                            <bundle>
+                                <event id="startCmd"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isNotRunning_2">
+                            <bundle>
+                                <event id="palarmMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isNotRunning_1">
+                            <bundle>
+                                <event id="startCmd"> </event>
+                            </bundle>
+                        </causality>
+                    </causalities>
+                    <conflicts>
+                        <conflict>
+                            <events>
+                                <event id="pumpStop_1"> </event>
+                                <event id="stopCmd"> </event>
+                                <event id="setStop"> </event>
+                                <event id="isRunning_1"> </event>
+                            </events>
+                            <events>
+                                <event id="setReady_0"> </event>
+                                <event id="setReady_1"> </event>
+                                <event id="isReady_0"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="setReady_1"> </event>
+                                <event id="pumpStop_1"> </event>
+                                <event id="isRunning_2"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </events>
+                            <events>
+                                <event id="commandMsg"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="pumpStop_1"> </event>
+                                <event id="stopCmd"> </event>
+                                <event id="isRunning_1"> </event>
+                                <event id="setStop"> </event>
+                                <event id="isNotRunning_1"> </event>
+                            </events>
+                            <events>
+                                <event id="setReady_1"> </event>
+                                <event id="isReady_0"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="pumpStop_1"> </event>
+                                <event id="stopCmd"> </event>
+                                <event id="setStop"> </event>
+                            </events>
+                            <events>
+                                <event id="setReady_0"> </event>
+                                <event id="setReady_1"> </event>
+                                <event id="startCmd"> </event>
+                                <event id="isReady_0"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="commandMsg"> </event>
+                                <event id="pumpStop_1"> </event>
+                                <event id="stopCmd"> </event>
+                                <event id="isRunning_1"> </event>
+                                <event id="setStop"> </event>
+                                <event id="isNotRunning_1"> </event>
+                            </events>
+                            <events>
+                                <event id="setReady_1"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="commandMsg"> </event>
+                                <event id="stopCmd"> </event>
+                                <event id="setStop"> </event>
+                                <event id="isRunning_1"> </event>
+                                <event id="isNotRunning_1"> </event>
+                            </events>
+                            <events>
+                                <event id="setReady_1"> </event>
+                                <event id="isRunning_2"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </events>
+                        </conflict>
+                    </conflicts>
+                </event_constraints>
+            </feature>
+        </optional>
+        <mandatory>
+            <feature name="WaterRegulation">
+                <events>
+                    <event id="levelMsg" fexpression="WaterRegulation"> </event>
+                </events>
+                <optional>
+                    <feature name="Low">
+                        <events>
+                            <event id="isRunning_4" fexpression="Low"> </event>
+                            <event id="lowLevel" fexpression="Low"> </event>
+                            <event id="setLowStop" fexpression="Low"> </event>
+                            <event id="isNotRunning_3" fexpression="Low"> </event>
+                            <event id="pumpStop_2" fexpression="Low"> </event>
+                            <event id="isLowStop" fexpression="Low"> </event>
+                        </events>
+                        <event_constraints>
+                            <causalities>
+                                <causality target="isRunning_4">
+                                    <bundle>
+                                        <event id="lowLevel"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="lowLevel">
+                                    <bundle>
+                                        <event id="levelMsg"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="setLowStop">
+                                    <bundle>
+                                        <event id="pumpStop_2"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isNotRunning_3">
+                                    <bundle>
+                                        <event id="lowLevel"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="pumpStop_2">
+                                    <bundle>
+                                        <event id="isRunning_4"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isLowStop">
+                                    <bundle>
+                                        <event id="highLevel"> </event>
+                                    </bundle>
+                                </causality>
+                            </causalities>
+                            <conflicts>
+                                <conflict>
+                                    <events>
+                                        <event id="isRunning_4"> </event>
+                                        <event id="setLowStop"> </event>
+                                        <event id="pumpStop_2"> </event>
+                                        <event id="isLowStop"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isNotRunning_3"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="isRunning_4"> </event>
+                                        <event id="lowLevel"> </event>
+                                        <event id="setLowStop"> </event>
+                                        <event id="isNotRunning_3"> </event>
+                                        <event id="pumpStop_2"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isLowStop"> </event>
+                                    </events>
+                                </conflict>
+                            </conflicts>
+                        </event_constraints>
+                    </feature>
+                </optional>
+                <optional>
+                    <feature name="Normal"></feature>
+                </optional>
+                <mandatory>
+                    <feature name="High">
+                        <events>
+                            <event id="isRunning_3" fexpression="High"> </event>
+                            <event id="highLevel" fexpression="High"> </event>
+                            <event id="isStopped" fexpression="High"> </event>
+                            <event id="isReady_2" fexpression="High"> </event>
+                            <event id="isReady_1" fexpression="High"> </event>
+                            <event id="pumpStart" fexpression="High"> </event>
+                            <event id="isNotReady" fexpression="High"> </event>
+                            <event id="setRunning" fexpression="High"> </event>
+                        </events>
+                        <event_constraints>
+                            <causalities>
+                                <causality target="isRunning_3">
+                                    <bundle>
+                                        <event id="highLevel"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="highLevel">
+                                    <bundle>
+                                        <event id="levelMsg"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isStopped">
+                                    <bundle>
+                                        <event id="highLevel"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isReady_2">
+                                    <bundle>
+                                        <event id="setReady_1"> </event>
+                                        <event id="setMethaneStop_0"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isReady_1">
+                                    <bundle>
+                                        <event id="highLevel"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="pumpStart">
+                                    <bundle>
+                                        <event id="isReady_2"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="isNotReady">
+                                    <bundle>
+                                        <event id="setReady_1"> </event>
+                                        <event id="setMethaneStop_0"> </event>
+                                    </bundle>
+                                </causality>
+                                <causality target="setRunning">
+                                    <bundle>
+                                        <event id="pumpStart"> </event>
+                                    </bundle>
+                                </causality>
+                            </causalities>
+                            <conflicts>
+                                <conflict>
+                                    <events>
+                                        <event id="isRunning_3"> </event>
+                                        <event id="isReady_2"> </event>
+                                        <event id="isReady_1"> </event>
+                                        <event id="pumpStart"> </event>
+                                        <event id="isNotReady"> </event>
+                                        <event id="setRunning"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isStopped"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="isStopped"> </event>
+                                        <event id="isReady_2"> </event>
+                                        <event id="isReady_1"> </event>
+                                        <event id="pumpStart"> </event>
+                                        <event id="isNotReady"> </event>
+                                        <event id="setRunning"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isRunning_3"> </event>
+                                    </events>
+                                </conflict>
+                                <conflict>
+                                    <events>
+                                        <event id="isRunning_3"> </event>
+                                        <event id="isStopped"> </event>
+                                        <event id="isReady_2"> </event>
+                                        <event id="pumpStart"> </event>
+                                        <event id="setRunning"> </event>
+                                    </events>
+                                    <events>
+                                        <event id="isNotReady"> </event>
+                                    </events>
+                                </conflict>
+                            </conflicts>
+                        </event_constraints>
+                    </feature>
+                </mandatory>
+                <event_constraints>
+                    <causalities>
+                        <causality target="highLevel">
+                            <bundle>
+                                <event id="levelMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isStopped">
+                            <bundle>
+                                <event id="highLevel"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="setLowStop">
+                            <bundle>
+                                <event id="pumpStop_2"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isNotReady">
+                            <bundle>
+                                <event id="setReady_1"> </event>
+                                <event id="setMethaneStop_0"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="setRunning">
+                            <bundle>
+                                <event id="pumpStart"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isRunning_4">
+                            <bundle>
+                                <event id="lowLevel"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="levelMsg">
+                            <bundle>
+                                <event id="receiveMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isRunning_3">
+                            <bundle>
+                                <event id="highLevel"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="lowLevel">
+                            <bundle>
+                                <event id="levelMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isReady_2">
+                            <bundle>
+                                <event id="setReady_1"> </event>
+                                <event id="setMethaneStop_0"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isReady_1">
+                            <bundle>
+                                <event id="highLevel"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isNotRunning_3">
+                            <bundle>
+                                <event id="lowLevel"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="pumpStart">
+                            <bundle>
+                                <event id="isReady_2"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="pumpStop_2">
+                            <bundle>
+                                <event id="isRunning_4"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isLowStop">
+                            <bundle>
+                                <event id="highLevel"> </event>
+                            </bundle>
+                        </causality>
+                    </causalities>
+                    <conflicts>
+                        <conflict>
+                            <events>
+                                <event id="isRunning_4"> </event>
+                                <event id="lowLevel"> </event>
+                                <event id="setLowStop"> </event>
+                                <event id="isNotRunning_3"> </event>
+                                <event id="pumpStop_2"> </event>
+                                <event id="isLowStop"> </event>
+                            </events>
+                            <events>
+                                <event id="isRunning_3"> </event>
+                                <event id="isStopped"> </event>
+                                <event id="isReady_1"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="isRunning_4"> </event>
+                                <event id="lowLevel"> </event>
+                                <event id="setLowStop"> </event>
+                                <event id="isNotRunning_3"> </event>
+                                <event id="pumpStop_2"> </event>
+                            </events>
+                            <events>
+                                <event id="isRunning_3"> </event>
+                                <event id="highLevel"> </event>
+                                <event id="isStopped"> </event>
+                                <event id="isReady_2"> </event>
+                                <event id="isReady_1"> </event>
+                                <event id="pumpStart"> </event>
+                                <event id="isNotReady"> </event>
+                                <event id="setRunning"> </event>
+                            </events>
+                        </conflict>
+                    </conflicts>
+                </event_constraints>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="MethaneDetect">
+                <events>
+                    <event id="palarmMsg" fexpression="MethaneDetect"> </event>
+                    <event id="isMethaneStop" fexpression="MethaneDetect"> </event>
+                    <event id="isRunning_0" fexpression="MethaneDetect"> </event>
+                    <event id="pumpStop_0" fexpression="MethaneDetect"> </event>
+                    <event id="setMethaneStop_0" fexpression="MethaneDetect"> </event>
+                    <event id="setMethaneStop_1" fexpression="MethaneDetect"> </event>
+                    <event id="isNotRunning_0" fexpression="MethaneDetect"> </event>
+                </events>
+                <event_constraints>
+                    <causalities>
+                        <causality target="palarmMsg">
+                            <bundle>
+                                <event id="receiveMsg"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isMethaneStop">
+                            <bundle>
+                                <event id="highLevel"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isRunning_0">
+                            <bundle>
+                                <event id="stopCmd"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="pumpStop_0">
+                            <bundle>
+                                <event id="isRunning_0"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="setMethaneStop_0">
+                            <bundle>
+                                <event id="isReady_1"> </event>
+                                <event id="isLowStop"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="setMethaneStop_1">
+                            <bundle>
+                                <event id="pumpStop_1"> </event>
+                                <event id="isNotRunning_2"> </event>
+                            </bundle>
+                        </causality>
+                        <causality target="isNotRunning_0">
+                            <bundle>
+                                <event id="stopCmd"> </event>
+                            </bundle>
+                        </causality>
+                    </causalities>
+                    <conflicts>
+                        <conflict>
+                            <events>
+                                <event id="palarmMsg"> </event>
+                                <event id="isMethaneStop"> </event>
+                                <event id="setMethaneStop_0"> </event>
+                                <event id="setMethaneStop_1"> </event>
+                                <event id="isNotRunning_0"> </event>
+                            </events>
+                            <events>
+                                <event id="isRunning_0"> </event>
+                                <event id="pumpStop_0"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="palarmMsg"> </event>
+                                <event id="isMethaneStop"> </event>
+                                <event id="isRunning_0"> </event>
+                                <event id="pumpStop_0"> </event>
+                                <event id="setMethaneStop_0"> </event>
+                                <event id="setMethaneStop_1"> </event>
+                            </events>
+                            <events>
+                                <event id="isNotRunning_0"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="isRunning_0"> </event>
+                                <event id="isMethaneStop"> </event>
+                                <event id="pumpStop_0"> </event>
+                                <event id="setMethaneStop_0"> </event>
+                                <event id="isNotRunning_0"> </event>
+                            </events>
+                            <events>
+                                <event id="palarmMsg"> </event>
+                                <event id="setMethaneStop_1"> </event>
+                            </events>
+                        </conflict>
+                        <conflict>
+                            <events>
+                                <event id="palarmMsg"> </event>
+                                <event id="isRunning_0"> </event>
+                                <event id="isMethaneStop"> </event>
+                                <event id="pumpStop_0"> </event>
+                                <event id="setMethaneStop_1"> </event>
+                                <event id="isNotRunning_0"> </event>
+                            </events>
+                            <events>
+                                <event id="setMethaneStop_0"> </event>
+                            </events>
+                        </conflict>
+                    </conflicts>
+                </event_constraints>
+            </feature>
+        </optional>
+        <event_constraints>
+            <causalities>
+                <causality target="palarmMsg">
+                    <bundle>
+                        <event id="receiveMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="commandMsg">
+                    <bundle>
+                        <event id="receiveMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pumpStop_1">
+                    <bundle>
+                        <event id="isRunning_2"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pumpStop_0">
+                    <bundle>
+                        <event id="isRunning_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="startCmd">
+                    <bundle>
+                        <event id="commandMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setLowStop">
+                    <bundle>
+                        <event id="pumpStop_2"> </event>
+                    </bundle>
+                </causality>
+                <causality target="end_0">
+                    <bundle>
+                        <event id="setStop"> </event>
+                    </bundle>
+                </causality>
+                <causality target="end_3">
+                    <bundle>
+                        <event id="levelMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isRunning_4">
+                    <bundle>
+                        <event id="lowLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="end_4">
+                    <bundle>
+                        <event id="isRunning_3"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                    </bundle>
+                </causality>
+                <causality target="levelMsg">
+                    <bundle>
+                        <event id="receiveMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isRunning_3">
+                    <bundle>
+                        <event id="highLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="end_1">
+                    <bundle>
+                        <event id="setReady_0"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="lowLevel">
+                    <bundle>
+                        <event id="levelMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="end_2">
+                    <bundle>
+                        <event id="setMethaneStop_1"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isMethaneStop">
+                    <bundle>
+                        <event id="highLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isRunning_0">
+                    <bundle>
+                        <event id="stopCmd"> </event>
+                    </bundle>
+                </causality>
+                <causality target="end_5">
+                    <bundle>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="setLowStop"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isRunning_2">
+                    <bundle>
+                        <event id="palarmMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setStop">
+                    <bundle>
+                        <event id="pumpStop_0"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isRunning_1">
+                    <bundle>
+                        <event id="startCmd"> </event>
+                    </bundle>
+                </causality>
+                <causality target="waterRise_1">
+                    <bundle>
+                        <event id="pumpRunning_1"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isReady_2">
+                    <bundle>
+                        <event id="setReady_1"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isReady_1">
+                    <bundle>
+                        <event id="highLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isReady_0">
+                    <bundle>
+                        <event id="startCmd"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pumpStart">
+                    <bundle>
+                        <event id="isReady_2"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pumpRunning_0">
+                    <bundle>
+                        <event id="waterRise_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isLowStop">
+                    <bundle>
+                        <event id="highLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="highLevel">
+                    <bundle>
+                        <event id="levelMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pumpStopped">
+                    <bundle>
+                        <event id="pumpStarted"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isStopped">
+                    <bundle>
+                        <event id="highLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setMethaneStop_0">
+                    <bundle>
+                        <event id="isReady_1"> </event>
+                        <event id="isLowStop"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setMethaneStop_1">
+                    <bundle>
+                        <event id="pumpStop_1"> </event>
+                        <event id="isNotRunning_2"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isNotReady">
+                    <bundle>
+                        <event id="setReady_1"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setRunning">
+                    <bundle>
+                        <event id="pumpStart"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setReady_0">
+                    <bundle>
+                        <event id="isNotRunning_1"> </event>
+                    </bundle>
+                </causality>
+                <causality target="setReady_1">
+                    <bundle>
+                        <event id="isReady_1"> </event>
+                        <event id="isLowStop"> </event>
+                    </bundle>
+                </causality>
+                <causality target="stopCmd">
+                    <bundle>
+                        <event id="commandMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isNotRunning_3">
+                    <bundle>
+                        <event id="lowLevel"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isNotRunning_2">
+                    <bundle>
+                        <event id="palarmMsg"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pumpStop_2">
+                    <bundle>
+                        <event id="isRunning_4"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isNotRunning_1">
+                    <bundle>
+                        <event id="startCmd"> </event>
+                    </bundle>
+                </causality>
+                <causality target="isNotRunning_0">
+                    <bundle>
+                        <event id="stopCmd"> </event>
+                    </bundle>
+                </causality>
+            </causalities>
+            <conflicts>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="end_0"> </event>
+                        <event id="end_3"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="isRunning_3"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="isLowStop"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="end_0"> </event>
+                        <event id="end_3"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="end_1"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="isRunning_3"> </event>
+                        <event id="isStopped"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="levelMsg"> </event>
+                        <event id="end_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="end_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="waterRise_0"> </event>
+                        <event id="pumpRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="waterRise_1"> </event>
+                        <event id="pumpRunning_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="end_0"> </event>
+                        <event id="end_3"> </event>
+                        <event id="end_4"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="end_1"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="isRunning_4"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_5"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="pumpStop_2"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="end_3"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="end_4"> </event>
+                        <event id="levelMsg"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isLowStop"> </event>
+                    </events>
+                    <events>
+                        <event id="setReady_0"> </event>
+                        <event id="end_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="end_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="end_4"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                    </events>
+                    <events>
+                        <event id="isMethaneStop"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="setReady_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="end_0"> </event>
+                        <event id="end_3"> </event>
+                        <event id="end_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="end_5"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="commandMsg"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="levelMsg"> </event>
+                        <event id="end_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                    </events>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="end_2"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="palarmMsg"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="commandMsg"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="end_4"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="setStop"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="setMethaneStop_1"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="stopCmd"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="end_3"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pumpStop_0"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="end_0"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="levelMsg"> </event>
+                        <event id="end_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="isMethaneStop"> </event>
+                        <event id="isRunning_0"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="setMethaneStop_0"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_0"> </event>
+                    </events>
+                    <events>
+                        <event id="end_2"> </event>
+                        <event id="pumpStop_1"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="isNotRunning_2"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pumpStop_1"> </event>
+                        <event id="startCmd"> </event>
+                        <event id="setLowStop"> </event>
+                        <event id="isRunning_4"> </event>
+                        <event id="end_3"> </event>
+                        <event id="levelMsg"> </event>
+                        <event id="end_4"> </event>
+                        <event id="isRunning_3"> </event>
+                        <event id="lowLevel"> </event>
+                        <event id="end_1"> </event>
+                        <event id="end_2"> </event>
+                        <event id="isRunning_2"> </event>
+                        <event id="end_5"> </event>
+                        <event id="isRunning_1"> </event>
+                        <event id="isReady_2"> </event>
+                        <event id="isReady_1"> </event>
+                        <event id="pumpStart"> </event>
+                        <event id="isReady_0"> </event>
+                        <event id="isLowStop"> </event>
+                        <event id="highLevel"> </event>
+                        <event id="isStopped"> </event>
+                        <event id="isNotReady"> </event>
+                        <event id="setRunning"> </event>
+                        <event id="setReady_0"> </event>
+                        <event id="setReady_1"> </event>
+                        <event id="isNotRunning_3"> </event>
+                        <event id="pumpStop_2"> </event>
+                        <event id="isNotRunning_2"> </event>
+                        <event id="isNotRunning_1"> </event>
+                    </events>
+                    <events>
+                        <event id="isRunning_0"> </event>
+                        <event id="pumpStop_0"> </event>
+                        <event id="isNotRunning_0"> </event>
+                        <event id="end_0"> </event>
+                    </events>
+                </conflict>
+            </conflicts>
+        </event_constraints>
+    </feature>
+</bfm>

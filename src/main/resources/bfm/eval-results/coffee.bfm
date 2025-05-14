@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bfm namespace="VendingMachine">
+    <feature name="VM">
+        <events>
+            <event id="pour_milk_1 | CAP"> </event>
+            <event id="coffee_1 | COF"> </event>
+            <event id="sugar | BEV"> </event>
+            <event id="ring | TON"> </event>
+            <event id="cappuccino_0 | CAP"> </event>
+            <event id="pour_sugar_0 | BEV"> </event>
+            <event id="pour_tea | TEA"> </event>
+            <event id="insert_Dollar | DOL"> </event>
+            <event id="pour_coffee_0 | CAP"> </event>
+            <event id="cappuccino_1 | CAP"> </event>
+            <event id="tea_0 | TEA"> </event>
+            <event id="pour_sugar_2 | BEV"> </event>
+            <event id="pour_sugar_1 | BEV"> </event>
+            <event id="take_cup | VM"> </event>
+            <event id="tea_1 | TEA"> </event>
+            <event id="skip | not TON"> </event>
+            <event id="coffee_0 | COF"> </event>
+            <event id="cancelBev | X"> </event>
+            <event id="pour_coffee_1 | COF"> </event>
+            <event id="pour_coffee_2 | CAP"> </event>
+            <event id="pour_milk_0 | CAP"> </event>
+            <event id="no_sugar | BEV"> </event>
+            <event id="insert_Euro | EUR"> </event>
+        </events>
+        <mandatory>
+            <feature name="BEV">
+                <mandatory>
+                    <feature name="COF"></feature>
+                </mandatory>
+                <optional>
+                    <feature name="TEA"></feature>
+                </optional>
+                <optional>
+                    <feature name="CAP"></feature>
+                </optional>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="TON"></feature>
+        </optional>
+        <optional>
+            <feature name="X"></feature>
+        </optional>
+        <mandatory>
+            <feature name="CUR">
+                <alternative>
+                    <feature name="EUR"></feature>
+                    <feature name="DOL"></feature>
+                </alternative>
+            </feature>
+        </mandatory>
+        <feature_constraints>
+            <feature_constraint fexpression="(!CAP || !DOL)"></feature_constraint>
+            <feature_constraint fexpression="(TON || !CAP)"></feature_constraint>
+        </feature_constraints>
+        <event_constraints>
+            <causalities>
+                <causality target="pour_milk_1 | CAP">
+                    <bundle>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="coffee_1 | COF">
+                    <bundle>
+                        <event id="no_sugar | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="sugar | BEV">
+                    <bundle>
+                        <event id="insert_Dollar | DOL"> </event>
+                        <event id="insert_Euro | EUR"> </event>
+                    </bundle>
+                </causality>
+                <causality target="ring | TON">
+                    <bundle>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="cappuccino_0 | CAP">
+                    <bundle>
+                        <event id="sugar | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_sugar_0 | BEV">
+                    <bundle>
+                        <event id="coffee_0 | COF"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_tea | TEA">
+                    <bundle>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_coffee_0 | CAP">
+                    <bundle>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="cappuccino_1 | CAP">
+                    <bundle>
+                        <event id="no_sugar | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="tea_0 | TEA">
+                    <bundle>
+                        <event id="sugar | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_sugar_2 | BEV">
+                    <bundle>
+                        <event id="cappuccino_0 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_sugar_1 | BEV">
+                    <bundle>
+                        <event id="tea_0 | TEA"> </event>
+                    </bundle>
+                </causality>
+                <causality target="take_cup | VM">
+                    <bundle>
+                        <event id="ring | TON"> </event>
+                        <event id="skip | not TON"> </event>
+                    </bundle>
+                </causality>
+                <causality target="tea_1 | TEA">
+                    <bundle>
+                        <event id="no_sugar | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="skip | not TON">
+                    <bundle>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="coffee_0 | COF">
+                    <bundle>
+                        <event id="sugar | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="cancelBev | X">
+                    <bundle>
+                        <event id="insert_Dollar | DOL"> </event>
+                        <event id="insert_Euro | EUR"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_coffee_1 | COF">
+                    <bundle>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_coffee_2 | CAP">
+                    <bundle>
+                        <event id="pour_milk_0 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_milk_0 | CAP">
+                    <bundle>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </bundle>
+                </causality>
+                <causality target="no_sugar | BEV">
+                    <bundle>
+                        <event id="insert_Dollar | DOL"> </event>
+                        <event id="insert_Euro | EUR"> </event>
+                    </bundle>
+                </causality>
+            </causalities>
+            <conflicts>
+                <conflict>
+                    <events>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="no_sugar | BEV"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="sugar | BEV"> </event>
+                        <event id="ring | TON"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="take_cup | VM"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="skip | not TON"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                        <event id="no_sugar | BEV"> </event>
+                    </events>
+                    <events>
+                        <event id="cancelBev | X"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="insert_Dollar | DOL"> </event>
+                    </events>
+                    <events>
+                        <event id="insert_Euro | EUR"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="sugar | BEV"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="cancelBev | X"> </event>
+                    </events>
+                    <events>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="sugar | BEV"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="coffee_1 | COF"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="ring | TON"> </event>
+                        <event id="cancelBev | X"> </event>
+                    </events>
+                    <events>
+                        <event id="skip | not TON"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="no_sugar | BEV"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="sugar | BEV"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="sugar | BEV"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="tea_1 | TEA"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                        <event id="no_sugar | BEV"> </event>
+                    </events>
+                    <events>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="pour_sugar_2 | BEV"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="cappuccino_0 | CAP"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                        <event id="cappuccino_1 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_milk_1 | CAP"> </event>
+                        <event id="tea_0 | TEA"> </event>
+                        <event id="pour_sugar_1 | BEV"> </event>
+                        <event id="coffee_1 | COF"> </event>
+                        <event id="tea_1 | TEA"> </event>
+                        <event id="pour_tea | TEA"> </event>
+                        <event id="pour_sugar_0 | BEV"> </event>
+                        <event id="coffee_0 | COF"> </event>
+                        <event id="pour_coffee_1 | COF"> </event>
+                        <event id="cancelBev | X"> </event>
+                        <event id="pour_coffee_0 | CAP"> </event>
+                    </events>
+                    <events>
+                        <event id="pour_coffee_2 | CAP"> </event>
+                        <event id="pour_milk_0 | CAP"> </event>
+                    </events>
+                </conflict>
+            </conflicts>
+        </event_constraints>
+    </feature>
+</bfm>
