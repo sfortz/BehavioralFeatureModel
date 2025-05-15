@@ -3,7 +3,6 @@ package uk.kcl.info;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-
 import be.vibes.fexpression.exception.DimacsFormatException;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.io.xml.XmlLoaders;
@@ -14,9 +13,7 @@ import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotHandler;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
 import be.vibes.ts.io.dot.TransitionSystemDotPrinter;
-import uk.kcl.info.bfm.BehavioralFeatureModel;
-import uk.kcl.info.bfm.BundleEventStructure;
-import uk.kcl.info.bfm.FeaturedEventStructure;
+import uk.kcl.info.bfm.*;
 import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
@@ -237,10 +234,10 @@ public class Main {
         testbfm2fts();
         testparallel();*/
 
-
-        for(Map.Entry<String,String> entry: getSystems().entrySet()){
+        /* for(Map.Entry<String,String> entry: getSystems().entrySet()){
             testfts2bfm(entry.getValue(), entry.getKey());
         }
+       */
 
         System.out.println("============================================");
         for(String key: getSystems().keySet()){
@@ -294,7 +291,6 @@ public class Main {
     public static Map<String, String> getSystems() {
         Map<String, String> systems = new HashMap<>();
 
-        /*
         systems.put("cpterminal","cpterminal");
         systems.put("robot-linear","robot");
         systems.put("coffee","coffee");
@@ -306,9 +302,9 @@ public class Main {
         systems.put("/vm/new/svm_synchro","svm");
         systems.put("/vm/new/coffeesoup","coffeesoup");
         systems.put("/vm/new/sodasoup","sodasoup");
-        systems.put("/vm/new/coffeesoda","coffeesoda");*/
+        systems.put("/vm/new/coffeesoda","coffeesoda");
 
-        //systems.put("/vm/new/svm","svm");
+        systems.put("/vm/new/svm","svm");
 
         String minepumpPath = "minepump/new/";
         //File minepumpDir = new File("src/main/resources/fts/eval/" + minepumpPath + "done/");
@@ -343,6 +339,8 @@ public class Main {
         System.out.println("BFM Conflict count: " + bfm.getConflictsCount());
         System.out.println("BFM Causality count: " + bfm.getCausalitiesCount());
         System.out.println("BFM Max Conflict size: " + bfm.getMaxConflictSize());
+
+        //bfm.moveCausalities();
     }
 }
 
