@@ -63,6 +63,26 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return ev;
     }
 
+    protected void updateEventFexpr(String eventName, FExpression fexpr) {
+        Preconditions.checkNotNull(eventName, "Event name may not be null!");
+        Preconditions.checkNotNull(fexpr, "FExpression may not be null!");
+
+        // Find existing event
+        Event target = null;
+        for (Event e : events.keySet()) {
+            if (e.getName().equals(eventName)) {
+                target = e;
+                break;
+            }
+        }
+
+        Preconditions.checkArgument(target != null,
+                "Cannot update FExpression: event '" + eventName + "' does not exist in the table.");
+
+        //FExpression fe = getBFexpFromFM(fexpr);
+        events.put(target, fexpr);  // This updates the existing event's mapping
+    }
+
     private BehavioralFeature getFeatureFromFM(Feature<?> feature){
         for(BehavioralFeature bf: this.getAllRecursiveFeatures()){
             if(bf.getFeatureName().equalsIgnoreCase(feature.getFeatureName())){

@@ -50,6 +50,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     // Stack to track FM depth
     protected Stack<Group<BehavioralFeature>> groupStack = new Stack<>();
     protected Stack<BehavioralFeature> featureStack = new Stack<>();
+    protected BehavioralFeature rootFeature = null;
 
     // Stack to track nested bundles
     protected Stack<Set<String>> bundleStack = null;
@@ -165,6 +166,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
         BehavioralFeature currentFeature;
         if (this.groupStack.isEmpty()) {
             currentFeature = this.factory.setRootFeature(featureName);
+            rootFeature = currentFeature;
         } else {
             currentFeature = this.factory.addFeature(this.groupStack.peek(), featureName);
         }
@@ -222,15 +224,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
             Attribute exprAtt = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR));
             if (exprAtt != null) {
                 String expr = exprAtt.getValue();
-                if (expr != null) {
-                    try {
-                        FExpression fexpr = ParserUtil.getInstance().parse(expr);
-                        factory.addEvent(featureStack.peek(), id, fexpr);
-                    } catch (ParserException e) {
-                        LOG.error("Exception while parsing fexpression {}!", expr, e);
-                        throw new XMLStreamException("Exception while parsing fexpression " + expr, e);
-                    }
-                }
+                factory.addEvent(featureStack.peek(), id, expr);
             } else {
                 factory.addEvent(featureStack.peek(), id);
             }
@@ -266,6 +260,9 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
                 break;
             case EVENT_TAG:
                 LOG.trace("Ending event");
+                break;
+            case EVENTS_TAG:
+                this.factory.updateAllEventFexpr();
                 break;
             case CAUSALITY_TAG:
                 LOG.trace("Ending causality");
