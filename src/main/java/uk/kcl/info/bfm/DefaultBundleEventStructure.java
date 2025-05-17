@@ -215,6 +215,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
+    public int getTotalNumberOfConflictingEvents() {
+        return allConflicts.getTotalNumberOfConflictingEvents();
+    }
+
+    @Override
     public boolean areInConflict(Event var1, Event var2){
         return this.allConflicts.areInConflict(var1, var2);
     }

@@ -58,6 +58,38 @@ public class ConflictSet {
         return allEvents;
     }
 
+
+    public int size(){
+        if(conflictMap.isEmpty()){
+            return 0;
+        } else {
+            return findMinimalBicliqueEdgeCover().size();
+        }
+    }
+
+    public int maxConflictSize() {
+        if (conflictMap.isEmpty()) {
+            return 0;
+        }
+
+        Set<Biclique> bicliques = findMinimalBicliqueEdgeCover();
+        return bicliques.stream()
+                .mapToInt(clique -> clique.getA().size() + clique.getB().size())
+                .max()
+                .orElse(0);
+    }
+
+    public int getTotalNumberOfConflictingEvents() {
+        if (conflictMap.isEmpty()) {
+            return 0;
+        }
+
+        Set<Biclique> bicliques = findMinimalBicliqueEdgeCover();
+        return bicliques.stream()
+                .mapToInt(clique -> clique.getA().size() + clique.getB().size())
+                .sum();
+    }
+
     @Override
     public String toString() {
         Set<Biclique> cliques = findMinimalBicliqueEdgeCover();
@@ -124,26 +156,6 @@ public class ConflictSet {
             }
         }
         return bestPivot;
-    }
-
-    public int size(){
-        if(conflictMap.isEmpty()){
-            return 0;
-        } else {
-            return findMinimalBicliqueEdgeCover().size();
-        }
-    }
-
-    public int maxConflictSize() {
-        if (conflictMap.isEmpty()) {
-            return 0;
-        }
-
-        Set<Biclique> bicliques = findMinimalBicliqueEdgeCover();
-        return bicliques.stream()
-                .mapToInt(clique -> clique.getA().size() + clique.getB().size())
-                .max()
-                .orElse(0);
     }
 
     public Set<Biclique> findMinimalBicliqueEdgeCover() {

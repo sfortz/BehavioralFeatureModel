@@ -290,5 +290,9 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return conflicts.maxConflictSize();
     }
 
+    public int getTotalNumberOfConflictingEvents() {
+        return conflicts.getTotalNumberOfConflictingEvents();
+    }
+
     //TODO: Override toString, equals and hashcode to Add the behavioural part
 }

@@ -297,6 +297,11 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     }
 
     @Override
+    public int getTotalNumberOfConflictingEvents() {
+        return this.getRootFeature().getAllRecursiveFeatures().stream().mapToInt(BehavioralFeature::getTotalNumberOfConflictingEvents).sum();
+    }
+
+    @Override
     public Iterator<CausalityRelation> getOutgoingCausalities(Event event) {
 
         Set<CausalityRelation> causalities = new HashSet<>();

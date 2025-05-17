@@ -136,7 +136,7 @@ public class Translator {
 
         // Step 1: Collect actions & add events
         Map<Action, Event> eventMap = new HashMap<>();
-        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) { //TODO: This loop only works for Linear BES!
+        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) { //TODO: This loop only works for Linear BES! (or interleaving if composition)
             Action a = it.next();
             String name = a.getName();
             Event e = new Event(name);
@@ -192,7 +192,6 @@ public class Translator {
         return factory.build();
     }
 
-
     private static boolean isPredecessor(FeaturedTransitionSystem fts, Action source, Action target) {
 
         for (Iterator<Transition> it1 = fts.getTransitions(source); it1.hasNext(); ) {
@@ -214,7 +213,6 @@ public class Translator {
 
         return false;
     }
-
 
     private static FExpression isReachable(FeaturedTransitionSystem fts, State current, FExpression f1, Action destination, Set<State> visited) {
         if (visited.contains(current)) {

@@ -326,21 +326,33 @@ public class Main {
         return systems;
     }
 
-    public static void testbfmMetrics(String bfmName) {
+    public static void testbfmMetrics(String system) throws TransitionSystemDefinitionException, IOException {
 
-        System.out.println("********************************** " + bfmName+ " ******************************");
+        //System.out.println("********************************** " + system + " ******************************");
 
         String dirPath = "src/main/resources/";
-        String basePath = dirPath + "bfm/eval-results/" + bfmName;
-        File fileBFM = new File(basePath + ".bfm");
+        String bfmBasePath = dirPath + "bfm/eval-results/" + system;
+        File fileBFM = new File(bfmBasePath + ".bfm");
         BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(fileBFM);
 
-        System.out.println("BFM Event count: " + bfm.getEventsCount());
-        System.out.println("BFM Conflict count: " + bfm.getConflictsCount());
-        System.out.println("BFM Causality count: " + bfm.getCausalitiesCount());
-        System.out.println("BFM Max Conflict size: " + bfm.getMaxConflictSize());
+        FeaturedTransitionSystem fts;
+        String ftsBasePath = dirPath + "fts/eval/" + system;
+        File ftsFile = new File(ftsBasePath + ".fts");
+        File dotFile = new File(ftsBasePath + ".dot");
 
-        //bfm.moveCausalities();
+        if (ftsFile.exists()) {
+            fts = XmlLoaderUtility.loadFeaturedTransitionSystem(ftsFile);
+        } else if (dotFile.exists()) {
+            fts = FeaturedTransitionSystemDotHandler.parseDotFile(dotFile.getAbsolutePath());
+        } else {
+            throw new FileNotFoundException("Neither .fts nor .dot file found for " + system);
+        }
+
+        int ftsTotal = fts.getActionsCount() + fts.getStatesCount() + fts.getTransitionsCount();
+        int bfmTotal = bfm.getEventsCount() + bfm.getCausalitiesCount() + bfm.getTotalNumberOfConflictingEvents();
+        //System.out.println(system + " & " + fts.getActionsCount() + " & " + fts.getStatesCount() + " & \\cellcolor{lightred} " + fts.getTransitionsCount() + " & " + ftsTotal + " & " + bfm.getEventsCount() + " & " + bfm.getConflictsCount() + "\\(\\mid\\) " + bfm.getMaxConflictSize() + " & \\cellcolor{lightgreen} " + bfm.getCausalitiesCount() + " & " + bfmTotal + " & TIME \\\\");
+        System.out.println(system +  " & " + ftsTotal +  " & " + bfmTotal + " = " + (bfmTotal-ftsTotal));
+
     }
 }
 
