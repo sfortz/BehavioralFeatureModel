@@ -1,0 +1,30 @@
+digraph G {
+center = TRUE;
+mclimit = 10.0;
+nodesep = 0.05;
+node [ width=0.25, height=0.25, label="" ];
+s0 [ peripheries=2 ];
+s0 [label="(1)"];
+s1 [label="(3)"];
+s2 [label="(2)"];
+s3 [label="(5)"];
+s4 [label="(6)"];
+s5 [label="(4)"];
+s6 [label="(7)"];
+s7 [label="(10)"];
+s8 [label="(8)"];
+s9 [label="(9)"];
+s0->s1[label="free"];
+s0->s2[label="pay"];
+s1->s3[label="soda"];
+s1->s4[label="tea"];
+s1->s5[label="cancel"];
+s2->s1[label="change"];
+s3->s6[label="serveSoda"];
+s4->s6[label="serveTea"];
+s5->s7[label="return"];
+s6->s7[label="take_0"];
+s6->s8[label="open"];
+s8->s9[label="take_1"];
+s9->s7[label="close"];
+}
