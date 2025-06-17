@@ -1,0 +1,42 @@
+<fm namespace="SoupVendingMachine">
+    <feature name="M">
+        <mandatory>
+            <feature name="O"/>
+        </mandatory>
+        <mandatory>
+            <feature name="SC">
+                <mandatory>
+                    <feature name="S">
+                        <or>
+                            <feature name="CS"/>
+                            <feature name="PS"/>
+                            <feature name="TS"/>
+                        </or>
+                    </feature>
+                </mandatory>
+                <optional>
+                    <feature name="U"/>
+                </optional>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="R">
+                <optional>
+                    <feature name="P"/>
+                </optional>
+            </feature>
+        </optional>
+        <optional>
+            <feature name="X"/>
+        </optional>
+        <alternative>
+            <feature name="E"/>
+            <feature name="D"/>
+        </alternative>
+        <feature_constraints>
+            <feature_constraints>
+                <feature_constraint fexpression="!(D &amp;&amp; SC) || U"/>
+            </feature_constraints>
+        </feature_constraints>
+    </feature>
+</fm>

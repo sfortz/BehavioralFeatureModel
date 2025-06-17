@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<events>
+		<event id="map" feature="mapping" fexpression="mapping"/>
+		<event id="liDet" feature="lidar" fexpression="lidar"/>
+		<event id="caDet" feature="camera" fexpression="camera"/>
+		<event id="move" feature="cleaning"/>
+		<event id="goAround" feature="cleaning"/>
+		<event id="clean" feature="cleaning"/>
+		<event id="charge" feature="robot"/>
+	</events>
+
+	<causalities>
+		<causality target="move">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="liDet">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="caDet">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="goAround">
+			<bundle>
+				<event id="liDet"/>
+				<event id="caDet"/>
+			</bundle>
+		</causality>
+
+		<causality target="clean">
+			<bundle>
+				<event id="goAround"/>
+				<event id="move"/>
+			</bundle>
+		</causality>
+
+		<causality target="charge">
+			<bundle>
+				<event id="clean"/>
+			</bundle>
+		</causality>
+	</causalities>
+	<conflicts>
+		<conflict>
+			<events>
+				<event id="liDet"/>
+				<event id="caDet"/>
+				<event id="goAround"/>
+			</events>
+			<events>
+				<event id="move"/>
+			</events>
+		</conflict>
+	</conflicts>
+</fes>

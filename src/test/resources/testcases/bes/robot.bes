@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<events>
+		<event id="map"/>
+		<event id="liDet"/>
+		<event id="caDet"/>
+		<event id="move"/>
+		<event id="goAround"/>
+		<event id="clean"/>
+		<event id="charge"/>
+	</events>
+
+	<causalities>
+		<causality target="move">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="liDet">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="caDet">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="goAround">
+			<bundle>
+				<event id="liDet"/>
+				<event id="caDet"/>
+			</bundle>
+		</causality>
+
+		<causality target="clean">
+			<bundle>
+				<event id="goAround"/>
+				<event id="move"/>
+			</bundle>
+		</causality>
+
+		<causality target="charge">
+			<bundle>
+				<event id="clean"/>
+			</bundle>
+		</causality>
+	</causalities>
+
+	<conflicts>
+		<conflict>
+			<events>
+				<event id="liDet"/>
+				<event id="caDet"/>
+				<event id="goAround"/>
+			</events>
+			<events>
+				<event id="move"/>
+			</events>
+		</conflict>
+		<conflict>
+			<events>
+				<event id="liDet"/>
+			</events>
+			<events>
+				<event id="caDet"/>
+			</events>
+		</conflict>
+	</conflicts>
+</bes>

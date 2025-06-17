@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<events>
+		<event id="map"/>
+		<event id="liDet_0"/>
+		<event id="caDet_0"/>
+		<event id="move_0"/>
+		<event id="liDet_1"/>
+		<event id="caDet_1"/>
+		<event id="move_1"/>
+		<event id="goAround"/>
+		<event id="clean"/>
+		<event id="charge"/>
+	</events>
+
+	<causalities>
+		<causality target="move_0">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="liDet_0">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="caDet_0">
+			<bundle>
+				<event id="map"/>
+			</bundle>
+		</causality>
+
+		<causality target="goAround">
+			<bundle>
+				<event id="liDet_0"/>
+				<event id="caDet_0"/>
+				<event id="liDet_1"/>
+				<event id="caDet_1"/>
+			</bundle>
+		</causality>
+
+		<causality target="clean">
+			<bundle>
+				<event id="goAround"/>
+				<event id="move_0"/>
+				<event id="move_1"/>
+			</bundle>
+		</causality>
+
+		<causality target="charge">
+			<bundle>
+				<event id="clean"/>
+			</bundle>
+		</causality>
+	</causalities>
+
+	<conflicts>
+		<conflict>
+			<events>
+				<event id="liDet_0"/>
+				<event id="liDet_1"/>
+				<event id="caDet_0"/>
+				<event id="caDet_1"/>
+				<event id="goAround"/>
+			</events>
+			<events>
+				<event id="move_0"/>
+				<event id="move_1"/>
+			</events>
+		</conflict>
+		<conflict>
+			<events>
+				<event id="liDet_0"/>
+				<event id="liDet_1"/>
+			</events>
+			<events>
+				<event id="caDet_0"/>
+				<event id="caDet_1"/>
+			</events>
+		</conflict>
+		<conflict>
+			<events>
+				<event id="liDet_0"/>
+				<event id="caDet_0"/>
+				<event id="move_0"/>
+			</events>
+			<events>
+				<event id="liDet_1"/>
+				<event id="caDet_1"/>
+				<event id="move_1"/>
+			</events>
+		</conflict>
+		<conflict>
+			<events>
+				<event id="map"/>
+			</events>
+			<events>
+				<event id="liDet_1"/>
+				<event id="caDet_1"/>
+				<event id="move_1"/>
+			</events>
+		</conflict>
+	</conflicts>
+</bes>

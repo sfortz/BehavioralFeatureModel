@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bfm namespace="CleaningRobot">
+	<feature name="Robot">
+		<events>
+			<event id="charge"/>
+		</events>
+		<optional>
+			<feature name="Mapping">
+				<events>
+					<event id="map" fexpression="mapping"/>
+				</events>
+			</feature>
+		</optional>
+
+		<mandatory>
+			<feature name="ObstacleDetection">
+				<alternative>
+					<feature name="Lidar">
+						<events>
+							<event id="liDet" fexpression="lidar"/>
+						</events>
+					</feature>
+					<feature name="Camera">
+						<events>
+							<event id="caDet" fexpression="camera"/>
+						</events>
+					</feature>
+				</alternative>
+			</feature>
+		</mandatory>
+
+		<mandatory>
+			<feature name="Cleaning">
+				<events>
+					<event id="move"/>
+					<event id="goAround"/>
+					<event id="clean"/>
+				</events>
+				<event_constraints>
+					<causalities>
+						<causality target="clean">
+							<bundle>
+								<event id="goAround"/>
+								<event id="move"/>
+							</bundle>
+						</causality>
+					</causalities>
+
+					<conflicts>
+						<conflict>
+							<events>
+								<event id="goAround"/>
+							</events>
+							<events>
+								<event id="move"/>
+							</events>
+						</conflict>
+					</conflicts>
+				</event_constraints>
+			</feature>
+		</mandatory>
+
+		<event_constraints>
+		<causalities>
+			<causality target="move">
+				<bundle>
+					<event id="map"/>
+				</bundle>
+			</causality>
+
+			<causality target="liDet">
+				<bundle>
+					<event id="map"/>
+				</bundle>
+			</causality>
+
+			<causality target="caDet">
+				<bundle>
+					<event id="map"/>
+				</bundle>
+			</causality>
+
+			<causality target="goAround">
+				<bundle>
+					<event id="liDet"/>
+					<event id="caDet"/>
+				</bundle>
+			</causality>
+
+			<causality target="charge">
+				<bundle>
+					<event id="clean"/>
+				</bundle>
+			</causality>
+		</causalities>
+
+		<conflicts>
+			<conflict>
+				<events>
+					<event id="liDet"/>
+					<event id="caDet"/>
+				</events>
+				<events>
+					<event id="move"/>
+				</events>
+			</conflict>
+		</conflicts>
+	</event_constraints>
+	</feature>
+</bfm>
