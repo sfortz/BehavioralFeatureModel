@@ -54,14 +54,12 @@
             <events>
                 <event id="liDet_1"> </event>
                 <event id="liDet_0"> </event>
-                <event id="caDet_0"> </event>
+                <event id="move_1"> </event>
                 <event id="move_0"> </event>
                 <event id="caDet_1"> </event>
-                <event id="goAround"> </event>
-                <event id="map"> </event>
             </events>
             <events>
-                <event id="move_1"> </event>
+                <event id="caDet_0"> </event>
             </events>
         </conflict>
         <conflict>
@@ -95,36 +93,38 @@
                 <event id="liDet_1"> </event>
                 <event id="liDet_0"> </event>
                 <event id="move_1"> </event>
-                <event id="move_0"> </event>
-                <event id="caDet_1"> </event>
-            </events>
-            <events>
-                <event id="caDet_0"> </event>
-            </events>
-        </conflict>
-        <conflict>
-            <events>
-                <event id="liDet_1"> </event>
-                <event id="move_1"> </event>
-                <event id="caDet_0"> </event>
-                <event id="move_0"> </event>
-                <event id="caDet_1"> </event>
-            </events>
-            <events>
-                <event id="liDet_0"> </event>
-            </events>
-        </conflict>
-        <conflict>
-            <events>
-                <event id="liDet_1"> </event>
-                <event id="liDet_0"> </event>
-                <event id="move_1"> </event>
                 <event id="caDet_0"> </event>
                 <event id="move_0"> </event>
                 <event id="map"> </event>
             </events>
             <events>
                 <event id="caDet_1"> </event>
+            </events>
+        </conflict>
+        <conflict>
+            <events>
+                <event id="liDet_1"> </event>
+                <event id="liDet_0"> </event>
+                <event id="caDet_0"> </event>
+                <event id="move_0"> </event>
+                <event id="caDet_1"> </event>
+                <event id="goAround"> </event>
+                <event id="map"> </event>
+            </events>
+            <events>
+                <event id="move_1"> </event>
+            </events>
+        </conflict>
+        <conflict>
+            <events>
+                <event id="liDet_1"> </event>
+                <event id="move_1"> </event>
+                <event id="caDet_0"> </event>
+                <event id="move_0"> </event>
+                <event id="caDet_1"> </event>
+            </events>
+            <events>
+                <event id="liDet_0"> </event>
             </events>
         </conflict>
     </conflicts>

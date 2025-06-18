@@ -1,4 +1,4 @@
-package uk.kcl.info;
+package uk.kcl.info.utils.ftslabelling;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.exception.DimacsFormatException;

@@ -1,0 +1,28 @@
+digraph G {
+rankdir=LR;
+state0[ label = "State_0", style=filled, color=green ];
+state1 [ label = "State_2" ];
+state1 -> state2 [ label=" goAround " ];
+state3 [ label = "State_3" ];
+state3 -> state4 [ label=" clean " ];
+state5 [ label = "State_10" ];
+state6 [ label = "State_4" ];
+state6 -> state7 [ label=" goAround " ];
+state8 [ label = "State_11" ];
+state4 [ label = "State_5" ];
+state4 -> state5 [ label=" charge " ];
+state9 [ label = "State_12" ];
+state0 -> state10 [ label=" map " ];
+state10 [ label = "State_1" ];
+state10 -> state1 [ label=" caDet " ];
+state10 -> state3 [ label=" move " ];
+state10 -> state6 [ label=" liDet " ];
+state7 [ label = "State_6" ];
+state7 -> state11 [ label=" clean " ];
+state2 [ label = "State_7" ];
+state2 -> state12 [ label=" clean " ];
+state11 [ label = "State_8" ];
+state11 -> state8 [ label=" charge " ];
+state12 [ label = "State_9" ];
+state12 -> state9 [ label=" charge " ];
+}

@@ -1,9 +1,8 @@
-package uk.kcl.info;
+package uk.kcl.info.utils.ftslabelling;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.FExpressionVisitorWithReturn;
 import be.vibes.fexpression.Feature;
-import be.vibes.fexpression.exception.DimacsFormatException;
 import be.vibes.fexpression.exception.FExpressionException;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.io.xml.XmlLoaders;

@@ -1,10 +1,9 @@
-package uk.kcl.info;
+package uk.kcl.info.utils.translators;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.FeatureModelFactory;
-import be.vibes.solver.Sat4JSolverFacade;
 import be.vibes.ts.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -314,11 +313,6 @@ public class Translator {
             factory.addAction(ev.getName());
         }
         factory.addStates(configToStateMap.values().toArray(new String[0]));
-
-        Map<Event, FExpression> mu = new HashMap<>();
-        for (BehavioralFeature bf : bfm.getFeatures()) {
-            mu.putAll(bf.getEventMap());
-        }
 
         // Create transitions efficiently
         for (int size : configurations.keySet()) {
