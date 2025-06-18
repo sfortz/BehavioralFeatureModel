@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bfm namespace="CleaningRobot">
+    <feature name="Robot">
+        <events>
+            <event id="charge"> </event>
+            <event id="move"> </event>
+            <event id="clean"> </event>
+            <event id="goAround"> </event>
+        </events>
+        <optional>
+            <feature name="Mapping">
+                <events>
+                    <event id="map" fexpression="Mapping"> </event>
+                </events>
+            </feature>
+        </optional>
+        <mandatory>
+            <feature name="ObstacleDetection">
+                <alternative>
+                    <feature name="Lidar">
+                        <events>
+                            <event id="liDet" fexpression="Lidar"> </event>
+                        </events>
+                    </feature>
+                    <feature name="Camera">
+                        <events>
+                            <event id="caDet" fexpression="Camera"> </event>
+                        </events>
+                    </feature>
+                </alternative>
+                <event_constraints>
+                    <conflicts>
+                        <conflict>
+                            <events>
+                                <event id="caDet"> </event>
+                            </events>
+                            <events>
+                                <event id="liDet"> </event>
+                            </events>
+                        </conflict>
+                    </conflicts>
+                </event_constraints>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="Cleaning"></feature>
+        </mandatory>
+        <event_constraints>
+            <causalities>
+                <causality target="clean">
+                    <bundle>
+                        <event id="move"> </event>
+                        <event id="goAround"> </event>
+                    </bundle>
+                </causality>
+                <causality target="caDet">
+                    <bundle>
+                        <event id="map"> </event>
+                    </bundle>
+                </causality>
+                <causality target="move">
+                    <bundle>
+                        <event id="map"> </event>
+                    </bundle>
+                </causality>
+                <causality target="liDet">
+                    <bundle>
+                        <event id="map"> </event>
+                    </bundle>
+                </causality>
+                <causality target="goAround">
+                    <bundle>
+                        <event id="caDet"> </event>
+                        <event id="liDet"> </event>
+                    </bundle>
+                </causality>
+                <causality target="charge">
+                    <bundle>
+                        <event id="clean"> </event>
+                    </bundle>
+                </causality>
+            </causalities>
+            <conflicts>
+                <conflict>
+                    <events>
+                        <event id="move"> </event>
+                    </events>
+                    <events>
+                        <event id="caDet"> </event>
+                        <event id="goAround"> </event>
+                        <event id="liDet"> </event>
+                    </events>
+                </conflict>
+            </conflicts>
+        </event_constraints>
+    </feature>
+</bfm>

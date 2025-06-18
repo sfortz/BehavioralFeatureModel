@@ -5,7 +5,6 @@ import uk.kcl.info.bfm.*;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import static uk.kcl.info.utils.translators.TranslationUtils.*;
 
@@ -14,8 +13,6 @@ public class TsToBesConverter {
     private final BundleEventStructureFactory factory;
     private final TransitionSystem ts;
     private final Map<Action, Event> eventMap = new HashMap<>();
-    private final ConflictSet conflictSet = new ConflictSet();
-    private final Set<CausalityRelation> candidateBundles = new HashSet<>();
 
     public TsToBesConverter(TransitionSystem ts) {
         this.ts = Objects.requireNonNull(ts);
@@ -25,17 +22,16 @@ public class TsToBesConverter {
     public BundleEventStructure convert() {
 
         // Step 1: Collect actions & add events
-        createEvents();
+        addEvents();
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
-        computeConflictsAndCausality();
+        Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
         // Step 4: Optimize non-conflicting bundle splitting
-        optimizeBundles();
+        addCausalities(candidateBundles);
 
-        candidateBundles.forEach(factory::addCausality);
         return factory.build();
     }
 
-    private void createEvents() {
+    private void addEvents() {
         for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
             Action a = it.next();
             Event e = new Event(a.getName());
@@ -44,7 +40,10 @@ public class TsToBesConverter {
         }
     }
 
-    private void computeConflictsAndCausality() {
+    private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+        ConflictSet conflicts = new ConflictSet();
+        Set<CausalityRelation> candidateBundles = new HashSet<>();
+
         for (Entry<Action, Event> entry1 : eventMap.entrySet()) {
             Action a1 = entry1.getKey();
             Event e1 = entry1.getValue();
@@ -60,7 +59,7 @@ public class TsToBesConverter {
 
                     if (!a1ToA2 && !a2ToA1) {
                         factory.addConflict(e1, e2);
-                        conflictSet.addConflict(e1, e2);
+                        conflicts.addConflict(e1, e2);
                     }
 
                     if (isPredecessor(ts, a2, a1) && !a1ToA2) {
@@ -73,17 +72,12 @@ public class TsToBesConverter {
                 candidateBundles.add(new CausalityRelation(bundle, e1));
             }
         }
+
+        return splitBundlesOnConflicts(candidateBundles, conflicts);
     }
 
-    private void optimizeBundles() {
-        Set<CausalityRelation> optimized = candidateBundles.stream()
-                .flatMap(causality ->
-                        conflictSet.findMaximalCliques(causality.getBundle())
-                                .stream()
-                                .map(clique -> new CausalityRelation(clique, causality.getTarget()))
-                )
-                .collect(Collectors.toSet());
-        candidateBundles.clear();
-        candidateBundles.addAll(optimized);
+    private void addCausalities(Set<CausalityRelation> bundles) {
+        bundles.forEach(factory::addCausality);
     }
+
 }

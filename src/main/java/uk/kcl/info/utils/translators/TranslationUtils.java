@@ -3,6 +3,8 @@ package uk.kcl.info.utils.translators;
 import be.vibes.fexpression.FExpression;
 import be.vibes.ts.*;
 import com.google.common.collect.Lists;
+import uk.kcl.info.bfm.CausalityRelation;
+import uk.kcl.info.bfm.ConflictSet;
 import uk.kcl.info.bfm.Event;
 
 import java.util.*;
@@ -124,4 +126,12 @@ public class TranslationUtils {
         return false;
     }
 
+    public static Set<CausalityRelation> splitBundlesOnConflicts(Set<CausalityRelation> bundles, ConflictSet conflicts) {
+        return bundles.stream()
+                .flatMap(causality ->
+                        conflicts.findMaximalCliques(causality.getBundle()).stream()
+                                .map(clique -> new CausalityRelation(clique, causality.getTarget()))
+                )
+                .collect(Collectors.toSet());
+    }
 }
