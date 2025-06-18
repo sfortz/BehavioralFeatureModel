@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bes>
+<fes>
     <events>
-        <event id="move_1"> </event>
-        <event id="move_0"> </event>
-        <event id="charge"> </event>
-        <event id="liDet_1"> </event>
-        <event id="goAround"> </event>
-        <event id="caDet_0"> </event>
-        <event id="caDet_1"> </event>
-        <event id="clean"> </event>
-        <event id="liDet_0"> </event>
-        <event id="map"> </event>
+        <event id="move_1" feature="Robot" fexpression="!Mapping"> </event>
+        <event id="move_0" feature="Mapping" fexpression="Mapping"> </event>
+        <event id="liDet_1" feature="Robot" fexpression="(!Mapping &amp;&amp; Lidar)"> </event>
+        <event id="charge" feature="Robot"> </event>
+        <event id="goAround" feature="Robot"> </event>
+        <event id="caDet_0" feature="Robot" fexpression="(Mapping &amp;&amp; Camera)"> </event>
+        <event id="caDet_1" feature="Robot" fexpression="(!Mapping &amp;&amp; Camera)"> </event>
+        <event id="liDet_0" feature="Robot" fexpression="(Mapping &amp;&amp; Lidar)"> </event>
+        <event id="clean" feature="Robot"> </event>
+        <event id="map" feature="Mapping" fexpression="Mapping"> </event>
     </events>
     <causalities>
         <causality target="move_0">
@@ -36,6 +36,11 @@
                 <event id="map"> </event>
             </bundle>
         </causality>
+        <causality target="liDet_0">
+            <bundle>
+                <event id="map"> </event>
+            </bundle>
+        </causality>
         <causality target="clean">
             <bundle>
                 <event id="move_1"> </event>
@@ -43,40 +48,10 @@
                 <event id="goAround"> </event>
             </bundle>
         </causality>
-        <causality target="liDet_0">
-            <bundle>
-                <event id="map"> </event>
-            </bundle>
-        </causality>
     </causalities>
     <conflicts>
         <conflict>
             <events>
-                <event id="liDet_0"> </event>
-                <event id="move_1"> </event>
-                <event id="caDet_0"> </event>
-                <event id="move_0"> </event>
-                <event id="caDet_1"> </event>
-                <event id="map"> </event>
-            </events>
-            <events>
-                <event id="liDet_1"> </event>
-            </events>
-        </conflict>
-        <conflict>
-            <events>
-                <event id="liDet_1"> </event>
-                <event id="move_1"> </event>
-                <event id="caDet_0"> </event>
-                <event id="move_0"> </event>
-                <event id="caDet_1"> </event>
-            </events>
-            <events>
-                <event id="liDet_0"> </event>
-            </events>
-        </conflict>
-        <conflict>
-            <events>
                 <event id="liDet_1"> </event>
                 <event id="liDet_0"> </event>
                 <event id="caDet_0"> </event>
@@ -117,6 +92,18 @@
         <conflict>
             <events>
                 <event id="liDet_1"> </event>
+                <event id="move_1"> </event>
+                <event id="caDet_0"> </event>
+                <event id="move_0"> </event>
+                <event id="caDet_1"> </event>
+            </events>
+            <events>
+                <event id="liDet_0"> </event>
+            </events>
+        </conflict>
+        <conflict>
+            <events>
+                <event id="liDet_1"> </event>
                 <event id="liDet_0"> </event>
                 <event id="move_1"> </event>
                 <event id="caDet_0"> </event>
@@ -125,7 +112,20 @@
             </events>
             <events>
                 <event id="caDet_1"> </event>
+            </events>
+        </conflict>
+        <conflict>
+            <events>
+                <event id="liDet_0"> </event>
+                <event id="move_1"> </event>
+                <event id="caDet_0"> </event>
+                <event id="move_0"> </event>
+                <event id="caDet_1"> </event>
+                <event id="map"> </event>
+            </events>
+            <events>
+                <event id="liDet_1"> </event>
             </events>
         </conflict>
     </conflicts>
-</bes>
+</fes>
