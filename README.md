@@ -7,7 +7,7 @@ g { color: Green }
 # Behavioral Feature Models Toolkit
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://maven.apache.org)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+<!--- [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license) -->
 
 This project provides a toolkit for modeling, transforming, and analyzing **Behavioral Feature Models (BFMs)** and related behavioral models. 
 BFMs are a novel formalism designed to unify structural and behavioral variability in software product lines (SPLs) within a single compositional model. 
@@ -29,8 +29,6 @@ It also supports integration with established tools such as <o>UVL and ViBeS</o>
 - Example models and test cases under `src/main/resources/` and `src/test/resources/`
 - Benchmark datasets, Integration <r>and unit tests</r> for validation
 - Tool Compatibility: UVL-based feature models, ViBeS TS/FTS support.
-
----
 
 ## 📁 Project Structure
 
@@ -111,8 +109,6 @@ Various folders under src/main/resources/ and src/test/resources/ contain exampl
 - *.xml and *.uvl: Feature Models
 You can modify or extend these examples to fit your use case.
 
----
-
 ### 📄 License
 This project is licensed under the <r>[...]</r> License. See the LICENSE file for details.
 
@@ -129,5 +125,3 @@ Contributions are welcome! If you'd like to improve the codebase or add new feat
 
 ### 📬 Contact
 For any inquiries or academic collaboration, please contact [Sophie Fortz](mailto:sophie.fortz@kcl.ac.uk).
-
----
