@@ -233,21 +233,6 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
             return productFExp.applySimplification();
         }).toList();
 
-/*
-        List<FExpression> allFExps2 = allProducts.stream().map(product -> {
-            // Construct the product feature expression
-            FExpression productFExp = FExpression.trueValue();
-            for (F f : allFeatures) {
-                FExpression fFexpr= new FExpression(f);
-                if(product.isSelected(f)){
-                    productFExp.andWith(fFexpr);
-                } else {
-                    productFExp.andWith(fFexpr.not());
-                }
-            }
-            return productFExp.applySimplification();
-        }).toList();*/
-
         return allFExps;
     }
 }

@@ -2,6 +2,8 @@ package uk.kcl.info.utils.translators;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.ts.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import uk.kcl.info.bfm.CausalityRelation;
 import uk.kcl.info.bfm.ConflictSet;
@@ -14,6 +16,25 @@ import java.util.stream.Collectors;
  * Utility class to hold shared helper methods (like getSingleDifference, reachability, etc.)
  */
 public class TranslationUtils {
+
+    public static final String INITIAL_STATE = "State_0";
+
+    public static BiMap<Set<Event>, String> indexConfigurationsAsStates(Collection<Set<Set<Event>>> configurations) {
+        BiMap<Set<Event>, String> configToStateMap = HashBiMap.create();
+        int stateCounter = 0;
+        configToStateMap.put(Collections.emptySet(), INITIAL_STATE);
+        stateCounter++;
+
+        for (Set<Set<Event>> configSet : configurations) {
+            for (Set<Event> config : configSet) {
+                if (!config.isEmpty() && !configToStateMap.containsKey(config)) {
+                    configToStateMap.put(config, "State_" + stateCounter++);
+                }
+            }
+        }
+
+        return configToStateMap;
+    }
 
     public static boolean isSingleStepSuccessor(Set<Event> smaller, Set<Event> larger) {
         return larger.size() == smaller.size() + 1 && larger.containsAll(smaller);
@@ -134,4 +155,5 @@ public class TranslationUtils {
                 )
                 .collect(Collectors.toSet());
     }
+
 }

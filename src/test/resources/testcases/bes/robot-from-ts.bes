@@ -47,19 +47,19 @@
         <conflict>
             <events>
                 <event id="move"> </event>
+                <event id="caDet"> </event>
             </events>
             <events>
-                <event id="caDet"> </event>
-                <event id="goAround"> </event>
                 <event id="liDet"> </event>
             </events>
         </conflict>
         <conflict>
             <events>
                 <event id="move"> </event>
-                <event id="caDet"> </event>
             </events>
             <events>
+                <event id="caDet"> </event>
+                <event id="goAround"> </event>
                 <event id="liDet"> </event>
             </events>
         </conflict>

@@ -2,7 +2,6 @@ package uk.kcl.info.utils.translators;
 
 import be.vibes.ts.*;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.Event;
 
@@ -14,41 +13,20 @@ public class BesToTsConverter {
 
     private final BundleEventStructure bes;
     private final TreeMap<Integer, Set<Set<Event>>> configurations;
-    private final BiMap<Set<Event>, String> configToStateMap = HashBiMap.create();
-    private static final String INITIAL_STATE = "State_0";
+    private final BiMap<Set<Event>, String> configToStateMap;
 
     public BesToTsConverter(BundleEventStructure bes) {
         this.bes = Objects.requireNonNull(bes);;
         this.configurations = bes.getAllConfigurations();
-        indexConfigurationsAsStates();
+        this.configToStateMap = indexConfigurationsAsStates(configurations.values());
     }
 
     public TransitionSystem convert() {
-        TransitionSystemFactory factory = new TransitionSystemFactory(getInitialState());
-
+        TransitionSystemFactory factory = new TransitionSystemFactory(INITIAL_STATE);
         addActions(factory);
         addStates(factory);
         addTransitions(factory);
-
         return factory.build();
-    }
-
-    private void indexConfigurationsAsStates() {
-        int stateCounter = 0;
-        configToStateMap.put(Collections.emptySet(), INITIAL_STATE);
-        stateCounter++;
-
-        for (Set<Set<Event>> configSet : configurations.values()) {
-            for (Set<Event> config : configSet) {
-            if (!config.isEmpty()) {
-                configToStateMap.put(config, "State_" + stateCounter++);
-            }
-        }
-        }
-    }
-
-    private String getInitialState() {
-        return configToStateMap.getOrDefault(Collections.emptySet(), "State_0");
     }
 
     private void addActions(TransitionSystemFactory factory) {

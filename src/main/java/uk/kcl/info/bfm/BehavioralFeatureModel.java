@@ -89,8 +89,8 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     @Override
     public FExpression getFExpression(Event event){
         Preconditions.checkNotNull(event, "Event may not be null!");
-        BehavioralFeature parent = this.getFeature(event);
-        return parent.getFExpression(event);
+        BehavioralFeature bf = this.getFeature(event);
+        return bf.getFExpression(event);
     }
 
     @Override
@@ -237,8 +237,12 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
 
         Collection<BehavioralFeature> allFeatures = this.getFeatures();
         FExpression configFexpr = this.configFexpressions.get(config);
-        FExpression eventFexpr = this.getFExpression(event);
-        FExpression constraint = eventFexpr.and(configFexpr);
+
+
+        FExpression constraint = this.getFExpression(event).and(configFexpr);
+
+
+
         ConfigurationSet allProducts = new ConfigurationSet(this, constraint);
 
         List<FExpression> allFExps = allProducts.stream().map(product -> {

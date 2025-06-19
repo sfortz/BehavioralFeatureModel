@@ -14,15 +14,18 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
     private final Set<CausalityRelation> causalities;
     private final ConflictSet conflicts;
 
-    public BehavioralFeature(String name, Map<Event, FExpression> events) {
+    public BehavioralFeature(String name) {
         super(name);
-        this.events = events;
+        this.events = new HashMap<>();
         this.causalities = new HashSet<>();
         this.conflicts = new ConflictSet();
     }
 
-    public BehavioralFeature(String name) {
-        this(name, new HashMap<>());
+    public BehavioralFeature(String name, Map<Event, FExpression> events) {
+        this(name);
+        for(Map.Entry<Event, FExpression> entry : events.entrySet()) {
+            this.addEvent(entry.getKey(), entry.getValue());
+        }
     }
 
     public BehavioralFeature(Feature<?> old) {
@@ -54,13 +57,15 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         this.getConstraints().addAll(old.getConstraints());
     }
 
-    protected Event addEvent(String eventName, FExpression fexpr) {
-        Preconditions.checkNotNull(eventName, "Event name may not be null!");
-        Preconditions.checkNotNull(fexpr, "FExpression name may not be null!");
-        Event ev = new Event(eventName);
-        FExpression fe = getBFexpFromFM(fexpr);
-        this.events.put(ev,fe);
+    protected Event addEvent(Event ev, FExpression fexpr) {
+        Preconditions.checkNotNull(ev, "Event may not be null!");
+        Preconditions.checkNotNull(fexpr, "FExpression may not be null!");
+        this.events.put(ev,getBFexpFromFM(fexpr));
         return ev;
+    }
+
+    protected Event addEvent(String eventName, FExpression fexpr) {
+        return this.addEvent(new Event(eventName), fexpr);
     }
 
     protected void updateEventFexpr(String eventName, FExpression fexpr) {
@@ -79,8 +84,7 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         Preconditions.checkArgument(target != null,
                 "Cannot update FExpression: event '" + eventName + "' does not exist in the table.");
 
-        //FExpression fe = getBFexpFromFM(fexpr);
-        events.put(target, fexpr);  // This updates the existing event's mapping
+        events.put(target, getBFexpFromFM(fexpr));  // This updates the existing event's mapping
     }
 
     private BehavioralFeature getFeatureFromFM(Feature<?> feature){
@@ -152,7 +156,8 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
 
     private FExpression getBFexpFromFM(FExpression fexp) {
         try {
-            return fexp.accept(new BFexpFromFMBuilder());
+            FExpression newFexp = fexp.accept(new BFexpFromFMBuilder());
+            return newFexp;
         } catch (FExpressionException e) {
             throw new NullPointerException(e.getMessage());
         }
@@ -221,7 +226,6 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
 
         for (Group<BehavioralFeature> g : this.getChildren()) {
             for(BehavioralFeature f: g.getFeatures()){
-                ev.addAll(f.getEventMap().keySet());
                 ev.addAll(f.getAllRecursiveEvents());
             }
         }
@@ -234,7 +238,6 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
 
         for (Group<BehavioralFeature> g : this.getChildren()) {
             for(BehavioralFeature f: g.getFeatures()){
-                causes.addAll(f.getCausalities());
                 causes.addAll(f.getAllRecursiveCausalities());
             }
         }
@@ -246,12 +249,11 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         ConflictSet allConflicts = new ConflictSet();
         allConflicts.addConflicts(this.conflicts);
 
-        this.getChildren().stream()
-                .flatMap(group -> group.getFeatures().stream())
-                .forEach(feature -> {
-                    allConflicts.addConflicts(feature.getConflictSet());
-                    allConflicts.addConflicts(feature.getAllRecursiveConflicts());
-                });
+        for (Group<BehavioralFeature> g : this.getChildren()) {
+            for(BehavioralFeature f: g.getFeatures()){
+                allConflicts.addConflicts(f.getAllRecursiveConflicts());
+            }
+        }
 
         return allConflicts;
     }
@@ -264,8 +266,9 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         } else {
             for (Group<BehavioralFeature> g : this.getChildren()) {
                 for(BehavioralFeature f: g.getFeatures()){
-                    if(f.getFExpression(event) != null){
-                        return f.getFExpression(event);
+                    FExpression fexpr = f.getFExpression(event);
+                    if(fexpr != null){
+                        return fexpr;
                     }
                 }
             }
