@@ -31,7 +31,8 @@ public class BFMToFTSIntegrationTest {
         saveFts(fts, "robot");
     }
 
-    /*
+    /*  TODO: Buggy since renaming implies moving events to their parents (e.g., liDet should be in root as it is
+             associated to lidet && mapping)
     @Test
     public void testRobotLinearBFMToFTSConversion() throws Exception {
         // Load BFM
