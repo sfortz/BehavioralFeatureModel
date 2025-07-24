@@ -1,0 +1,145 @@
+@startuml
+
+top to bottom direction
+skinparam linetype ortho
+hide empty methods
+hide empty fields
+
+'Inheritance -- Mandatory (hierarchy)
+!define EXTENDS -[#000082,plain]-^
+'Realization -- Important
+!define IMPLEMENTS -[#008200,dashed]-^
+'Dependency -- if non-obvious or cross-cutting
+!define USES  -[#C70039,dashed]->
+'Composition -- only if non-trivial
+!define HAS_A *-[#008017,plain]->
+
+' Package ukl.kcl.info core classes
+package "BFM Toolkit.core" {
+    class Event
+    class CausalityRelation
+    class ConflictSet
+    class BehavioralFeature
+    class BehavioralFeatureModel
+    class BehavioralFeatureModelFactory
+    interface BundleEventStructure << interface >>
+    class BundleEventStructureFactory
+    class DefaultBundleEventStructure
+    class DefaultFeaturedEventStructure
+    interface FeaturedEventStructure << interface >>
+    class FeaturedEventStructureFactory
+}
+
+package "BFM Toolkit.translators" {
+    interface ModelConverter << interface >>
+    class BesToTsConverter
+    class BfmToFmConverter
+    class BfmToFtsConverter
+    class FesToFtsConverter
+    class FtsToBfmConverter
+    class FtsToFesConverter
+    class TsToBesConverter
+}
+
+' Package be.vibes.ts core classes
+package "ViBeS.core" {
+    class Action
+    class State
+    class Transition
+    interface TransitionSystem << interface >>
+    class TransitionSystemFactory
+    class DefaultTransitionSystem
+    interface FeaturedTransitionSystem << interface >>
+    class FeaturedTransitionSystemFactory
+    class DefaultFeaturedTransitionSystem
+    class Execution
+    class TransitionSystemExecutor
+    class FeaturedTransitionSystemExecutor
+}
+
+' Package be.vibes.fexpression core classes
+package "ViBeS.fexpression" {
+    class FExpression
+    class Feature
+    class FeatureModel
+    class FeatureModelFactory
+    class Group
+    interface SolverFacade << interface >>
+    class Sat4JSolverFacade
+    class BDDSolverFacade
+}
+
+
+BDDSolverFacade                   IMPLEMENTS  SolverFacade
+BehavioralFeatureModel            IMPLEMENTS  FeaturedEventStructure
+BesToTsConverter                  IMPLEMENTS  ModelConverter
+BfmToFmConverter                  IMPLEMENTS  ModelConverter
+BfmToFtsConverter                 IMPLEMENTS  ModelConverter
+DefaultBundleEventStructure       IMPLEMENTS  BundleEventStructure
+DefaultFeaturedEventStructure     IMPLEMENTS  FeaturedEventStructure
+DefaultFeaturedTransitionSystem   IMPLEMENTS  FeaturedTransitionSystem
+DefaultTransitionSystem           IMPLEMENTS  TransitionSystem
+FesToFtsConverter                 IMPLEMENTS  ModelConverter
+FtsToBfmConverter                 IMPLEMENTS  ModelConverter
+FtsToFesConverter                 IMPLEMENTS  ModelConverter
+Sat4JSolverFacade                 IMPLEMENTS  SolverFacade
+TsToBesConverter                  IMPLEMENTS  ModelConverter
+
+BehavioralFeature                 EXTENDS  Feature
+BehavioralFeatureModel            EXTENDS  FeatureModel
+DefaultFeaturedEventStructure     EXTENDS  DefaultBundleEventStructure
+DefaultFeaturedTransitionSystem   EXTENDS  DefaultTransitionSystem
+FeaturedEventStructure            EXTENDS  BundleEventStructure
+FeaturedEventStructureFactory     EXTENDS  BundleEventStructureFactory
+FeaturedTransitionSystem          EXTENDS  TransitionSystem
+FeaturedTransitionSystemExecutor  EXTENDS  TransitionSystemExecutor
+FeaturedTransitionSystemFactory   EXTENDS  TransitionSystemFactory
+
+BehavioralFeatureModelFactory     USES   BehavioralFeatureModel: "<<create>>"
+BundleEventStructureFactory       USES   DefaultBundleEventStructure: "<<create>>"
+FeaturedEventStructureFactory     USES   DefaultFeaturedEventStructure: "<<create>>"
+FesToFtsConverter                 USES   BesToTsConverter: "<<uses>>"
+FtsToFesConverter                 USES   TsToBesConverter: "<<uses>>"
+FesToFtsConverter                 USES   FeaturedTransitionSystemFactory: "<<to>>"
+FtsToBfmConverter                 USES   BehavioralFeatureModelFactory: "<<to>>"
+FtsToFesConverter                 USES   FeaturedEventStructureFactory: "<<to>>"
+TsToBesConverter                  USES   BundleEventStructureFactory: "<<to>>"
+BesToTsConverter                  USES   TransitionSystemFactory: "<<to>>"
+BfmToFmConverter                  USES   FeatureModelFactory: "<<to>>"
+BfmToFtsConverter                 USES   FeaturedTransitionSystemFactory: "<<to>>"
+Feature                           USES  Group: "<<uses>>"
+TransitionSystemExecutor          USES  Execution: "<<uses>>"
+FeaturedTransitionSystemExecutor  USES  SolverFacade: "<<uses>>"
+FExpression                       USES  Feature: "<<uses>>"
+FeatureModelFactory               USES   FeatureModel: "<<create>>"
+TransitionSystemFactory           USES  DefaultTransitionSystem: "<<create>>"
+FeaturedTransitionSystemFactory   USES  DefaultFeaturedTransitionSystem: "<<create>>"
+
+FeatureModel                     HAS_A   Feature: "<<composes>>"
+BehavioralFeature                HAS_A   CausalityRelation: "<<composes>>"
+BehavioralFeature                HAS_A   ConflictSet: "<<composes>>"
+DefaultBundleEventStructure      HAS_A   CausalityRelation: "<<composes>>"
+DefaultBundleEventStructure      HAS_A   ConflictSet: "<<composes>>"
+BehavioralFeatureModel           HAS_A   BehavioralFeature: "<<composes>>"
+DefaultFeaturedEventStructure    HAS_A  FeatureModel: "<<composes>>"
+DefaultFeaturedTransitionSystem  HAS_A  FExpression: "<<composes>>"
+DefaultTransitionSystem          HAS_A  Transition: "<<composes>>"
+FeatureModel                     HAS_A  SolverFacade: "<<composes>>"
+Transition                       HAS_A  Action: "<<composes>>"
+Transition                       HAS_A  State: "<<composes>>"
+CausalityRelation                HAS_A  Event: "<<composes>>"
+ConflictSet                      HAS_A  Event: "<<composes>>"
+Group                            HAS_A   Feature: "<<composes>>"
+TransitionSystemExecutor         HAS_A  TransitionSystem: "<<executes>>"
+FeaturedTransitionSystemExecutor HAS_A  FeaturedTransitionSystem: "<<executes>>"
+Execution                        HAS_A  Transition: "<<executes>>"
+BesToTsConverter                 HAS_A  BundleEventStructure: "<<transforms>>"
+BfmToFmConverter                 HAS_A  BehavioralFeatureModel: "<<transforms>>"
+BfmToFtsConverter                HAS_A  BehavioralFeatureModel: "<<transforms>>"
+FesToFtsConverter                HAS_A  FeaturedEventStructure: "<<transforms>>"
+FtsToBfmConverter                HAS_A  FeaturedTransitionSystem: "<<transforms>>"
+FtsToFesConverter                HAS_A  FeaturedTransitionSystem: "<<transforms>>"
+TsToBesConverter                 HAS_A  TransitionSystem: "<<transforms>>"
+
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml
+
+top to bottom direction
+'skinparam linetype ortho
+hide empty methods
+hide empty fields
+
+'Inheritance -- Mandatory (hierarchy)
+!define EXTENDS -[#000082,plain]-^
+'Realization -- Important
+!define IMPLEMENTS -[#008200,dashed]-^
+'Dependency -- if non-obvious or cross-cutting
+!define USES  -[#C70039,dashed]->
+'Composition -- only if non-trivial
+!define HAS_A *-[#008017,plain]->
+
+' Package be.vibes.fexpression core classes
+package "ViBeS.fexpression" {
+    class FExpression
+    class Feature
+    class FeatureModel
+    class FeatureModelFactory
+    class Group
+    interface SolverFacade << interface >>
+    class Sat4JSolverFacade
+    class BDDSolverFacade
+}
+
+BDDSolverFacade                   IMPLEMENTS  SolverFacade
+Sat4JSolverFacade                 IMPLEMENTS  SolverFacade
+
+Feature                           USES  Group: "<<uses>>"
+FExpression                       USES  Feature: "<<uses>>"
+FeatureModelFactory               USES   FeatureModel: "<<create>>"
+
+FeatureModel                     HAS_A   Feature: "<<composes>>"
+FeatureModel                     HAS_A  SolverFacade: "<<composes>>"
+Group                            HAS_A   Feature: "<<composes>>"
+
+@enduml

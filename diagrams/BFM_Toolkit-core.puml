@@ -1,0 +1,64 @@
+@startuml
+
+top to bottom direction
+'skinparam linetype ortho
+hide empty methods
+hide empty fields
+
+'Inheritance -- Mandatory (hierarchy)
+!define EXTENDS -[#000082,plain]-^
+'Realization -- Important
+!define IMPLEMENTS -[#008200,dashed]-^
+'Dependency -- if non-obvious or cross-cutting
+!define USES  -[#C70039,dashed]->
+'Composition -- only if non-trivial
+!define HAS_A *-[#008017,plain]->
+
+' Package ukl.kcl.info core classes
+package "BFM Toolkit.core" {
+    class Event
+    class CausalityRelation
+    class ConflictSet
+    class BehavioralFeature
+    class BehavioralFeatureModel
+    class BehavioralFeatureModelFactory
+    interface BundleEventStructure << interface >>
+    class BundleEventStructureFactory
+    class DefaultBundleEventStructure
+    class DefaultFeaturedEventStructure
+    interface FeaturedEventStructure << interface >>
+    class FeaturedEventStructureFactory
+}
+
+' Package be.vibes.fexpression core classes
+package "ViBeS.fexpression" {
+    class Feature
+    class FeatureModel
+}
+
+BehavioralFeatureModel            IMPLEMENTS  FeaturedEventStructure
+DefaultBundleEventStructure       IMPLEMENTS  BundleEventStructure
+DefaultFeaturedEventStructure     IMPLEMENTS  FeaturedEventStructure
+
+BehavioralFeature                 EXTENDS  Feature
+BehavioralFeatureModel            EXTENDS  FeatureModel
+DefaultFeaturedEventStructure     EXTENDS  DefaultBundleEventStructure
+FeaturedEventStructure            EXTENDS  BundleEventStructure
+FeaturedEventStructureFactory     EXTENDS  BundleEventStructureFactory
+
+BehavioralFeatureModelFactory     USES   BehavioralFeatureModel: "<<create>>"
+BundleEventStructureFactory       USES   DefaultBundleEventStructure: "<<create>>"
+FeaturedEventStructureFactory     USES   DefaultFeaturedEventStructure: "<<create>>"
+
+FeatureModel                     HAS_A   Feature: "<<composes>>"
+BehavioralFeatureModel           HAS_A   BehavioralFeature: "<<composes>>"
+DefaultFeaturedEventStructure    HAS_A  FeatureModel: "<<composes>>"
+
+BehavioralFeature                HAS_A   CausalityRelation: "<<composes>>"
+BehavioralFeature                HAS_A   ConflictSet: "<<composes>>"
+DefaultBundleEventStructure      HAS_A   CausalityRelation: "<<composes>>"
+DefaultBundleEventStructure      HAS_A   ConflictSet: "<<composes>>"
+CausalityRelation                HAS_A  Event: "<<composes>>"
+ConflictSet                      HAS_A  Event: "<<composes>>"
+
+@enduml

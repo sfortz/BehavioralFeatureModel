@@ -1,0 +1,78 @@
+@startuml
+
+top to bottom direction
+'skinparam linetype ortho
+hide empty methods
+hide empty fields
+
+'Inheritance -- Mandatory (hierarchy)
+!define EXTENDS -[#000082,plain]-^
+'Realization -- Important
+!define IMPLEMENTS -[#008200,dashed]-^
+'Dependency -- if non-obvious or cross-cutting
+!define USES  -[#C70039,dashed]->
+'Composition -- only if non-trivial
+!define HAS_A *-[#008017,plain]->
+
+' Package ukl.kcl.info core classes
+package "BFM Toolkit.core" {
+    class BehavioralFeatureModel
+    class BehavioralFeatureModelFactory
+    interface BundleEventStructure << interface >>
+    class BundleEventStructureFactory
+    interface FeaturedEventStructure << interface >>
+    class FeaturedEventStructureFactory
+}
+
+package "BFM Toolkit.translators" {
+    interface ModelConverter << interface >>
+    class BesToTsConverter
+    class BfmToFmConverter
+    class BfmToFtsConverter
+    class FesToFtsConverter
+    class FtsToBfmConverter
+    class FtsToFesConverter
+    class TsToBesConverter
+}
+
+' Package be.vibes.ts core classes
+package "ViBeS.core" {
+    interface TransitionSystem << interface >>
+    class TransitionSystemFactory
+    interface FeaturedTransitionSystem << interface >>
+    class FeaturedTransitionSystemFactory
+}
+
+' Package be.vibes.fexpression core classes
+package "ViBeS.fexpression" {
+    class FeatureModelFactory
+}
+
+BesToTsConverter                  IMPLEMENTS  ModelConverter
+BfmToFmConverter                  IMPLEMENTS  ModelConverter
+BfmToFtsConverter                 IMPLEMENTS  ModelConverter
+FesToFtsConverter                 IMPLEMENTS  ModelConverter
+FtsToBfmConverter                 IMPLEMENTS  ModelConverter
+FtsToFesConverter                 IMPLEMENTS  ModelConverter
+TsToBesConverter                  IMPLEMENTS  ModelConverter
+
+FesToFtsConverter                 USES   BesToTsConverter: "<<uses>>"
+FtsToFesConverter                 USES   TsToBesConverter: "<<uses>>"
+FesToFtsConverter                 USES   FeaturedTransitionSystemFactory: "<<to>>"
+FtsToBfmConverter                 USES   BehavioralFeatureModelFactory: "<<to>>"
+FtsToFesConverter                 USES   FeaturedEventStructureFactory: "<<to>>"
+TsToBesConverter                  USES   BundleEventStructureFactory: "<<to>>"
+BesToTsConverter                  USES   TransitionSystemFactory: "<<to>>"
+BfmToFmConverter                  USES   FeatureModelFactory: "<<to>>"
+BfmToFtsConverter                 USES   FeaturedTransitionSystemFactory: "<<to>>"
+
+BesToTsConverter                 HAS_A  BundleEventStructure: "<<transforms>>"
+BfmToFmConverter                 HAS_A  BehavioralFeatureModel: "<<transforms>>"
+BfmToFtsConverter                HAS_A  BehavioralFeatureModel: "<<transforms>>"
+FesToFtsConverter                HAS_A  FeaturedEventStructure: "<<transforms>>"
+FtsToBfmConverter                HAS_A  FeaturedTransitionSystem: "<<transforms>>"
+FtsToFesConverter                HAS_A  FeaturedTransitionSystem: "<<transforms>>"
+TsToBesConverter                 HAS_A  TransitionSystem: "<<transforms>>"
+
+
+@enduml

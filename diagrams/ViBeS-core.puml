@@ -1,0 +1,60 @@
+@startuml
+
+top to bottom direction
+'skinparam linetype ortho
+hide empty methods
+hide empty fields
+
+'Inheritance -- Mandatory (hierarchy)
+!define EXTENDS -[#000082,plain]-^
+'Realization -- Important
+!define IMPLEMENTS -[#008200,dashed]-^
+'Dependency -- if non-obvious or cross-cutting
+!define USES  -[#C70039,dashed]->
+'Composition -- only if non-trivial
+!define HAS_A *-[#008017,plain]->
+
+' Package be.vibes.ts core classes
+package "ViBeS.core" {
+    class Action
+    class State
+    class Transition
+    interface TransitionSystem << interface >>
+    class TransitionSystemFactory
+    class DefaultTransitionSystem
+    interface FeaturedTransitionSystem << interface >>
+    class FeaturedTransitionSystemFactory
+    class DefaultFeaturedTransitionSystem
+    class Execution
+    class TransitionSystemExecutor
+    class FeaturedTransitionSystemExecutor
+}
+
+' Package be.vibes.fexpression core classes
+package "ViBeS.fexpression" {
+    class FExpression
+    interface SolverFacade << interface >>
+}
+
+DefaultFeaturedTransitionSystem   IMPLEMENTS  FeaturedTransitionSystem
+DefaultTransitionSystem           IMPLEMENTS  TransitionSystem
+
+DefaultFeaturedTransitionSystem   EXTENDS  DefaultTransitionSystem
+FeaturedTransitionSystem          EXTENDS  TransitionSystem
+FeaturedTransitionSystemExecutor  EXTENDS  TransitionSystemExecutor
+FeaturedTransitionSystemFactory   EXTENDS  TransitionSystemFactory
+
+TransitionSystemExecutor          USES  Execution: "<<uses>>"
+FeaturedTransitionSystemExecutor  USES  SolverFacade: "<<uses>>"
+TransitionSystemFactory           USES  DefaultTransitionSystem: "<<create>>"
+FeaturedTransitionSystemFactory   USES  DefaultFeaturedTransitionSystem: "<<create>>"
+
+DefaultFeaturedTransitionSystem  HAS_A  FExpression: "<<composes>>"
+DefaultTransitionSystem          HAS_A  Transition: "<<composes>>"
+Transition                       HAS_A  Action: "<<composes>>"
+Transition                       HAS_A  State: "<<composes>>"
+TransitionSystemExecutor         HAS_A  TransitionSystem: "<<executes>>"
+FeaturedTransitionSystemExecutor HAS_A  FeaturedTransitionSystem: "<<executes>>"
+Execution                        HAS_A  Transition: "<<executes>>"
+
+@enduml
