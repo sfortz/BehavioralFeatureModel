@@ -1,6 +1,8 @@
 @startuml
 
-top to bottom direction
+'top to bottom direction
+left to right direction
+
 'skinparam linetype ortho
 hide empty methods
 hide empty fields

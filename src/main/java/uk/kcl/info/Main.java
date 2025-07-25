@@ -59,21 +59,28 @@ public class Main {
 
     public static void main(String[] args) throws IOException, TransitionSystemDefinitionException, BehavioralFeatureModelDefinitionException, BundleEventStructureDefinitionException {
 
+        LOG.info("convertBesToTs");
         convertBesToTs("robot");
-        convertBesToTs("robot-linear");
+        //convertBesToTs("robot-linear");
 
-        convertTsToBes("parallel");
-        convertTsToBes("robot-linear");
-
-        convertBfmToFm("robot");
+        LOG.info("convertFesToFts");
         convertFesToFts("robot", "robot");
-        convertFesToFts("robot", "robot-linear");
+        //convertFesToFts("robot", "robot-linear");
 
+        LOG.info("convertBfmToFm");
+        convertBfmToFm("robot");
+        LOG.info("convertBfmToFts");
         convertBfmToFts("robot");
         //convertBfmToFts("robot-linear");
 
+        LOG.info("convertTsToBes");
+        convertTsToBes("robot-linear");
+        convertTsToBes("parallel");
+
+        LOG.info("convertFtsToFes");
         convertFtsToFes("robot", "robot-linear");
 
+        LOG.info("convertFtsToBfm");
         for (Map.Entry<String, String> entry : getSystems().entrySet()) {
             convertFtsToBfm(entry.getValue(), entry.getKey());
         }

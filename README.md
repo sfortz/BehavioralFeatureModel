@@ -1,127 +1,239 @@
-<style>
-r { color: Red }
-o { color: Orange }
-g { color: Green }
-</style>
-
-# Behavioral Feature Models Toolkit
+# Behavioral Feature Model Toolkit
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://maven.apache.org)
-<!--- [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license) -->
 
-This project provides a toolkit for modeling, transforming, and analyzing **Behavioral Feature Models (BFMs)** and related behavioral models. 
-BFMs are a novel formalism designed to unify structural and behavioral variability in software product lines (SPLs) within a single compositional model. 
-In a BFM, each feature of a traditional feature model is enriched with an associated behavioral specification, and constraints can be expressed between behaviors of different features—allowing the behavior of each product in the SPL to emerge from the composition of its selected features.
-Building on our research introducing BFMs, this project includes a suite of translation algorithms, supporting data structures, and converters to enable inter-model transformations across a range of formats, including BFMs, Bundle Event Structures (BESs), Featured Event Structures (FESs), Featured Transition Systems (FTSs), Transition Systems (TSs), and Feature Models (FMs).
-It also supports integration with established tools such as <o>UVL and ViBeS</o>, facilitating interoperability within the SPL and behavioral modeling ecosystems.
+A toolkit for modeling, transforming, and analyzing **Behavioral Feature Models (BFMs)** and related behavioral models in Software Product Lines (SPLs).
+
+## 🧠 Overview
+
+**Behavioral Feature Models (BFMs)** unify structural and behavioral variability within SPLs by extending traditional feature models: each feature is enriched with an associated behavioral specification, and inter-feature behavioral constraints can be declared. The behavior of a product emerges from the composition of its selected features.
+
+This toolkit includes:
+
+* Core data structures for BFMs and related models (i.e., BESs, FESs, FTSs, TSs and FMs)
+* Translation algorithms between behavioral modeling formalisms
+* IO utilities and format converters
+* Interoperability with [UVL](https://universal-variability-language.github.io/) and [VIBeS](https://github.com/xdevroey/vibes)
+
+Our implementation builds upon [VIBeS](https://github.com/xdevroey/vibes), a library for Featured Transition System (FTS)
+manipulation, and integrates the **Universal Variability Language (UVL)** \[[1](#references), [2](#references)]
+facilitating interoperability within the SPL and behavioral modeling ecosystems and offering modern feature modeling support.
+
+---
 
 ## 🧩 Features
 
-- Support for core data structures for representing behavioral and structural variability models:
-  - **Behavioral Event Structures** (BES)
-  - **Behavioral Feature Models** (BFM)
-  - **Featured Event Structures** (FES)
-  - **Feature Models** (FM) in XML and UVL formats
-  - **Featured Transition Systems** (FTS)
-  - **Transition Systems** (TS)
-- Bidirectional Translation between various formalisms
-- IO utilities for loading/saving models in XML (all supported formalisms) and DOT formats (TSs and FTSs only)
-- Example models and test cases under `src/main/resources/` and `src/test/resources/`
-- Benchmark datasets, Integration <r>and unit tests</r> for validation
-- Tool Compatibility: UVL-based feature models, ViBeS TS/FTS support.
+* ✅ Core modeling support for:
+
+  * **Behavioral Feature Models (BFM)**
+  * **Behavioral Event Structures (BES)**
+  * **Featured Event Structures (FES)**
+  * **Featured Transition Systems (FTS)**
+  * **Transition Systems (TS)**
+  * **Feature Models (FM)** in XML and UVL formats
+* 🔄 Bidirectional translations between formalisms
+* 📂 IO support for XML (all formalisms) and DOT (TSs/FTSs)
+* 📊 Benchmark models and integration testing infrastructure
+* 🔗 Tool compatibility with VIBeS and UVL
+
+---
 
 ## 📁 Project Structure
 
 ```bash
 .
-├── pom.xml                    # Maven configuration
+├── pom.xml                    # Maven build configuration
+├── diagrams/                  # Class diagrams for core packages (BFM toolkit and VIBeS)
+│   ├── png/                   # Rendered diagrams in PNG format
+│   └── puml/                  # Source diagrams in PlantUML format
 ├── src/
 │   ├── main/
-│   │   ├── java/              # Core Java source code
+│   │   ├── java/              # Core Java sources
 │   │   │   └── uk/kcl/info/bfm/
-│   │   │       ├── *.java     # Model classes and logic
-│   │   │       ├── exceptions/
-│   │   │       ├── io/xml/    # XML input/output handlers
-│   │   │       ├── utils/     # Labeling + translation utilities (contains our algorithm implementations)
-│   │   │       └── Main.java  # Optional entry point
-│   │   └── resources/         # Sample input files (.bfm, .bes, etc.)
-│   └── test/                  
-│       ├── java/              
+│   │   │       ├── *.java         # Core data structure classes and logic
+│   │   │       ├── exceptions/    # Exception definitions
+│   │   │       ├── io/xml/        # XML read/write utilities
+│   │   │       ├── utils/         # Labeling & translation algorithms
+│   │   │       └── Main.java      # Main entry point
+│   │   └── resources/             # Example input models (.bfm, .fes, etc.)
+│   └── test/
+│       ├── java/
 │       │   └── uk/kcl/info/bfm/
-│       │       ├── integration/ # Integration test cases
-│       │       └── unit/        # Unit test cases
-│       └── resources/testcases/
-└── target/                    # Compiled output
-
-
-
+│       │       ├── integration/   # Integration tests
+│       │       └── unit/          # Unit tests
+│       └── resources/testcases/   # Test model inputs
+└── target/                        # Compiled artifacts
 ```
 
+### 🔍 Class Diagrams
+
+To better understand the internal structure, we provide class diagrams for each major package or module.
+The project is organized around two core packages:
+
+* One dedicated to the data structures that define our modeling formalisms
+* One focused on the model transformation algorithms between those formalisms
+
+Since the data structures build on and extend concepts from [VIBeS](https://github.com/sfortz/vibes), we also include class 
+diagrams for two relevant [VIBeS](https://github.com/sfortz/vibes) modules to illustrate their integration and dependencies.
+
+> Note: Only key classes and meaningful relationships are shown—those central to the design and behavior of the toolkit.
+
+* **BFM Toolkit – Core Components**
+
+  ![BFM\_Toolkit-core](diagrams/png/BFM_Toolkit-core.png)
+
+* **BFM Toolkit – Translators and Utilities**
+
+  ![BFM\_Toolkit-translators](diagrams/png/BFM_Toolkit-translators.png)
+
+* **VIBeS – Core Components**
+
+  ![ViBeS-core](diagrams/png/ViBeS-core.png)
+
+* **VIBeS – Feature Expressions**
+
+  ![ViBeS-fexpression](diagrams/png/ViBeS-fexpression.png)
+
+> 📁 A full class diagram showing all modules together is available at:
+> `diagrams/png/ClassDiagram.png`
+> However, due to its size, it is not displayed directly here.
+
+---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### ✅ Prerequisites
 
-- Java 23+
-- Maven 4.0+
+* Java 23 or higher
+* Maven 4.0 or higher
+* Forked version of VIBeS (see below)
 
-### Build the project
+### 🔧 Installation
+
+#### 1. Install VIBeS (Forked Version)
+
+This toolkit relies on a customized fork of [VIBeS](https://github.com/sfortz/vibes), 
+which adds support for [UVL](https://universal-variability-language.github.io/) and **hierarchical feature models**.
+
+To install the forked VIBeS library locally:
 
 ```bash
-mvn clean install
+git clone https://github.com/sfortz/vibes
+cd vibes
+mvn clean validate compile test package verify install
 ```
 
-### Run (if applicable)
+This will build and install VIBeS into your local Maven repository.
 
-You can run the main class:
+#### 2. Clone and Build the Toolkit
 
 ```bash
-mvn exec:java -Dexec.mainClass="uk.kcl.info.bfm.Main"
-java -cp target/your-artifact-name.jar uk.kcl.info.bfm.Main
+git clone https://github.com/sfortz/BehavioralFeatureModel
+cd BehavioralFeatureModel
+mvn clean package
 ```
 
-⚠️ The Main class is currently minimal or a placeholder. You can extend it to support command-line transformations or load specific models from XML.
-Replace your-artifact-name.jar with the name generated in your POM.
+This will produce a standalone jar file with all dependencies under `target/`.
 
-### 🧪 Testing
-This project uses JUnit for testing.
-To execute all unit and integration tests run:
+---
+
+## 🧪 Running Tests
+
+This project uses JUnit. To run all tests:
 
 ```bash
 mvn test
 ```
 
-Test cases and input models are located in:
-- `src/test/resources/testcases/`
-- `src/test/java/uk/kcl/info/bfm/{integration, unit}/`
+Test sources and example models are located in:
 
-Each test verifies bidirectional transformations between modeling formats using the provided examples.
+* `src/test/java/uk/kcl/info/bfm/{integration, unit}/`
+* `src/test/resources/testcases/`
 
-### 📦 Input Formats
-The resources/ directory includes example files:
+Each test ensures the correctness of bidirectional transformations between supported 
+modeling formats using curated examples.
 
-#### 📂 Model Examples
-Various folders under src/main/resources/ and src/test/resources/ contain example models in different formats. For example:
-- *.bfm: Behavioral Feature Models
-- *.fes: Featured Event Structures
-- *.fts: Featured Transition Systems
-- *.ts: Transition Systems
-- *.xml and *.uvl: Feature Models
-You can modify or extend these examples to fit your use case.
+---
 
-### 📄 License
-This project is licensed under the <r>[...]</r> License. See the LICENSE file for details.
+## ▶️ Running the Main Program
 
-### 📚 Acknowledgements
+You can run the toolkit's default transformations using the packaged JAR:
 
-This project is based on the research paper introducing the Behavioral Feature Model formalism.
-<r>[...]</r>
+```bash
+java -jar target/BehavioralFeatureModel-1.0-SNAPSHOT-jar-with-dependencies.jar 
+```
 
-### 🤝 Contributing
-Contributions are welcome! If you'd like to improve the codebase or add new features/translations:
-- Fork the repository.
-- Create a new branch.
-- Submit a pull request with a clear explanation.
 
-### 📬 Contact
-For any inquiries or academic collaboration, please contact [Sophie Fortz](mailto:sophie.fortz@kcl.ac.uk).
+> ⚠️ **The `Main` class is currently a minimal entry point**, intended for demonstration and internal testing.
+> It executes a fixed sequence of model transformations on illustrative examples to showcase the toolkit’s capabilities.
+
+### 🔄 Included Transformations
+
+* **BES → TS**, **FES → FTS**, **BFM → FM**, **BFM → FTS**
+
+  * `robot`: the cleaning robot example
+
+* **TS → BES**
+
+  * `parallel`: a toy example demonstrating support for flattened parallel compositions of linear systems (a specific subclass of non-linear models)
+  * `robot-linear`: a linear version of the cleaning robot
+
+* **FTS → FES**
+
+  * `robot-linear`
+
+* **FTS → BFM**
+
+  * The full benchmark dataset used in the evaluation of the accompanying research paper (see [References](#references))
+
+> ⚠️ While small examples complete in a few seconds, the full benchmark transformation took approximately **10 days** on a **2023 MacBook Pro M2** with **16 GB of unified memory**.
+
+---
+
+## 📥 Input Formats
+
+Example models are located in `src/main/resources/` and `src/test/resources/`, using the following formats:
+
+* `.bfm`: Behavioral Feature Models (BFMs)
+* `.bes`: Behavioral Event Structures (BESs)
+* `.fes`: Featured Event Structures (FESs)
+* `.fts`: Featured Transition Systems (FTSs)
+* `.ts`: Transition Systems (TSs)
+* `.xml` / `.uvl`: Feature Models (FMs)
+
+You may use, extend, or modify the provided examples to experiment with the toolkit or tailor them to your specific use case.
+
+---
+
+## 📜 License
+
+This project is licensed under the [Apache License 2.0](./LICENSE).
+
+---
+
+## 📚 References
+
+1. Benavides, D., et al. *Universal Variability Language*. [ACM TOSEM, 2021](https://doi.org/10.1145/3461001.3471145)
+2. Benavides, D., et al. *UVL 2.0: Towards Interoperable Feature Models*. To appear, 2025.
+
+> 📄 The core BFM formalism is introduced in our upcoming research publication.
+> **\[Reference to be added]**
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! If you'd like to improve the codebase or add new features/translations:
+
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request with a clear description
+
+Bug reports, suggestions, and improvements are appreciated.
+
+---
+
+## 📬 Contact
+
+For questions, collaborations, or academic discussions, please contact
+[**Sophie Fortz**](mailto:sophie.fortz@kcl.ac.uk).
