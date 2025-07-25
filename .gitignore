@@ -35,4 +35,4 @@ build/
 .DS_Store
 
 ### Selected project files ###
-!**/src/main/resources/**/output/
+src/main/resources/**/output/
