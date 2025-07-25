@@ -19,6 +19,8 @@
 package uk.kcl.info.utils.translators;
 
 import be.vibes.ts.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
 
 import java.util.*;
@@ -27,6 +29,8 @@ import java.util.Map.Entry;
 import static uk.kcl.info.utils.translators.TranslationUtils.*;
 
 public class TsToBesConverter implements ModelConverter<TransitionSystem, BundleEventStructure> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TsToBesConverter.class);
 
     private final BundleEventStructureFactory factory;
     private final TransitionSystem ts;
@@ -50,15 +54,19 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
     }
 
     private void addEvents() {
+        int i = 0;
         for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
             Action a = it.next();
             Event e = new Event(a.getName());
             eventMap.put(a, e);
             factory.addEvent(e.getName());
+            i++;
+            LOG.trace("Actions to events: {}/{}", i, ts.getActionsCount());
         }
     }
 
     private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+        int i = 0;
         ConflictSet conflicts = new ConflictSet();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
 
@@ -89,6 +97,9 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
             if (!bundle.isEmpty()) {
                 candidateBundles.add(new CausalityRelation(bundle, e1));
             }
+
+            i++;
+            LOG.trace("Adding conflicts and candidate causalities: {}/{}", i, eventMap.size());
         }
 
         return splitBundlesOnConflicts(candidateBundles, conflicts);

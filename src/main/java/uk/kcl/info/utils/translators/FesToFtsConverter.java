@@ -20,6 +20,8 @@ package uk.kcl.info.utils.translators;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.ts.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.Event;
 import uk.kcl.info.bfm.FeaturedEventStructure;
 
@@ -28,6 +30,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class FesToFtsConverter implements ModelConverter<FeaturedEventStructure<?>, FeaturedTransitionSystem> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FesToFtsConverter.class);
 
     private final FeaturedEventStructure<?> fes;
     private final BesToTsConverter besToTsConverter;
@@ -49,6 +53,7 @@ public class FesToFtsConverter implements ModelConverter<FeaturedEventStructure<
     }
 
     private void addFeaturedTransitions() {
+        int i = 0;
         for (Iterator<Transition> it = ts.transitions(); it.hasNext(); ) {
             Transition t = it.next();
             String source = t.getSource().getName();
@@ -66,6 +71,9 @@ public class FesToFtsConverter implements ModelConverter<FeaturedEventStructure<
             if (!expr.isFalse()) {
                 factory.addTransition(source, action, expr, target);
             }
+
+            i++;
+            LOG.trace("Adding feature expressions: {}/{}", i, ts.getTransitionsCount());
         }
     }
 

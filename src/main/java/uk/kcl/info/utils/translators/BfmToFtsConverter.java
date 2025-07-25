@@ -22,6 +22,8 @@ import be.vibes.fexpression.FExpression;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.FeaturedTransitionSystemFactory;
 import com.google.common.collect.BiMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.Event;
 
@@ -30,6 +32,8 @@ import java.util.*;
 import static uk.kcl.info.utils.translators.TranslationUtils.*;
 
 public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel, FeaturedTransitionSystem> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BfmToFtsConverter.class);
 
     private final BehavioralFeatureModel bfm;
     private final TreeMap<Integer, Set<Set<Event>>> configurations;
@@ -50,8 +54,12 @@ public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel,
     }
 
     private void addActions(FeaturedTransitionSystemFactory factory) {
+        int i = 0;
         for (Event ev : bfm.getAllEvents()) {
             factory.addAction(ev.getName());
+
+            i++;
+            LOG.trace("Events to actions: {}/{}", i, bfm.getEventsCount());
         }
     }
 
@@ -60,6 +68,7 @@ public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel,
     }
 
     private void addTransitions(FeaturedTransitionSystemFactory factory) {
+        int i = 0;
         for (Map.Entry<Integer, Set<Set<Event>>> entry : configurations.entrySet()) {
             int size = entry.getKey();
             Set<Set<Event>> currentConfigs = entry.getValue();
@@ -75,6 +84,9 @@ public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel,
                     }
                 }
             }
+
+            i++;
+            LOG.trace("Configurations to transitions: {}/{}", i, configurations.size());
         }
     }
 

@@ -20,6 +20,8 @@ package uk.kcl.info.utils.translators;
 
 import be.vibes.ts.*;
 import com.google.common.collect.BiMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.Event;
 
@@ -28,6 +30,8 @@ import java.util.*;
 import static uk.kcl.info.utils.translators.TranslationUtils.*;
 
 public class BesToTsConverter implements ModelConverter<BundleEventStructure, TransitionSystem> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BesToTsConverter.class);
 
     private final BundleEventStructure bes;
     private final TreeMap<Integer, Set<Set<Event>>> configurations;
@@ -48,18 +52,25 @@ public class BesToTsConverter implements ModelConverter<BundleEventStructure, Tr
     }
 
     private void addActions(TransitionSystemFactory factory) {
+        int i = 0;
         for (Event event : bes.getAllEvents()) {
             factory.addAction(event.getName());
+            i++;
+            LOG.trace("Events to actions: {}/{}", i, bes.getEventsCount());
         }
     }
 
     private void addStates(TransitionSystemFactory factory) {
+        int i = 0;
         for (String state : configToStateMap.values()) {
             factory.addState(state);
+            i++;
+            LOG.trace("Configurations to states: {}/{}", i, configToStateMap.size());
         }
     }
 
     private void addTransitions(TransitionSystemFactory factory) {
+        int i = 0;
         for (int size : configurations.keySet()) {
             Set<Set<Event>> currentLevel = configurations.get(size);
             Set<Set<Event>> nextLevel = configurations.get(size + 1);
@@ -77,6 +88,8 @@ public class BesToTsConverter implements ModelConverter<BundleEventStructure, Tr
                     }
                 }
             }
+            i++;
+            LOG.trace("Configurations to transitions: {}/{}", i, configurations.size());
         }
     }
 

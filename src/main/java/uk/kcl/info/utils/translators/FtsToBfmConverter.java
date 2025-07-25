@@ -55,9 +55,7 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
         Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
         addCausalities(candidateBundles);
 
-        BehavioralFeatureModel bfm = factory.build();
-        logSummary(bfm);
-        return bfm;
+        return factory.build();
     }
 
     private void addEvents() {
@@ -85,7 +83,7 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             factory.addEvent(bf, e.getName(), combinedExpr);
 
             i++;
-            LOG.trace("Actions treated: {}/{}", i, fts.getActionsCount());
+            LOG.trace("Actions to events: {}/{}", i, fts.getActionsCount());
         }
     }
 
@@ -126,7 +124,7 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             }
 
             i++;
-            LOG.trace("Transitions treated: {}/{}", i, tMap.size());
+            LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, tMap.size());
         }
 
         return splitBundlesOnConflicts(candidateBundles, conflicts);
@@ -141,15 +139,7 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             }
             factory.addCausality(lca.getFeatureName(), causality);
             i++;
-            LOG.trace("Candidate causalities treated: {}/{}", i, bundles.size());
+            LOG.trace("Adding causalities: {}/{}", i, bundles.size());
         }
-    }
-
-    private void logSummary(BehavioralFeatureModel bfm) {
-        System.out.println("FTS Action count: " + fts.getActionsCount());
-        System.out.println("FTS Transitions count: " + fts.getTransitionsCount());
-        System.out.println("BFM Event count: " + bfm.getEventsCount());
-        System.out.println("BFM Conflict count: " + bfm.getConflictsCount());
-        System.out.println("BFM Causality count: " + bfm.getCausalitiesCount());
     }
 }
