@@ -77,6 +77,7 @@ public class ConflictSet {
     }
 
 
+    // Returns the number of conflicts (i.e. the number of (A,B) pairs)
     public int size(){
         if(conflictMap.isEmpty()){
             return 0;
@@ -85,6 +86,7 @@ public class ConflictSet {
         }
     }
 
+    // Returns the size of the largest conflict: max(|A| + |B|)
     public int maxConflictSize() {
         if (conflictMap.isEmpty()) {
             return 0;
@@ -97,6 +99,7 @@ public class ConflictSet {
                 .orElse(0);
     }
 
+    // Returns the sum of the size of all conflicts: Σ(|A| + |B|)
     public int getTotalNumberOfConflictingEvents() {
         if (conflictMap.isEmpty()) {
             return 0;

@@ -202,11 +202,11 @@
       <version>${txw2.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/io.github.universal-variability-language/fm-metamodel -->
-    <dependency>
+    <!-- <dependency>
       <groupId>io.github.universal-variability-language</groupId>
       <artifactId>fm-metamodel</artifactId>
       <version>${uvl_fm.version}</version>
-    </dependency>
+    </dependency>-->
   </dependencies>
 
   <profiles>
