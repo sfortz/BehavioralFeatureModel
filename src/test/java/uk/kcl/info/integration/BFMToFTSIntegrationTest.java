@@ -21,34 +21,23 @@ package uk.kcl.info.integration;
 import be.vibes.fexpression.configuration.Configuration;
 import be.vibes.solver.FeatureModel;
 import be.vibes.solver.exception.ConstraintSolvingException;
-import be.vibes.solver.io.xml.XmlLoaders;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.exception.TransitionSystenExecutionException;
 import be.vibes.ts.exception.UnresolvedFExpression;
-import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
-import uk.kcl.info.bfm.FeaturedEventStructure;
-import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
 import uk.kcl.info.utils.translators.BfmToFmConverter;
 import uk.kcl.info.utils.translators.BfmToFtsConverter;
-import uk.kcl.info.utils.translators.FesToFtsConverter;
-import uk.kcl.info.utils.translators.FtsToBfmConverter;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TestTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
 
 public class BFMToFTSIntegrationTest {
 
@@ -80,5 +69,5 @@ public class BFMToFTSIntegrationTest {
     /*  TODO: Linear is Buggy since renaming implies moving events to their parents (e.g., liDet should be in root as it is
              associated to lidet && mapping)
      */
-    
+
 }

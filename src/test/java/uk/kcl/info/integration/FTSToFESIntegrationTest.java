@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TestTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
 
 public class FTSToFESIntegrationTest {
 

@@ -26,16 +26,12 @@ import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.exception.TransitionSystenExecutionException;
 import be.vibes.ts.exception.UnresolvedFExpression;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
-import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
 import uk.kcl.info.utils.translators.FtsToBfmConverter;
-import uk.kcl.info.utils.translators.FtsToFesConverter;
 
 import java.io.File;
 import java.util.List;
@@ -43,7 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TestTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
 
 public class FTSToBFMIntegrationTest {
 

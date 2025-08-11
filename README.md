@@ -30,7 +30,7 @@ facilitating interoperability within the SPL and behavioral modeling ecosystems 
   * **Featured Event Structures (FES)**
   * **Featured Transition Systems (FTS)**
   * **Transition Systems (TS)**
-  * **Feature Models (FM)** in XML and UVL formats
+  * **Feature Models (FM)**
 * 🔄 Bidirectional translations between formalisms
 * 📂 IO support for XML (all formalisms) and DOT (TSs/FTSs)
 * 📊 Benchmark models and integration testing infrastructure
@@ -60,7 +60,8 @@ facilitating interoperability within the SPL and behavioral modeling ecosystems 
 │       ├── java/
 │       │   └── uk/kcl/info/bfm/
 │       │       ├── integration/   # Integration tests
-│       │       └── unit/          # Unit tests
+│       │       ├── unit/          # Unit tests
+│       │       └── utils/         # Utility class to generate (F)TS traces
 │       └── resources/testcases/   # Test model inputs
 └── target/                        # Compiled artifacts
 ```
@@ -150,8 +151,8 @@ Test sources and example models are located in:
 * `src/test/java/uk/kcl/info/bfm/{integration, unit}/`
 * `src/test/resources/testcases/`
 
-Each test ensures the correctness of bidirectional transformations between supported 
-modeling formats using curated examples.
+Each test ensures the correctness of bidirectional transformations between supported modeling formats by asserting 
+trace equivalence on a curated collection of examples.
 
 ---
 
@@ -169,7 +170,7 @@ java -jar target/BehavioralFeatureModel-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 ### 🔄 Included Transformations
 
-* **BES → TS**, **FES → FTS**, **BFM → FM**, **BFM → FTS**
+* **BES → TS**, **FES → FTS**, **BFM → FTS** (including **BFM → FM**)
 
   * `robot`: the cleaning robot example
 
@@ -197,9 +198,9 @@ Example models are located in `src/main/resources/` and `src/test/resources/`, u
 * `.bfm`: Behavioral Feature Models (BFMs)
 * `.bes`: Behavioral Event Structures (BESs)
 * `.fes`: Featured Event Structures (FESs)
-* `.fts`: Featured Transition Systems (FTSs)
+* `.fts` / `.dot`: Featured Transition Systems (FTSs)
 * `.ts`: Transition Systems (TSs)
-* `.xml` / `.uvl`: Feature Models (FMs)
+* `.xml`: Feature Models (FMs)
 
 You may use, extend, or modify the provided examples to experiment with the toolkit or tailor them to your specific use case.
 

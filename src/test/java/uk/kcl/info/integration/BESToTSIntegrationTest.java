@@ -19,7 +19,7 @@
 package uk.kcl.info.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TestTraceUtils.getAllTsTraces;
+import static uk.kcl.info.utils.TSTraceUtils.getAllTsTraces;
 
 import be.vibes.ts.TransitionSystem;
 import be.vibes.ts.exception.TransitionSystenExecutionException;

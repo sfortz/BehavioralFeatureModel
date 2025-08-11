@@ -28,7 +28,7 @@ import be.vibes.ts.execution.TransitionSystemExecutor;
 
 import java.util.*;
 
-public class TestTraceUtils {
+public class TSTraceUtils {
 
     /**
      * Generates all possible execution traces of the given Transition System.
