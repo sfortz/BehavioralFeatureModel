@@ -77,19 +77,8 @@ public class BFMToFTSIntegrationTest {
         assertEquals(bfmTraces, ftsTraces, "The BFM and FTS traces should be equivalent");
     }
 
-    /*  TODO: Buggy since renaming implies moving events to their parents (e.g., liDet should be in root as it is
+    /*  TODO: Linear is Buggy since renaming implies moving events to their parents (e.g., liDet should be in root as it is
              associated to lidet && mapping)
-    @Test
-    public void testRobotLinearBFMToFTSConversion() throws Exception {
-        // Load BFM
-        File bfmFile = new File(BFM_IN_PATH + "robot-linear.bfm");
-        BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(bfmFile);
-        // Convert to FTS
-        BfmToFtsConverter converter = new BfmToFtsConverter(bfm);
-        FeaturedTransitionSystem fts = converter.convert();
-
-        saveFts(fts, "robot-linear");
-    }*/
-
-
+     */
+    
 }
