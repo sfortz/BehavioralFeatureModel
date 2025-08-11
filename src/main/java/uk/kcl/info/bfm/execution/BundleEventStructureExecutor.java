@@ -85,16 +85,4 @@ public class BundleEventStructureExecutor {
         return false;
     }
 
-    private static final String BASE_PATH = "src/test/resources/testcases/";
-    private static final String BES_IN_PATH = BASE_PATH + "bes/";
-
-    public static void main(String[] args) throws Exception {
-
-        BundleEventStructure bes = XmlLoaderUtility.loadBundleEventStructure(new File(BES_IN_PATH + "robot.bes"));
-        BundleEventStructureExecutor executor = new BundleEventStructureExecutor(bes);
-        Set<List<String>> traces = executor.getAllTraces();
-        System.out.println("Traces: " + traces);
-
-    }
-
 }

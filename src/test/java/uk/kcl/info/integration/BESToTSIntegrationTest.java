@@ -41,7 +41,7 @@ public class BESToTSIntegrationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"robot.bes", "robot-linear.bes"})
-    public void testBESConversion(String besFileName) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException {
+    public void testBEStoTSConversion(String besFileName) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException {
 
         // Load BES
         BundleEventStructure bes = XmlLoaderUtility.loadBundleEventStructure(new File(BES_IN_PATH + besFileName));

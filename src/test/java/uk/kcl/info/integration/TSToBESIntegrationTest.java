@@ -41,7 +41,7 @@ public class TSToBESIntegrationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"robot-linear.ts", "parallel.ts"})
-    public void testTSConversion(String tsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
+    public void testTStoBESConversion(String tsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
 
         // Load TS
         TransitionSystem ts = XmlLoaderUtility.loadTransitionSystem(new File(TS_IN_PATH + tsFileName));

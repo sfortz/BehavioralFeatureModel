@@ -26,12 +26,16 @@ import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.exception.TransitionSystenExecutionException;
 import be.vibes.ts.exception.UnresolvedFExpression;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
-import uk.kcl.info.utils.translators.FtsToFesConverter;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
+import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
+import uk.kcl.info.utils.translators.FtsToBfmConverter;
+import uk.kcl.info.utils.translators.FtsToFesConverter;
 
 import java.io.File;
 import java.util.List;
@@ -41,7 +45,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.kcl.info.utils.TestTraceUtils.getAllFtsTraces;
 
-public class FTSToFESIntegrationTest {
+public class FTSToBFMIntegrationTest {
+
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
     private static final String FM_IN_PATH = BASE_PATH + "fm/xml/";
@@ -49,7 +54,7 @@ public class FTSToFESIntegrationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"robot.fts", "robot-linear.fts"})
-    public void testFTStoFESConversion(String ftsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
+    public void testFTStoBFMConversion(String ftsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
 
         // Load FM
         FeatureModel<?> fm = XmlLoaders.loadFeatureModel(FM_IN_PATH + "robot.xml");
@@ -57,15 +62,14 @@ public class FTSToFESIntegrationTest {
         // Load FTS
         FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(new File(FTS_IN_PATH + ftsFileName));
 
-        // Convert to FES
-        FtsToFesConverter converter = new FtsToFesConverter(fm, fts);
-        FeaturedEventStructure<?> fes = converter.convert();
+        // Convert to BFM
+        FtsToBfmConverter<?> converter = new FtsToBfmConverter<>(fm, fts);
+        BehavioralFeatureModel bfm = converter.convert();
 
-        // Execute both FTS and FES
+        // Execute both FTS and BFM
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
-        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllTraces();
+        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllTraces();
 
-        assertEquals(ftsTraces, fesTraces, "The FTS and FES traces should be equivalent");
+        assertEquals(ftsTraces, bfmTraces, "The FTS and BFM traces should be equivalent");
     }
-
 }

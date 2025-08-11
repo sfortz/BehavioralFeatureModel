@@ -61,23 +61,4 @@ public class FeaturedEventStructureExecutor {
         return tracesMap;
     }
 
-    private static final String BASE_PATH = "src/test/resources/testcases/";
-    private static final String FES_IN_PATH = BASE_PATH + "fes/";
-    private static final String FM_IN_PATH = BASE_PATH + "fm/xml/";
-
-    public static void main(String[] args) throws Exception {
-
-        FeatureModel<?> fm = XmlLoaders.loadFeatureModel(FM_IN_PATH + "robot.xml");
-        FeaturedEventStructure<?> fes = XmlLoaderUtility.loadFeaturedEventStructure(FES_IN_PATH + "robot.fes", fm);
-
-        FeaturedEventStructureExecutor executor = new FeaturedEventStructureExecutor(fes, fm);
-        Map<Configuration, Set<List<String>>> traces = executor.getAllTraces();
-        System.out.println("Traces: ");
-        for(Map.Entry<Configuration, Set<List<String>>> entry : traces.entrySet()){
-            System.out.println(entry.getKey());
-            for(List<String> trace : entry.getValue()){
-                System.out.println("    " + trace);
-            }
-        }
-    }
 }
