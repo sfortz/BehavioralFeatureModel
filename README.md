@@ -185,7 +185,7 @@ java -jar target/BehavioralFeatureModel-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 * **FTS → BFM**
 
-  * The full benchmark dataset used in the evaluation of the accompanying research paper (see [References](#references))
+  * The full benchmark dataset used in the evaluation of the accompanying research paper (see [References](-references))
 
 > ⚠️ While small examples complete in a few seconds, the full benchmark transformation took approximately **10 days** on a **2023 MacBook Pro M2** with **16 GB of unified memory**.
 
@@ -212,7 +212,6 @@ This project is licensed under the [Apache License 2.0](./LICENSE).
 
 ---
 
-<a id="references"></a>
 ## 📚 References
 
 1. [Benavides, D., et al. *Universal Variability Language*. ACM TOSEM, 2021](https://doi.org/10.1145/3461001.3471145)
