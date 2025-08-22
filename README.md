@@ -217,8 +217,8 @@ This project is licensed under the [Apache License 2.0](./LICENSE.txt).
 1. [Benavides, D., et al. *Universal Variability Language*. ACM TOSEM, 2021](https://doi.org/10.1145/3461001.3471145)
 2. Benavides, D., et al. *UVL 2.0: Towards Interoperable Feature Models*. To appear, 2025.
 
-> 📄 The core BFM formalism is introduced in our upcoming research publication.
-> **\[Reference to be added]**
+> 📄 The core BFM formalism is introduced in our upcoming research publication (currently under review).
+> A long version of this paper, containint all our proofs is already available [here](./BFM_LongVersion.pdf).
 
 ---
 
