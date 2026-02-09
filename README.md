@@ -55,7 +55,9 @@ facilitating interoperability within the SPL and behavioral modeling ecosystems 
 │   │   │       ├── io/xml/        # XML read/write utilities
 │   │   │       ├── utils/         # Labeling & translation algorithms
 │   │   │       └── Main.java      # Main entry point
-│   │   └── resources/             # Example input models (.bfm, .fes, etc.)
+│   │   └── resources/             # Example input models (.bfm, .fes, etc.). It comprises 
+│   │                              # the FTS used as a benchmark in our evaluation, as well as
+│   │                              # our running example (the cleaning robot) in each formalism.
 │   └── test/
 │       ├── java/
 │       │   └── uk/kcl/info/bfm/
