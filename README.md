@@ -55,7 +55,9 @@ facilitating interoperability within the SPL and behavioral modeling ecosystems 
 │   │   │       ├── io/xml/        # XML read/write utilities
 │   │   │       ├── utils/         # Labeling & translation algorithms
 │   │   │       └── Main.java      # Main entry point
-│   │   └── resources/             # Example input models (.bfm, .fes, etc.)
+│   │   └── resources/             # Example input models (.bfm, .fes, etc.). It comprises 
+│   │                              # the FTS used as a benchmark in our evaluation, as well as
+│   │                              # our running example (the cleaning robot) in each formalism.
 │   └── test/
 │       ├── java/
 │       │   └── uk/kcl/info/bfm/
@@ -185,7 +187,7 @@ java -jar target/BehavioralFeatureModel-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 * **FTS → BFM**
 
-  * The full benchmark dataset used in the evaluation of the accompanying research paper (see [References](#references))
+  * The full benchmark dataset used in the evaluation of the accompanying research paper (see [References](#-references))
 
 > ⚠️ While small examples complete in a few seconds, the full benchmark transformation took approximately **10 days** on a **2023 MacBook Pro M2** with **16 GB of unified memory**.
 
@@ -208,17 +210,17 @@ You may use, extend, or modify the provided examples to experiment with the tool
 
 ## 📜 License
 
-This project is licensed under the [Apache License 2.0](./LICENSE).
+This project is licensed under the [Apache License 2.0](./LICENSE.txt).
 
 ---
 
 ## 📚 References
 
-1. Benavides, D., et al. *Universal Variability Language*. [ACM TOSEM, 2021](https://doi.org/10.1145/3461001.3471145)
+1. [Benavides, D., et al. *Universal Variability Language*. ACM TOSEM, 2021](https://doi.org/10.1145/3461001.3471145)
 2. Benavides, D., et al. *UVL 2.0: Towards Interoperable Feature Models*. To appear, 2025.
 
-> 📄 The core BFM formalism is introduced in our upcoming research publication.
-> **\[Reference to be added]**
+> 📄 The core BFM formalism is introduced in our upcoming research publication (currently under review).
+> A long version of this paper, containint all our proofs is already available [here](./BFM_LongVersion.pdf).
 
 ---
 
