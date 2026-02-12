@@ -19,8 +19,7 @@
 package uk.kcl.info;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 import be.vibes.solver.FeatureModel;
@@ -74,11 +73,11 @@ public class Main {
         //convertBfmToFts("robot-linear");
 
         LOG.info("convertTsToBes");
-        convertTsToBes("robot-linear");
+        convertTsToBes("robot");
         convertTsToBes("parallel");
 
         LOG.info("convertFtsToFes");
-        convertFtsToFes("robot", "robot-linear");
+        convertFtsToFes("robot", "robot");
 
         LOG.info("convertFtsToBfm");
         for (Map.Entry<String, String> entry : getSystems().entrySet()) {
@@ -268,7 +267,7 @@ public class Main {
         Map<String, String> systems = new HashMap<>();
 
         systems.put("cpterminal", "cpterminal");
-        systems.put("robot-linear", "robot");
+        systems.put("robot", "robot");
         systems.put("/vm/coffee", "coffee");
         systems.put("/vm/soup", "soup");
         systems.put("/vm/soda", "soda");
