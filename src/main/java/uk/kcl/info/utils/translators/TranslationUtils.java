@@ -64,106 +64,69 @@ public class TranslationUtils {
         return (diff.size() == 1) ? diff.iterator().next() : null;
     }
 
-    public static boolean isPredecessor(TransitionSystem ts, Action source, Action target) {
-        for (Iterator<Transition> it = ts.getTransitions(source); it.hasNext(); ) {
-            Transition t = it.next();
-            State intermediate = t.getTarget();
-
-            for (Iterator<Transition> it2 = ts.getOutgoing(intermediate); it2.hasNext(); ) {
-                Transition t2 = it2.next();
-                if (t2.getAction().equals(target)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public static boolean isPredecessor(Transition t1, Transition t2) {
+        return t2.getSource().equals(t1.getTarget());
     }
 
-    private static boolean canReachActionFrom(TransitionSystem ts, State current, Action destination, Set<State> visited) {
-        if (!visited.add(current)) return false;
+    public static boolean isReachable(TransitionSystem ts, Transition from, Transition to) {
+        State start = from.getTarget();
+        State target = to.getSource();
 
-        for (Iterator<Transition> it = ts.getOutgoing(current); it.hasNext(); ) {
-            Transition t = it.next();
-            if (t.getAction().equals(destination)) {
-                return true;
-            } else if (canReachActionFrom(ts, t.getTarget(), destination, visited)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isReachable(TransitionSystem ts, Action from, Action to) {
         Set<State> visited = new HashSet<>();
-        List<Transition> transitions = new ArrayList<>();
-        ts.getTransitions(from).forEachRemaining(transitions::add);
-        Set<State> targets = transitions.stream().map(Transition::getTarget).collect(Collectors.toSet());
+        Deque<State> stack = new ArrayDeque<>();
+        stack.push(start);
 
-        for (State target : targets) {
-            if (canReachActionFrom(ts, target, to, visited)) {
-                return true;
+        while (!stack.isEmpty()) {
+            State current = stack.pop();
+            if (!visited.add(current)) continue;
+            if (current.equals(target)) return true;
+
+            for (Iterator<Transition> it = ts.getOutgoing(current); it.hasNext(); ) {
+                stack.push(it.next().getTarget());
             }
         }
         return false;
     }
 
-    public static boolean isPredecessor(FeaturedTransitionSystem fts, Action source, Action target) {
+    public static boolean isReachable(FeaturedTransitionSystem fts, Transition from, Transition to) {
 
-        for (Iterator<Transition> it1 = fts.getTransitions(source); it1.hasNext(); ) {
-            Transition t1 = it1.next();
-            FExpression fexpr1 = fts.getFExpression(t1);
-            State s = t1.getTarget();
-            for (Iterator<Transition> it2 = fts.getOutgoing(s); it2.hasNext(); ) {
-                Transition t2 = it2.next();
+        State start = from.getTarget();
+        State target = to.getSource();
+        FExpression startF = fts.getFExpression(from);
 
-                if (t2.getAction().equals(target)) {
-                    FExpression fexpr2 = fts.getFExpression(t2);
-                    FExpression combined = fexpr1.and(fexpr2).applySimplification();
-                    if (!combined.isFalse()) {
-                        return true;
-                    }
+        record Node(State s, FExpression f) {}
+
+        Map<State, Set<FExpression>> visited = new HashMap<>();
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.push(new Node(start, startF));
+
+        while (!stack.isEmpty()) {
+            Node node = stack.pop();
+            State current = node.s();
+            FExpression currentF = node.f();
+
+            if (current.equals(target)) return true;
+
+            Set<FExpression> seen = visited.computeIfAbsent(current, k -> new HashSet<>());
+
+            // Subsumption check
+            boolean subsumed = seen.stream().anyMatch(oldF -> currentF.not().or(oldF).applySimplification().isTrue());
+
+            if (subsumed) continue;
+            seen.add(currentF);
+
+            for (Iterator<Transition> it = fts.getOutgoing(current); it.hasNext(); ) {
+                Transition t = it.next();
+                FExpression newF = currentF.and(fts.getFExpression(t)) .applySimplification();
+
+                if (!newF.isFalse()) {
+                    stack.push(new Node(t.getTarget(), newF));
                 }
             }
         }
-
         return false;
     }
 
-    private static FExpression canReachActionFrom(FeaturedTransitionSystem fts, State current, FExpression f1, Action destination, Set<State> visited) {
-        if (visited.contains(current)) {
-            return FExpression.falseValue();
-        }
-        visited.add(current);
-
-        for (Iterator<Transition> it = fts.getOutgoing(current); it.hasNext(); ) {
-            Transition t = it.next();
-            FExpression f2 = fts.getFExpression(t);
-            if (t.getAction().equals(destination)) {
-                return f1.and(f2);
-            } else {
-                FExpression f3 = canReachActionFrom(fts, t.getTarget(), f1.and(f2), destination, visited);
-                if (!f3.applySimplification().isFalse()) {
-                    return f3;
-                }
-            }
-        }
-        return FExpression.falseValue();
-    }
-
-    public static boolean isReachable(FeaturedTransitionSystem fts, Action a1, Action a2) {
-        Set<State> visited = new HashSet<>();
-
-        List<Transition> transitions = Lists.newArrayList(fts.getTransitions(a1));
-        Set<State> targets = transitions.stream().map(Transition::getTarget).collect(Collectors.toSet());
-
-        for (State t:targets){
-            FExpression fexpr = canReachActionFrom(fts, t, FExpression.trueValue(), a2, visited);
-            if(!fexpr.applySimplification().isFalse()){
-                return true;
-            }
-        }
-        return false;
-    }
 
     public static Set<CausalityRelation> splitBundlesOnConflicts(Set<CausalityRelation> bundles, ConflictSet conflicts) {
         return bundles.stream()

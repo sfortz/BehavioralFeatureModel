@@ -40,7 +40,7 @@ public class TSToBESIntegrationTest {
     private static final String TS_IN_PATH = BASE_PATH + "ts/xml/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot-linear.ts", "parallel.ts"})
+    @ValueSource(strings = {"robot.ts", "parallel.ts"})
     public void testTStoBESConversion(String tsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
 
         // Load TS
@@ -52,7 +52,7 @@ public class TSToBESIntegrationTest {
 
         // Execute TS and BES
         Set<List<String>> tsTraces = getAllTsTraces(ts);
-        Set<List<String>> besTraces = new BundleEventStructureExecutor(bes).getAllTraces();
+        Set<List<String>> besTraces = new BundleEventStructureExecutor(bes).getAllActionTraces();
 
         assertEquals(tsTraces, besTraces, "The TS and BES traces should be equivalent");
     }

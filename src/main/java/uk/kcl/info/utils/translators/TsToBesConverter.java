@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 import static uk.kcl.info.utils.translators.TranslationUtils.*;
 
@@ -32,21 +31,22 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
 
     private static final Logger LOG = LoggerFactory.getLogger(TsToBesConverter.class);
 
-    private final BundleEventStructureFactory factory;
-    private final TransitionSystem ts;
-    private final Map<Action, Event> eventMap = new HashMap<>();
+    private final TransitionSystem ts;;
+    private final Map<Transition, Event> transitionEventMap = new HashMap<>();
+    private final BundleEventStructureFactory factory = new BundleEventStructureFactory();
 
     public TsToBesConverter(TransitionSystem ts) {
         this.ts = Objects.requireNonNull(ts);
-        this.factory = new BundleEventStructureFactory();
     }
 
+    @Override
     public BundleEventStructure convert() {
 
         // Step 1: Collect actions & add events
         addEvents();
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
         Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
+
         // Step 4: Optimize non-conflicting bundle splitting
         addCausalities(candidateBundles);
 
@@ -54,41 +54,57 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
     }
 
     private void addEvents() {
+        Map<Action, Integer> actionCounter = new HashMap<>();
         int i = 0;
-        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
-            Action a = it.next();
-            Event e = new Event(a.getName());
-            eventMap.put(a, e);
-            factory.addEvent(e.getName());
+
+        for (Iterator<Transition> it = ts.transitions(); it.hasNext(); ) {
+            Transition t = it.next();
+            Action a = t.getAction();
+
+            int j = actionCounter.getOrDefault(a, 0);
+            String actionName = a.getName();
+            String eventName = actionName + "_" + j;
+
+            Event e = new Event(eventName, actionName);
+            transitionEventMap.put(t, e);
+            factory.addEvent(e);
+
+            actionCounter.put(a, j + 1);
             i++;
-            LOG.trace("Actions to events: {}/{}", i, ts.getActionsCount());
+            LOG.trace("Transitions to events: {}/{}", i, ts.getTransitionsCount());
         }
     }
 
     private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
-        int i = 0;
         ConflictSet conflicts = new ConflictSet();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
+        int i = 0;
 
-        for (Entry<Action, Event> entry1 : eventMap.entrySet()) {
-            Action a1 = entry1.getKey();
+        for (Map.Entry<Transition, Event> entry1 : transitionEventMap.entrySet()) {
+            Transition t1 = entry1.getKey();
             Event e1 = entry1.getValue();
+
             Set<Event> bundle = new HashSet<>();
 
-            for (Entry<Action, Event> entry2 : eventMap.entrySet()) {
-                Action a2 = entry2.getKey();
-                if (!a1.equals(a2)) {
+            for (Map.Entry<Transition, Event> entry2 : transitionEventMap.entrySet()) {
+                Transition t2 = entry2.getKey();
+                if (!t1.equals(t2)) {
                     Event e2 = entry2.getValue();
 
-                    boolean a1ToA2 = isReachable(ts, a1, a2);
-                    boolean a2ToA1 = isReachable(ts, a2, a1);
+                    boolean t1ToT2 = isReachable(ts, t1, t2);
+                    boolean t2ToT1 = isReachable(ts, t2, t1);
 
-                    if (!a1ToA2 && !a2ToA1) {
+                    if (!t1ToT2 && !t2ToT1) {
                         factory.addConflict(e1, e2);
                         conflicts.addConflict(e1, e2);
                     }
 
-                    if (isPredecessor(ts, a2, a1) && !a1ToA2) {
+                    if(e1.getName().equals("a_1") && e2.getName().equals("b_0")){
+                        System.out.println(e1);
+                        System.out.println(e2);
+                    }
+
+                    if (!t1ToT2 && isPredecessor(t2, t1)) {
                         bundle.add(e2);
                     }
                 }
@@ -99,7 +115,7 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
             }
 
             i++;
-            LOG.trace("Adding conflicts and candidate causalities: {}/{}", i, eventMap.size());
+            LOG.trace("Adding conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
         }
 
         return splitBundlesOnConflicts(candidateBundles, conflicts);
@@ -108,5 +124,4 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
     private void addCausalities(Set<CausalityRelation> bundles) {
         bundles.forEach(factory::addCausality);
     }
-
 }
