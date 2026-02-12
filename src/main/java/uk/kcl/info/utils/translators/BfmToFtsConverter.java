@@ -45,6 +45,7 @@ public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel,
         this.configToStateMap = indexConfigurationsAsStates(configurations.values());
     }
 
+    @Override
     public FeaturedTransitionSystem convert() {
         FeaturedTransitionSystemFactory factory = new FeaturedTransitionSystemFactory(INITIAL_STATE);
         addActions(factory);
@@ -56,7 +57,7 @@ public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel,
     private void addActions(FeaturedTransitionSystemFactory factory) {
         int i = 0;
         for (Event ev : bfm.getAllEvents()) {
-            factory.addAction(ev.getName());
+            factory.addAction(ev.getAction());
 
             i++;
             LOG.trace("Events to actions: {}/{}", i, bfm.getEventsCount());
@@ -101,7 +102,7 @@ public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel,
                 .toCnf();
 
         if (!fexpr.isFalse()) {
-            factory.addTransition(source, e.getName(), fexpr, target);
+            factory.addTransition(source, e.getAction(), fexpr, target);
         }
     }
 }

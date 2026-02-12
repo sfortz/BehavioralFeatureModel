@@ -31,6 +31,7 @@ public class BfmToFmConverter implements ModelConverter<BehavioralFeatureModel, 
         this.bfm = bfm;
     }
 
+    @Override
     public FeatureModel<BehavioralFeature> convert() {
         return new FeatureModelFactory<>(bfm).build();
     }

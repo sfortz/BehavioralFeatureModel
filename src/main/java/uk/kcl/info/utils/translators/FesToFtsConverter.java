@@ -43,6 +43,7 @@ public class FesToFtsConverter implements ModelConverter<FeaturedEventStructure<
         this.besToTsConverter = new BesToTsConverter(fes);
     }
 
+    @Override
     public FeaturedTransitionSystem convert() {
         this.ts = besToTsConverter.convert();
         this.factory = new FeaturedTransitionSystemFactory(ts.getInitialState().getName());

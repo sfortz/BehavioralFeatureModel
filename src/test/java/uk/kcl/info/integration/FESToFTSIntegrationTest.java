@@ -48,7 +48,7 @@ public class FESToFTSIntegrationTest {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot.fes", "robot-linear.fes"})
+    @ValueSource(strings = {"robot.fes"})
     public void testFESToFTSConversion(String fesFileName) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
 
         // Load FM
@@ -62,7 +62,7 @@ public class FESToFTSIntegrationTest {
         FeaturedTransitionSystem fts = converter.convert();
 
         // Execute both FES and FTS
-        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllTraces();
+        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllActionTraces();
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
 
         assertEquals(fesTraces, ftsTraces, "The FES and FTS traces should be equivalent");

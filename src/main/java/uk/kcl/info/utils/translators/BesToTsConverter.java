@@ -43,6 +43,7 @@ public class BesToTsConverter implements ModelConverter<BundleEventStructure, Tr
         this.configToStateMap = indexConfigurationsAsStates(configurations.values());
     }
 
+    @Override
     public TransitionSystem convert() {
         TransitionSystemFactory factory = new TransitionSystemFactory(INITIAL_STATE);
         addActions(factory);
@@ -54,7 +55,7 @@ public class BesToTsConverter implements ModelConverter<BundleEventStructure, Tr
     private void addActions(TransitionSystemFactory factory) {
         int i = 0;
         for (Event event : bes.getAllEvents()) {
-            factory.addAction(event.getName());
+            factory.addAction(event.getAction());
             i++;
             LOG.trace("Events to actions: {}/{}", i, bes.getEventsCount());
         }
@@ -83,7 +84,7 @@ public class BesToTsConverter implements ModelConverter<BundleEventStructure, Tr
                         if (addedEvent != null) {
                             String sourceState = configToStateMap.get(sourceConfig);
                             String targetState = configToStateMap.get(targetConfig);
-                            factory.addTransition(sourceState, addedEvent.getName(), targetState);
+                            factory.addTransition(sourceState, addedEvent.getAction(), targetState);
                         }
                     }
                 }
