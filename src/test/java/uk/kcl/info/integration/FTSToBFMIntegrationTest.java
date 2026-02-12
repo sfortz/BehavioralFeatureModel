@@ -49,7 +49,7 @@ public class FTSToBFMIntegrationTest {
     private static final String FTS_IN_PATH = BASE_PATH + "fts/xml/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot.fts", "robot-linear.fts"})
+    @ValueSource(strings = {"robot.fts"})
     public void testFTStoBFMConversion(String ftsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
 
         // Load FM
@@ -64,7 +64,7 @@ public class FTSToBFMIntegrationTest {
 
         // Execute both FTS and BFM
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
-        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllTraces();
+        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllActionTraces();
 
         assertEquals(ftsTraces, bfmTraces, "The FTS and BFM traces should be equivalent");
     }

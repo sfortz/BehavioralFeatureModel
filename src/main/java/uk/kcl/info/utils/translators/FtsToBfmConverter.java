@@ -40,14 +40,15 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
     private final FeatureModel<F> fm;
 
     private BehavioralFeatureModelFactory factory;
-    private final Map<Event, F> featureMap = new HashMap<>();
-    private final Map<Transition, Event> tMap = new HashMap<>();
+    //private final Map<Event, F> featureMap = new HashMap<>();
+    private final Map<Transition, Event> transitionEventMap = new HashMap<>();
 
     public FtsToBfmConverter(FeatureModel<F> fm, FeaturedTransitionSystem fts) {
         this.fm = Objects.requireNonNull(fm);
         this.fts = Objects.requireNonNull(fts);
     }
 
+    @Override
     public BehavioralFeatureModel convert() {
         this.factory = new BehavioralFeatureModelFactory(fm);
 
@@ -59,32 +60,63 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
     }
 
     private void addEvents() {
+        Map<Action, Integer> actionCounter = new HashMap<>();
+        //Map<Action, List<FExpression>> exprListMap = new HashMap<>();
+
         int i = 0;
-        for (Iterator<Action> it = fts.actions(); it.hasNext(); ) {
-            Action a = it.next();
-            Event e = new Event(a.getName());
 
-            FExpression combinedExpr = FExpression.falseValue();
-            List<FExpression> exprList = new ArrayList<>();
+        for (Iterator<Transition> it = fts.transitions(); it.hasNext(); ) {
+            Transition t = it.next();
+            Action a = t.getAction();
 
-            for (Iterator<Transition> transIt = fts.getTransitions(a); transIt.hasNext(); ) {
-                Transition t = transIt.next();
-                FExpression expr = fts.getFExpression(t);
-                combinedExpr.orWith(expr);
-                exprList.add(expr);
-                tMap.put(t, e);
-            }
+            int j = actionCounter.getOrDefault(a, 0);
+            String actionName = a.getName();
+            String eventName = actionName + "_" + j;
 
-            combinedExpr = combinedExpr.applySimplification().toCnf();
-            F ancestor = fm.getLeastCommonAncestor(exprList);
+            Event e = new Event(eventName, actionName);
+            transitionEventMap.put(t, e);
+
+            /*
+            // Accumulate expressions
+            FExpression expr = fts.getFExpression(t);
+            combinedExprMap.computeIfAbsent(a, k -> FExpression.falseValue()).orWith(expr);
+            exprListMap.computeIfAbsent(a, k -> new ArrayList<>()).add(expr);
+            transitionEventMap.put(t, e);
+
+            FExpression combinedExpr = combinedExprMap.get(a).applySimplification().toCnf();*/
+
+            // F ancestor = fm.getLeastCommonAncestor(exprListMap.get(a));
+            F ancestor = fm.getRootFeature();
+            //featureMap.put(e, ancestor);
+
+            BehavioralFeature bf = factory.getFeature(ancestor.getFeatureName());
+            FExpression fexpr = fts.getFExpression(t).applySimplification().toCnf();
+            factory.addEvent(bf, e.getName(), a.getName(), fexpr);
+
+            actionCounter.put(a, j + 1);
+            i++;
+            LOG.trace("Transitions to events: {}/{}", i, fts.getTransitionsCount());
+        }
+
+        /*
+        i = 0;
+
+        // Finalise per action
+        for (Map.Entry<Action, Event> entry : actionEventMap.entrySet()) {
+            Action a = entry.getKey();
+            Event e = entry.getValue();
+
+            FExpression combinedExpr = combinedExprMap.get(a).applySimplification().toCnf();
+            // F ancestor = fm.getLeastCommonAncestor(exprListMap.get(a));
+            F ancestor = fm.getRootFeature();
             featureMap.put(e, ancestor);
 
             BehavioralFeature bf = factory.getFeature(ancestor.getFeatureName());
             factory.addEvent(bf, e.getName(), combinedExpr);
 
             i++;
-            LOG.trace("Actions to events: {}/{}", i, fts.getActionsCount());
-        }
+            LOG.trace("Actions to events: {}/{}", i, actionEventMap.size());
+        }*/
     }
 
     private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
@@ -92,28 +124,27 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
         Set<CausalityRelation> candidateBundles = new HashSet<>();
         int i = 0;
 
-        for (Map.Entry<Transition, Event> entry1 : tMap.entrySet()) {
-            Action a1 = entry1.getKey().getAction();
+        for (Map.Entry<Transition, Event> entry1 : transitionEventMap.entrySet()) {
+            Transition t1 = entry1.getKey();
             Event e1 = entry1.getValue();
-
             Set<Event> bundle = new HashSet<>();
 
-            for (Map.Entry<Transition, Event> entry2 : tMap.entrySet()) {
-                Action a2 = entry2.getKey().getAction();
-
-                if (!a1.equals(a2)) {
+            for (Map.Entry<Transition, Event> entry2 : transitionEventMap.entrySet()) {
+                Transition t2 = entry2.getKey();
+                if (!t1.equals(t2)) {
                     Event e2 = entry2.getValue();
 
-                    boolean a1ToA2 = isReachable(fts, a1, a2);
-                    boolean a2ToA1 = isReachable(fts, a2, a1);
+                    boolean t1ToT2 = isReachable(fts, t1, t2);
+                    boolean t2ToT1 = isReachable(fts, t2, t1);
 
-                    if (!a1ToA2 && !a2ToA1) {
-                        F lca = fm.getLeastCommonAncestor(featureMap.get(e1), featureMap.get(e2));
-                        factory.addConflict(lca.getFeatureName(), e1, e2);
+                    if (!t1ToT2 && !t2ToT1) {
+                        //F lca = fm.getLeastCommonAncestor(featureMap.get(e1), featureMap.get(e2));
+                        //factory.addConflict(lca.getFeatureName(), e1, e2);
+                        factory.addConflict(fm.getRootFeature().getFeatureName(), e1, e2);
                         conflicts.addConflict(e1, e2);
                     }
 
-                    if (isPredecessor(fts, a2, a1) && !a1ToA2) {
+                    if (!t1ToT2 && isPredecessor(t2, t1)) {
                         bundle.add(e2);
                     }
                 }
@@ -124,7 +155,7 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             }
 
             i++;
-            LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, tMap.size());
+            LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
         }
 
         return splitBundlesOnConflicts(candidateBundles, conflicts);
@@ -133,11 +164,12 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
     private void addCausalities(Set<CausalityRelation> bundles) {
         int i = 0;
         for (CausalityRelation causality : bundles) {
-            F lca = featureMap.get(causality.getTarget());
+            /*F lca = featureMap.get(causality.getTarget());
             for (Event e : causality.getBundle()) {
                 lca = fm.getLeastCommonAncestor(lca, featureMap.get(e));
             }
-            factory.addCausality(lca.getFeatureName(), causality);
+            factory.addCausality(lca.getFeatureName(), causality);*/
+            factory.addCausality(fm.getRootFeature().getFeatureName(), causality);
             i++;
             LOG.trace("Adding causalities: {}/{}", i, bundles.size());
         }

@@ -24,66 +24,113 @@ import be.vibes.solver.FeatureModel;
 import be.vibes.ts.Action;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.Transition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import static uk.kcl.info.utils.translators.TranslationUtils.*;
 
 public class FtsToFesConverter implements ModelConverter<FeaturedTransitionSystem, FeaturedEventStructure<?>> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FtsToFesConverter.class);
+
     private final FeaturedTransitionSystem fts;
     private final FeatureModel<?> fm;
-    private final TsToBesConverter converter;
-    private BundleEventStructure bes;
+
     private FeaturedEventStructureFactory factory;
+    private final Map<Transition, Event> transitionEventMap = new HashMap<>();
 
     public FtsToFesConverter(FeatureModel<?> fm, FeaturedTransitionSystem fts) {
-        this.fts = Objects.requireNonNull(fts);
         this.fm = Objects.requireNonNull(fm);
-        this.converter = new TsToBesConverter(fts);
+        this.fts = Objects.requireNonNull(fts);
     }
 
+    @Override
     public FeaturedEventStructure<?> convert() {
-        this.bes = converter.convert();
         this.factory = new FeaturedEventStructureFactory(fm);
 
         addEvents();
-        addCausalities();
-        addConflicts();
+        Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
+        addCausalities(candidateBundles);
 
         return factory.build();
     }
 
     private void addEvents() {
-        for (Iterator<Event> it = bes.events(); it.hasNext(); ) {
-            Event event = it.next();
-            Action action = fts.getAction(event.getName());
+        Map<Action, Integer> actionCounter = new HashMap<>();
 
-            List<FExpression> fexprList = new ArrayList<>();
-            FExpression combinedExpr = FExpression.falseValue();
+        int i = 0;
 
-            for (Iterator<Transition> transIt = fts.getTransitions(action); transIt.hasNext(); ) {
-                FExpression fexpr = fts.getFExpression(transIt.next());
-                fexprList.add(fexpr);
-                combinedExpr.orWith(fexpr);
+        for (Iterator<Transition> it = fts.transitions(); it.hasNext(); ) {
+            Transition t = it.next();
+            Action a = t.getAction();
+
+            int j = actionCounter.getOrDefault(a, 0);
+            String actionName = a.getName();
+            String eventName = actionName + "_" + j;
+
+            Event e = new Event(eventName, actionName);
+            transitionEventMap.put(t, e);
+
+            Feature<?> ancestor = fm.getRootFeature();
+
+            FExpression fexpr = fts.getFExpression(t).applySimplification().toCnf();
+            factory.addEvent(e.getName(), a.getName(), ancestor, fexpr);
+
+            actionCounter.put(a, j + 1);
+            i++;
+            LOG.trace("Transitions to events: {}/{}", i, fts.getTransitionsCount());
+        }
+    }
+
+    private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+        ConflictSet conflicts = new ConflictSet();
+        Set<CausalityRelation> candidateBundles = new HashSet<>();
+        int i = 0;
+
+        for (Map.Entry<Transition, Event> entry1 : transitionEventMap.entrySet()) {
+            Transition t1 = entry1.getKey();
+            Event e1 = entry1.getValue();
+            Set<Event> bundle = new HashSet<>();
+
+            for (Map.Entry<Transition, Event> entry2 : transitionEventMap.entrySet()) {
+                Transition t2 = entry2.getKey();
+                if (!t1.equals(t2)) {
+                    Event e2 = entry2.getValue();
+
+                    boolean t1ToT2 = isReachable(fts, t1, t2);
+                    boolean t2ToT1 = isReachable(fts, t2, t1);
+
+                    if (!t1ToT2 && !t2ToT1) {
+                        factory.addConflict(e1, e2);
+                        conflicts.addConflict(e1, e2);
+                    }
+
+                    if (!t1ToT2 && isPredecessor(t2, t1)) {
+                        bundle.add(e2);
+                    }
+                }
             }
 
-            FExpression simplifiedExpr = combinedExpr.applySimplification();
-            Feature<?> feature = fm.getLeastCommonAncestor(fexprList);
-            factory.addEvent(event.getName(), feature, simplifiedExpr);
+            if (!bundle.isEmpty()) {
+                candidateBundles.add(new CausalityRelation(bundle, e1));
+            }
+
+            i++;
+            LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
         }
+
+        return splitBundlesOnConflicts(candidateBundles, conflicts);
     }
 
-    private void addCausalities() {
-        for (Iterator<CausalityRelation> it = bes.causalities(); it.hasNext(); ) {
-            CausalityRelation causality = it.next();
-            factory.addCausality(causality.getBundle(), causality.getTarget());
+    private void addCausalities(Set<CausalityRelation> bundles) {
+        int i = 0;
+        for (CausalityRelation causality : bundles) {
+            factory.addCausality(causality);
+            i++;
+            LOG.trace("Adding causalities: {}/{}", i, bundles.size());
         }
-    }
-
-    private void addConflicts() {
-        factory.addConflicts(bes.getConflictSetCopy());
     }
 }
