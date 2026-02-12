@@ -57,6 +57,7 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     public static final String NAMESPACE_ATTR = "namespace";
     public static final String NAME_ATTR = "name";
     public static final String ID_ATTR = "id";
+    public static final String ACTION_ATTR = "action";
     public static final String FEXPRESSION_ATTR = "fexpression";
     public static final String TARGET_ATTR = "target";
 
@@ -239,12 +240,13 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
             conflictStack.peek().add(id);
         } else {
             // Otherwise, it's a standalone event declaration
+            String action = element.getAttributeByName(QName.valueOf(ACTION_ATTR)).getValue();
             Attribute exprAtt = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR));
             if (exprAtt != null) {
                 String expr = exprAtt.getValue();
-                factory.addEvent(featureStack.peek(), id, expr);
+                factory.addEvent(featureStack.peek(), id, action, expr);
             } else {
-                factory.addEvent(featureStack.peek(), id);
+                factory.addEvent(featureStack.peek(), id, action);
             }
         }
     }

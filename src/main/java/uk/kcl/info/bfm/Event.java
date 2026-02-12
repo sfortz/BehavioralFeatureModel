@@ -23,20 +23,27 @@ import java.util.Objects;
 
 public class Event {
     public static final String EPSILON_ACTION = "epsilon";
-    static final Event EPSILON = new Event("epsilon");
+    static final Event EPSILON = new Event(EPSILON_ACTION,EPSILON_ACTION);
     private final String name;
+    private final String action;
 
-    public Event(String name) {
+    public Event(String name, String action) {
         Preconditions.checkNotNull(name, "Name may not be null!");
+        Preconditions.checkNotNull(action, "Action may not be null!");
         this.name = name;
+        this.action = action;
     }
 
     public String getName() {
         return this.name;
     }
 
+    public String getAction() {
+        return this.action;
+    }
+
     public String toString() {
-        return "Event{name=" + this.name + '}';
+        return "Event{name=" + this.name + ", action=" + this.action + '}';
     }
 
     public int hashCode() {

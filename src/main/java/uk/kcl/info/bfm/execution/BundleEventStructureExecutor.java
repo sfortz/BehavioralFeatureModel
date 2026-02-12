@@ -35,16 +35,33 @@ public class BundleEventStructureExecutor {
     }
 
     /**
+     * Return all traces as sequences of action names.
+     * This method should explore the BES configurations respecting causality and conflict.
+     */
+    public Set<List<String>> getAllActionTraces() {
+        Set<List<Event>> eventTraces = new HashSet<>();
+        Set<List<String>> actionTraces = new HashSet<>();
+        exploreConfigurations(new ArrayList<>(), new HashSet<>(), eventTraces);
+
+        for (List<Event> eventTrace : eventTraces) {
+            List<String> actionTrace = eventTrace.stream().map(Event::getAction).toList();
+            actionTraces.add(actionTrace);
+        }
+
+        return actionTraces;
+    }
+
+    /**
      * Return all traces as sequences of event names.
      * This method should explore the BES configurations respecting causality and conflict.
      */
-    public Set<List<String>> getAllTraces() {
-        Set<List<String>> traces = new HashSet<>();
+    public Set<List<Event>> getAllEventTraces() {
+        Set<List<Event>> traces = new HashSet<>();
         exploreConfigurations(new ArrayList<>(), new HashSet<>(), traces);
         return traces;
     }
 
-    private void exploreConfigurations(List<String> currentTrace, Set<Event> executed, Set<List<String>> traces) {
+    private void exploreConfigurations(List<Event> currentTrace, Set<Event> executed, Set<List<Event>> traces) {
         // Add current trace to traces
         traces.add(new ArrayList<>(currentTrace));
 
@@ -52,15 +69,23 @@ public class BundleEventStructureExecutor {
         for (Event event : bes.getAllEvents()) {
             if (executed.contains(event)) continue;
 
-            // Check causality: all causal predecessors executed
-            if (!areAllCausalPredecessorsExecuted(event, executed)) continue;
-
             // Check conflicts: event not in conflict with executed events
             if (isInConflictWithExecuted(event, executed)) continue;
 
+            if(event.getName().equals("map_0")){
+                System.out.println("Can I execute map_0 on current trace: " + currentTrace + "?");
+            }
+
+            // Check causality: all causal predecessors executed
+            if (!areAllCausalPredecessorsExecuted(event, executed)) continue;
+
+            if(event.getName().equals("map_0")){
+                System.out.println("Yes!");
+            }
+
             // Execute this event next
-            List<String> newTrace = new ArrayList<>(currentTrace);
-            newTrace.add(event.getName());
+            List<Event> newTrace = new ArrayList<>(currentTrace);
+            newTrace.add(event);
             Set<Event> newExecuted = new HashSet<>(executed);
             newExecuted.add(event);
             exploreConfigurations(newTrace, newExecuted, traces);
@@ -69,12 +94,31 @@ public class BundleEventStructureExecutor {
 
     private boolean areAllCausalPredecessorsExecuted(Event event, Set<Event> executed) {
         Iterator<CausalityRelation> causals = bes.getAllCausalitiesOfEvent(event);
+
+        if(executed.isEmpty()){
+            System.out.println(event);
+        }
+
+        //TODO: We are missing some bundles! (e.g., we only va bundle with a_0, not a_1 as targets...
+        //if(!causals.hasNext() && !executed.isEmpty()) return false;
+
         while (causals.hasNext()) {
             CausalityRelation cr = causals.next();
+
+            if(event.getName().equals("map_0")){
+                System.out.println("cr: " + cr);
+                System.out.println("executed: " + executed);
+            }
+
             // For this bundle to be satisfied, at least one event in the bundle must be executed
             boolean bundleSatisfied = cr.getBundle().stream().anyMatch(executed::contains);
             if (!bundleSatisfied) return false; // If any bundle is unsatisfied, event cannot execute
         }
+
+        if(executed.isEmpty()){
+            System.out.println("True!");
+        }
+
         return true; // All bundles satisfied
     }
 

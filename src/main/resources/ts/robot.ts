@@ -4,14 +4,14 @@
 	<states>
 		<state id="state0">
 			<transition action="map" target="state1" />
-			<transition action="liDet_1" target="state2" />
-			<transition action="caDet_1" target="state2" />
-			<transition action="move_1" target="state3" />
+			<transition action="liDet" target="state2" />
+			<transition action="caDet" target="state2" />
+			<transition action="move" target="state3" />
 		</state>
 		<state id="state1">
-			<transition action="liDet_0" target="state2" />
-			<transition action="caDet_0" target="state2" />
-			<transition action="move_0" target="state3" />
+			<transition action="liDet" target="state2" />
+			<transition action="caDet" target="state2" />
+			<transition action="move" target="state3" />
 		</state>
 		<state id="state2">
 			<transition action="goAround" target="state3" />

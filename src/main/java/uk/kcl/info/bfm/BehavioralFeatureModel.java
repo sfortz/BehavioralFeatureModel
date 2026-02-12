@@ -99,6 +99,11 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     }
 
     @Override
+    public Iterator<String> actions() {
+        return this.getRootFeature().recursiveActions();
+    }
+
+    @Override
     public BehavioralFeature getFeature(Event event){
         Preconditions.checkNotNull(event, "Event may not be null!");
         return getRecursiveFeature(this.getRootFeature(), event);
@@ -118,10 +123,12 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
 
     @Override
     public Event getEvent(String name) {
-        Event ev = new Event(name);
-        if (this.getRootFeature().getAllRecursiveEvents().contains(ev)){
-            return ev;
-        } else {return null;}
+        for (Event ev : this.getRootFeature().getAllRecursiveEvents()) {
+            if (ev.getName().equals(name)) {
+                return ev;
+            }
+        }
+        return null;
     }
 
     @Override

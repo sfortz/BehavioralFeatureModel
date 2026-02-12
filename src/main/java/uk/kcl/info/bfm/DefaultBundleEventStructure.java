@@ -36,8 +36,12 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         this.causalities = HashBasedTable.create();
     }
 
-    protected Event addEvent(String eventName) {
-        return this.events.computeIfAbsent(eventName, Event::new);
+    protected Event addEvent(String eventName, String actionName) {
+        return this.events.computeIfAbsent(eventName, k -> new Event(eventName, actionName));
+    }
+
+    protected Event addEvent(Event event) {
+        return this.events.put(event.getName(), event);
     }
 
     protected CausalityRelation addCausality(Set<Event> bundle, Event target) {
@@ -62,6 +66,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     protected CausalityRelation addCausality(CausalityRelation causality) {
         Preconditions.checkNotNull(causality, "Causality may not be null!");
         return addCausality(causality.getBundle(), causality.getTarget());
+    }
+
+    @Override
+    public Iterator<String> actions() {
+        return this.events.values().stream().map(Event::getAction).distinct().iterator();
     }
 
     protected ConflictSet getConflictSet(){

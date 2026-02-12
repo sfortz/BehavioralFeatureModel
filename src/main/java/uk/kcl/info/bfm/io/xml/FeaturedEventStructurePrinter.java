@@ -56,6 +56,7 @@ public class FeaturedEventStructurePrinter extends BundleEventStructurePrinter {
             LOG.trace("Printing event element");
             xtw.writeStartElement(EVENT_TAG);
             xtw.writeAttribute(ID_ATTR, event.getName());
+            xtw.writeAttribute(ACTION_ATTR, event.getAction());
             Feature<?> feature = this.getFES().getFeature(event);
             LOG.trace(this.getFES().toString());
             LOG.trace(feature.toString());

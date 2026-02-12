@@ -2,13 +2,13 @@
 <fes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<events>
-		<event id="map" feature="mapping" fexpression="mapping"/>
-		<event id="liDet" feature="lidar" fexpression="lidar"/>
-		<event id="caDet" feature="camera" fexpression="camera"/>
-		<event id="move" feature="cleaning"/>
-		<event id="goAround" feature="cleaning"/>
-		<event id="clean" feature="cleaning"/>
-		<event id="charge" feature="robot"/>
+		<event id="map" action="map" feature="mapping" fexpression="mapping"/>
+		<event id="liDet" action="liDet" feature="lidar" fexpression="lidar"/>
+		<event id="caDet" action="caDet" feature="camera" fexpression="camera"/>
+		<event id="move" action="move" feature="cleaning"/>
+		<event id="goAround"  action="goAround" feature="cleaning"/>
+		<event id="clean" action="clean" feature="cleaning"/>
+		<event id="charge" action="charge" feature="robot"/>
 	</events>
 
 	<causalities>

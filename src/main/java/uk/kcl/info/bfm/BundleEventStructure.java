@@ -18,9 +18,13 @@
 
 package uk.kcl.info.bfm;
 
+import be.vibes.ts.Action;
+
 import java.util.*;
 
 public interface BundleEventStructure {
+
+    Iterator<String> actions();
 
     Iterator<Event> events();
 

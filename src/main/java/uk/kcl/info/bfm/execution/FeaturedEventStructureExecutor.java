@@ -45,7 +45,7 @@ public class FeaturedEventStructureExecutor {
     }
 
 
-    public Map<Configuration, Set<List<String>>> getAllTraces() throws ConstraintSolvingException, UnresolvedFExpression {
+    public Map<Configuration, Set<List<String>>> getAllActionTraces() throws ConstraintSolvingException, UnresolvedFExpression {
 
         BehavioralProduct proj = SimpleBehavioralProduct.getInstance();
         Map<Configuration, Set<List<String>>> tracesMap = new HashMap<>();
@@ -55,7 +55,23 @@ public class FeaturedEventStructureExecutor {
             Configuration product = it.next();
             BundleEventStructure bes = proj.project(fes, (Collection<Feature<?>>) fm.getFeatures(), product);
             BundleEventStructureExecutor exec = new BundleEventStructureExecutor(bes);
-            tracesMap.put(product, exec.getAllTraces());
+            tracesMap.put(product, exec.getAllActionTraces());
+        }
+
+        return tracesMap;
+    }
+
+    public Map<Configuration, Set<List<Event>>> getAllEventTraces() throws ConstraintSolvingException, UnresolvedFExpression {
+
+        BehavioralProduct proj = SimpleBehavioralProduct.getInstance();
+        Map<Configuration, Set<List<Event>>> tracesMap = new HashMap<>();
+        Iterator<Configuration> it = fm.getSolutions();
+
+        while(it.hasNext()){
+            Configuration product = it.next();
+            BundleEventStructure bes = proj.project(fes, (Collection<Feature<?>>) fm.getFeatures(), product);
+            BundleEventStructureExecutor exec = new BundleEventStructureExecutor(bes);
+            tracesMap.put(product, exec.getAllEventTraces());
         }
 
         return tracesMap;

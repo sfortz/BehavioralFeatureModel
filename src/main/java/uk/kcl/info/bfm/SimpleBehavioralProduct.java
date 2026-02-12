@@ -60,7 +60,7 @@ public class SimpleBehavioralProduct implements BehavioralProduct {
                 if(!fes.getFExpression(e).and(productFexpr).applySimplification().isFalse()){ // pr |= 𝜈 (𝑒)
                     //Adding event
                     events.add(e);
-                    factory.addEvent(e.getName());
+                    factory.addEvent(e.getName(), e.getAction());
                 }
             }
         }

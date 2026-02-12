@@ -75,15 +75,23 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         this.getConstraints().addAll(old.getConstraints());
     }
 
-    protected Event addEvent(Event ev, FExpression fexpr) {
+    private Event addEvent(Event ev, FExpression fexpr) {
         Preconditions.checkNotNull(ev, "Event may not be null!");
         Preconditions.checkNotNull(fexpr, "FExpression may not be null!");
         this.events.put(ev,getBFexpFromFM(fexpr));
         return ev;
     }
 
-    protected Event addEvent(String eventName, FExpression fexpr) {
-        return this.addEvent(new Event(eventName), fexpr);
+    protected Event addEvent(String eventName, String actionName, FExpression fexpr) {
+        return this.addEvent(new Event(eventName, actionName), fexpr);
+    }
+
+    public Iterator<String> actions() {
+        return this.events.keySet().stream().map(Event::getAction).distinct().iterator();
+    }
+
+    public Iterator<String> recursiveActions() {
+        return this.getAllRecursiveEvents().stream().map(Event::getAction).distinct().iterator();
     }
 
     protected void updateEventFexpr(String eventName, FExpression fexpr) {
@@ -249,6 +257,10 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         }
 
         return ev;
+    }
+
+    public Event getEvent(String name){
+        return this.getAllRecursiveEvents().stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
     }
 
     public Set<CausalityRelation> getAllRecursiveCausalities() {

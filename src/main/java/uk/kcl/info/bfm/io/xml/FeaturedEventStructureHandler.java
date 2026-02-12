@@ -62,7 +62,7 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
             conflictStack.peek().add(id);
         } else {
             // Otherwise, it's a standalone event declaration
-
+            String action = element.getAttributeByName(QName.valueOf(ACTION_ATTR)).getValue();
             Attribute featAtt = element.getAttributeByName(QName.valueOf(FEATURE_ATTR));
             String f;
             if (featAtt != null) {
@@ -78,14 +78,14 @@ public class FeaturedEventStructureHandler extends BundleEventStructureHandler {
                 if (expr != null) {
                     try {
                         FExpression fexpr = ParserUtil.getInstance().parse(expr);
-                        getFactory().addEvent(id,new Feature<>(f),fexpr);
+                        getFactory().addEvent(id,action,new Feature<>(f),fexpr);
                     } catch (ParserException e) {
                         LOG.error("Exception while parsing fexpression {}!", expr, e);
                         throw new XMLStreamException("Exception while parsing fexpression " + expr, e);
                     }
                 }
             } else {
-                getFactory().addEvent(id,new Feature<>(f));
+                getFactory().addEvent(id,action,new Feature<>(f));
             }
         }
     }

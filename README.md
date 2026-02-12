@@ -153,8 +153,8 @@ Test sources and example models are located in:
 * `src/test/java/uk/kcl/info/bfm/{integration, unit}/`
 * `src/test/resources/testcases/`
 
-Each test ensures the correctness of bidirectional transformations between supported modeling formats by asserting 
-trace equivalence on a curated collection of examples.
+Each test ensures the correctness of bidirectional transformations between supported modeling formats by asserting
+(action) trace equivalence on a curated collection of examples.
 
 ---
 
@@ -178,12 +178,12 @@ java -jar target/BehavioralFeatureModel-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 * **TS → BES**
 
-  * `parallel`: a toy example demonstrating support for flattened parallel compositions of linear systems (a specific subclass of non-linear models)
-  * `robot-linear`: a linear version of the cleaning robot
+  * `parallel`: a toy example demonstrating support for flattened parallel compositions of linear systems
+  * `robot`
 
 * **FTS → FES**
 
-  * `robot-linear`
+  * `robot`
 
 * **FTS → BFM**
 

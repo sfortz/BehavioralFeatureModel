@@ -4,14 +4,14 @@
 	<states>
 		<state id="state0">
 			<transition action="map" fexpression="Mapping" target="state1" />
-			<transition action="liDet_1" fexpression="!Mapping &amp;&amp; Lidar" target="state2" />
-			<transition action="caDet_1" fexpression="!Mapping &amp;&amp; Camera" target="state2" />
-			<transition action="move_1" fexpression="!Mapping" target="state3" />
+			<transition action="liDet" fexpression="!Mapping &amp;&amp; Lidar" target="state2" />
+			<transition action="caDet" fexpression="!Mapping &amp;&amp; Camera" target="state2" />
+			<transition action="move" fexpression="!Mapping" target="state3" />
 		</state>
 		<state id="state1">
-			<transition action="liDet_0" fexpression="Mapping &amp;&amp; Lidar" target="state2" />
-			<transition action="caDet_0" fexpression="Mapping &amp;&amp; Camera" target="state2" />
-			<transition action="move_0" fexpression="Mapping" target="state3" />
+			<transition action="liDet" fexpression="Mapping &amp;&amp; Lidar" target="state2" />
+			<transition action="caDet" fexpression="Mapping &amp;&amp; Camera" target="state2" />
+			<transition action="move" fexpression="Mapping" target="state3" />
 		</state>
 		<state id="state2">
 			<transition action="goAround" target="state3" />
