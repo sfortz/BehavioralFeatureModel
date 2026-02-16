@@ -1,36 +1,36 @@
 <fm namespace="VendingMachine">
-    <feature name="VM">
+    <feature name="VendingMachine">
         <mandatory>
-            <feature name="BEV">
-                <mandatory>
-                    <feature name="COF"/>
-                </mandatory>
-                <optional>
-                    <feature name="TEA"/>
-                </optional>
-                <optional>
-                    <feature name="CAP"/>
-                </optional>
-            </feature>
-        </mandatory>
-        <optional>
-            <feature name="TON"/>
-        </optional>
-        <optional>
-            <feature name="X"/>
-        </optional>
-        <mandatory>
-            <feature name="CUR">
+            <feature name="Currency">
                 <alternative>
-                    <feature name="EUR"/>
-                    <feature name="DOL"/>
+                    <feature name="Euro"/>
+                    <feature name="Dollar"/>
                 </alternative>
             </feature>
         </mandatory>
+        <optional>
+            <feature name="Ringtone"/>
+        </optional>
+        <mandatory>
+            <feature name="Beverages">
+                <mandatory>
+                    <feature name="Coffee"/>
+                </mandatory>
+                <optional>
+                    <feature name="Tea"/>
+                </optional>
+                <optional>
+                    <feature name="Cappuccino"/>
+                </optional>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="CancelPurchase"/>
+        </optional>
         <feature_constraints>
             <feature_constraints>
-                <feature_constraint fexpression="!DOL || !CAP"/>
-                <feature_constraint fexpression="!CAP || TON"/>
+                <feature_constraint fexpression="!Dollar || !Cappuccino"/>
+                <feature_constraint fexpression="!Cappuccino || Ringtone"/>
             </feature_constraints>
         </feature_constraints>
     </feature>

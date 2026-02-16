@@ -19,15 +19,12 @@
 package uk.kcl.info.utils.ftslabelling;
 
 import be.vibes.fexpression.FExpression;
-import be.vibes.fexpression.exception.DimacsFormatException;
 import be.vibes.ts.FeaturedTransitionSystem;
 import be.vibes.ts.FeaturedTransitionSystemFactory;
 import be.vibes.ts.Transition;
-import be.vibes.ts.exception.TransitionSystemDefinitionException;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotHandler;
 import be.vibes.ts.io.dot.FeaturedTransitionSystemDotPrinter;
 import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
-import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,115 +35,43 @@ import java.util.Map;
 
 public class Minepump {
 
-    static Map<String, String> actionToFExpression = Map.<String, String>ofEntries(
-            Map.entry("commandMsg_0", "Command"),
-            Map.entry("palarmMsg_0", "MethaneDetect"),
-            Map.entry("levelMsg_0", "WaterRegulation"),
-            Map.entry("stopCmd_0", "Stop"),
-            Map.entry("startCmd_0", "Start"),
-            Map.entry("isNotRunning_0", "MethaneDetect"),
-            Map.entry("highLevel_0", "High"),
-            Map.entry("lowLevel_0", "Low"),
-            Map.entry("isNotRunning_1", "Stop"),
-            Map.entry("isNotRunning_2", "Start"),
-            Map.entry("setMethaneStop_0", "MethaneDetect"),
-            Map.entry("isStopped_0", "High"),
-            Map.entry("isNotRunning_3", "Low"),
-            Map.entry("setReady_0", "Start"),
-            Map.entry("commandMsg_1", "Command"),
-            Map.entry("palarmMsg_1", "MethaneDetect"),
-            Map.entry("levelMsg_1", "WaterRegulation"),
-            Map.entry("commandMsg_2", "Command"),
-            Map.entry("palarmMsg_2", "MethaneDetect"),
-            Map.entry("levelMsg_2", "WaterRegulation"),
-            Map.entry("stopCmd_1", "Stop"),
-            Map.entry("startCmd_1", "Start"),
-            Map.entry("isNotRunning_4", "MethaneDetect"),
-            Map.entry("highLevel_1", "High"),
-            Map.entry("lowLevel_1", "Low"),
-            Map.entry("stopCmd_2", "Stop"),
-            Map.entry("startCmd_2", "Start"),
-            Map.entry("isNotRunning_5", "MethaneDetect"),
-            Map.entry("highLevel_2", "High"),
-            Map.entry("lowLevel_2", "Low"),
-            Map.entry("isNotRunning_6", "Stop"),
-            Map.entry("isNotRunning_7", "Start"),
-            Map.entry("setMethaneStop_1", "MethaneDetect"),
-            Map.entry("isMethaneStop_0", "MethaneDetect"),
-            Map.entry("isNotRunning_8", "Low"),
-            Map.entry("isNotRunning_9", "Stop"),
-            Map.entry("isNotRunning_10", "Start"),
-            Map.entry("isReady_0", "Start"),
-            Map.entry("setMethaneStop_2", "MethaneDetect"),
-            Map.entry("isReady_1", "High"),
-            Map.entry("isNotRunning_11", "Low"),
-            Map.entry("setStop_0", "Stop"),
-            Map.entry("setReady_1", "Start"),
-            Map.entry("setStop_1", "Stop"),
-            Map.entry("setReady_2", "Start"),
-            Map.entry("setReady_3", "High"),
-            Map.entry("setMethaneStop_3", "MethaneDetect"),
-            Map.entry("isReady_2", "High"),
-            Map.entry("isNotReady_0", "High"),
-            Map.entry("pumpStart_0", "High"),
-            Map.entry("setRunning_0", "High"),
-            Map.entry("commandMsg_3", "Command"),
-            Map.entry("palarmMsg_3", "MethaneDetect"),
-            Map.entry("levelMsg_3", "WaterRegulation"),
-            Map.entry("stopCmd_3", "Stop"),
-            Map.entry("startCmd_3", "Start"),
-            Map.entry("isRunning_0", "MethaneDetect"),
-            Map.entry("highLevel_3", "High"),
-            Map.entry("lowLevel_3", "Low"),
-            Map.entry("isRunning_1", "Stop"),
-            Map.entry("isRunning_2", "Start"),
-            Map.entry("pumpStop_0", "MethaneDetect"),
-            Map.entry("isRunning_3", "High"),
-            Map.entry("isRunning_4", "Low"),
-            Map.entry("pumpStop_1", "Stop"),
-            Map.entry("setMethaneStop_4", "MethaneDetect"),
-            Map.entry("pumpStop_2", "Low"),
-            Map.entry("setStop_2", "Stop"),
-            Map.entry("setLowStop_0", "Low"),
-            Map.entry("commandMsg_4", "Command"),
-            Map.entry("palarmMsg_4", "MethaneDetect"),
-            Map.entry("levelMsg_4", "WaterRegulation"),
-            Map.entry("stopCmd_4", "Stop"),
-            Map.entry("startCmd_4", "Start"),
-            Map.entry("isNotRunning_12", "MethaneDetect"),
-            Map.entry("highLevel_4", "High"),
-            Map.entry("lowLevel_4", "Low"),
-            Map.entry("isNotRunning_13", "Stop"),
-            Map.entry("isNotRunning_14", "Start"),
-            Map.entry("isLowStop_0", "Low"),
-            Map.entry("isNotRunning_15", "Low"),
-            Map.entry("setReady_4", "High"),
-            Map.entry("setMethaneStop_5", "MethaneDetect"),
-            Map.entry("pumpStart", "High"),
-            Map.entry("palarmMsg", "MethaneDetect"),
-            Map.entry("commandMsg", "Command"),
-            Map.entry("highLevel", "High"),
-            Map.entry("lowLevel", "Low"),
-            Map.entry("isLowStop", "Low"),
-            Map.entry("setLowStop", "Low"),
-            Map.entry("levelMsg", "WaterRegulation"),
-            Map.entry("stopCmd", "Stop"),
-            Map.entry("startCmd", "Start"),
-            Map.entry("setStop", "Stop"),
-            Map.entry("isStopped", "High"),
-            Map.entry("setRunning", "High"),
-            Map.entry("isNotReady", "High"),
-            Map.entry("isMethaneStop", "MethaneDetect"),
-            Map.entry("pumpStop_3", "MethaneDetect"),
-            Map.entry("pumpStop_4", "Stop"),
-            Map.entry("pumpStop_5", "Low")
+    static Map<String, FExpression> actionToFExpression = Map.<String, FExpression>ofEntries(
+            Map.entry("commandMsg", FExpression.featureExpr("Command")),
+            Map.entry("highLevel", FExpression.featureExpr("High")),
+            Map.entry("setMethaneStop", FExpression.featureExpr("MethaneDetect")),
+            Map.entry("palarmMsg", FExpression.featureExpr("MethaneDetect")),
+            Map.entry("levelMsg", FExpression.featureExpr("WaterRegulation")),
+            Map.entry("stopCmd", FExpression.featureExpr("Stop")),
+            Map.entry("setStop", FExpression.featureExpr("Stop")),
+            Map.entry("startCmd", FExpression.featureExpr("Start")),
+            Map.entry("lowLevel", FExpression.featureExpr("Low")),
+            Map.entry("setLowStop", FExpression.featureExpr("Low")),
+            Map.entry("isLowStop", FExpression.featureExpr("Low")),
+            Map.entry("isStopped", FExpression.featureExpr("High")),
+            Map.entry("pumpStart", FExpression.featureExpr("High")),
+            Map.entry("setRunning", FExpression.featureExpr("High")),
+            Map.entry("isNotReady", FExpression.featureExpr("High")),
+            Map.entry("isMethaneStop", FExpression.featureExpr("MethaneDetect")),
+            Map.entry("isReady", FExpression.featureExpr("Start").or(FExpression.featureExpr("High"))),
+            Map.entry("setReady", FExpression.featureExpr("Start").or(FExpression.featureExpr("High")))   ,
+            Map.entry("isRunning", FExpression.featureExpr("Stop")
+                    .or(FExpression.featureExpr("Start"))
+                    .or(FExpression.featureExpr("High"))
+                    .or(FExpression.featureExpr("Low"))
+                    .or(FExpression.featureExpr("MethaneDetect"))),
+            Map.entry("isNotRunning", FExpression.featureExpr("Stop")
+                    .or(FExpression.featureExpr("Start"))
+                    .or(FExpression.featureExpr("Low"))
+                    .or(FExpression.featureExpr("MethaneDetect"))),
+            Map.entry("pumpStop", FExpression.featureExpr("Stop")
+                    .or(FExpression.featureExpr("Low"))
+                    .or(FExpression.featureExpr("MethaneDetect")))
     );
 
-    public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException,
-            TransitionSystemDefinitionException, DimacsFormatException, BehavioralFeatureModelDefinitionException {
+    public static void main(String[] args) throws IOException, BehavioralFeatureModelDefinitionException {
 
-        String inDirPath = "src/main/resources/fts/eval/minepump/old/";
-        String outDirPath = "src/main/resources/fts/eval/minepump/new/";
+        String inDirPath = "src/main/resources/fts/minepump/olds/";
+        String outDirPath = "src/main/resources/fts/minepump/news/";
         File dir = new File(inDirPath);
 
         File[] ftsFiles = dir.listFiles((d, name) -> name.endsWith(".dot"));
@@ -180,7 +105,7 @@ public class Minepump {
             String act = t.getAction().getName();
             FExpression fexpr = FExpression.trueValue();
             if(actionToFExpression.containsKey(act)){
-                fexpr = new FExpression(actionToFExpression.get(act));
+                fexpr = actionToFExpression.get(act);
             }
             factory.addTransition(t.getSource().getName(), act, fexpr, t.getTarget().getName());
         }

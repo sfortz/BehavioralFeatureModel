@@ -60,17 +60,14 @@ public class Main {
 
         LOG.info("convertBesToTs");
         convertBesToTs("robot");
-        //convertBesToTs("robot-linear");
 
         LOG.info("convertFesToFts");
         convertFesToFts("robot", "robot");
-        //convertFesToFts("robot", "robot-linear");
 
         LOG.info("convertBfmToFm");
         convertBfmToFm("robot");
         LOG.info("convertBfmToFts");
         convertBfmToFts("robot");
-        //convertBfmToFts("robot-linear");
 
         LOG.info("convertTsToBes");
         convertTsToBes("robot");

@@ -1,13 +1,5 @@
-<fm namespace="VendingMachineModel">
+<fm namespace="VendingMachine">
     <feature name="VendingMachine">
-        <mandatory>
-            <feature name="Beverages">
-                <or>
-                    <feature name="Soda"/>
-                    <feature name="Tea"/>
-                </or>
-            </feature>
-        </mandatory>
         <mandatory>
             <feature name="Currency">
                 <alternative>
@@ -19,6 +11,14 @@
         <optional>
             <feature name="FreeDrinks"/>
         </optional>
+        <mandatory>
+            <feature name="Beverages">
+                <or>
+                    <feature name="Soda"/>
+                    <feature name="Tea"/>
+                </or>
+            </feature>
+        </mandatory>
         <optional>
             <feature name="CancelPurchase"/>
         </optional>

@@ -44,96 +44,68 @@ public class VendingMachine {
     public static Map<String, FExpression> getMapping(){
 
         Map<String, FExpression> actionToFExpression = new HashMap<>();
-        actionToFExpression.put("insert_Euro", FExpression.featureExpr("F").not().and(FExpression.featureExpr("E")));
-        actionToFExpression.put("insert_Dollar", FExpression.featureExpr("F").not().and(FExpression.featureExpr("D")));
-        actionToFExpression.put("take", FExpression.featureExpr("F").not().and(FExpression.featureExpr("M")));
 
-        actionToFExpression.put("insertBev_Euro", FExpression.featureExpr("E"));
-        actionToFExpression.put("insertBev_Dollar", FExpression.featureExpr("D"));
-        actionToFExpression.put("cancelBev", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelBev_0", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelBev_1", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelBev_2", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelBev_3", FExpression.featureExpr("X"));
-        actionToFExpression.put("sugar", FExpression.featureExpr("B"));
-        actionToFExpression.put("no_sugar", FExpression.featureExpr("B"));
-        actionToFExpression.put("coffee_0", FExpression.featureExpr("C"));
-        actionToFExpression.put("cappuccino_0", FExpression.featureExpr("P"));
-        actionToFExpression.put("cappuccino_1", FExpression.featureExpr("P"));
-        actionToFExpression.put("tea_0", FExpression.featureExpr("T"));
-        actionToFExpression.put("tea_1", FExpression.featureExpr("T"));
-        actionToFExpression.put("teaBev_0", FExpression.featureExpr("T"));
-        actionToFExpression.put("teaBev_1", FExpression.featureExpr("T"));
-        actionToFExpression.put("coffee_1", FExpression.featureExpr("C"));
-        actionToFExpression.put("pour_sugar_0", FExpression.featureExpr("B"));
-        actionToFExpression.put("pour_sugar_1", FExpression.featureExpr("B"));
-        actionToFExpression.put("pour_sugar_2", FExpression.featureExpr("B"));
-        actionToFExpression.put("pour_milk_0", FExpression.featureExpr("P"));
-        actionToFExpression.put("pour_coffee_0", FExpression.featureExpr("P"));
-        actionToFExpression.put("pour_tea", FExpression.featureExpr("T"));
-        actionToFExpression.put("pourBev_tea", FExpression.featureExpr("T"));
-        actionToFExpression.put("pour_coffee_1", FExpression.featureExpr("C"));
-        actionToFExpression.put("pour_coffee_2", FExpression.featureExpr("P"));
-        actionToFExpression.put("pour_milk_1", FExpression.featureExpr("P"));
-        actionToFExpression.put("take_cup", FExpression.featureExpr("M"));
+        actionToFExpression.put("insert_euro_bev", FExpression.featureExpr("Euro"));
+        actionToFExpression.put("insert_dollar_bev", FExpression.featureExpr("Dollar"));
+        actionToFExpression.put("insert_euro_soup",  FExpression.featureExpr("Euro"));
+        actionToFExpression.put("insert_dollar_soup", FExpression.featureExpr("Dollar"));
+        actionToFExpression.put("insert_euro",  FExpression.featureExpr("Euro"));
+        actionToFExpression.put("insert_dollar", FExpression.featureExpr("Dollar"));
 
-        actionToFExpression.put("insertSoup_Euro", FExpression.featureExpr("SC").and(FExpression.featureExpr("E")));
-        actionToFExpression.put("insertSoup_Dollar", FExpression.featureExpr("SC").and(FExpression.featureExpr("D")));
-        actionToFExpression.put("cancelSoup_0", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoup_1", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoup_2", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoup_3", FExpression.featureExpr("X"));
-        actionToFExpression.put("tomato", FExpression.featureExpr("TS"));
-        actionToFExpression.put("chicken", FExpression.featureExpr("CS"));
-        actionToFExpression.put("pea", FExpression.featureExpr("PS"));
-        actionToFExpression.put("no_cup_0", FExpression.featureExpr("U"));
-        actionToFExpression.put("cup_present_0", FExpression.featureExpr("U"));
-        actionToFExpression.put("no_cup_1", FExpression.featureExpr("U"));
-        actionToFExpression.put("cup_present_1", FExpression.featureExpr("U"));
-        actionToFExpression.put("no_cup_2", FExpression.featureExpr("U"));
-        actionToFExpression.put("cup_present_2", FExpression.featureExpr("U"));
-        actionToFExpression.put("pour_tomato", FExpression.featureExpr("TS"));
-        actionToFExpression.put("pour_chicken", FExpression.featureExpr("CS"));
-        actionToFExpression.put("pour_pea", FExpression.featureExpr("PS"));
-        actionToFExpression.put("take_soup", FExpression.featureExpr("M"));
-        actionToFExpression.put("bad_luck", FExpression.featureExpr("U").not());
+        actionToFExpression.put("bad_luck", FExpression.featureExpr("Cup").not());
+        actionToFExpression.put("no_cup", FExpression.featureExpr("Cup"));
+        actionToFExpression.put("cup_present", FExpression.featureExpr("Cup"));
 
-        actionToFExpression.put("ring", FExpression.featureExpr("R"));
-        actionToFExpression.put("ringBev", FExpression.featureExpr("R"));
-        actionToFExpression.put("ringSoup", FExpression.featureExpr("R"));
-        actionToFExpression.put("cancel_0", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancel_1", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancel_2", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancel_3", FExpression.featureExpr("X"));
-        actionToFExpression.put("skip", FExpression.featureExpr("U").not().and(FExpression.featureExpr("R").not()));
-        actionToFExpression.put("skip_0", FExpression.featureExpr("U").not().and(FExpression.featureExpr("R").not()));
-        actionToFExpression.put("skip_1", FExpression.featureExpr("U").not().and(FExpression.featureExpr("R").not()));
-        actionToFExpression.put("skip_2", FExpression.featureExpr("U").not().and(FExpression.featureExpr("R").not()));
-        actionToFExpression.put("skip_3", FExpression.featureExpr("U").not().and(FExpression.featureExpr("R").not()));
+        actionToFExpression.put("pour_milk", FExpression.featureExpr("Cappuccino"));
+        actionToFExpression.put("pour_coffee", FExpression.featureExpr("Coffee").or(FExpression.featureExpr("Cappuccino")));
+        actionToFExpression.put("cappuccino", FExpression.featureExpr("Cappuccino"));
+        actionToFExpression.put("coffee", FExpression.featureExpr("Coffee"));
 
-        actionToFExpression.put("change", FExpression.featureExpr("F").not());
-        actionToFExpression.put("pay", FExpression.featureExpr("F").not());
-        actionToFExpression.put("pay_Euro", FExpression.featureExpr("F").not().and(FExpression.featureExpr("E")));
-        actionToFExpression.put("pay_Dollar", FExpression.featureExpr("F").not().and(FExpression.featureExpr("D")));
-        actionToFExpression.put("open", FExpression.featureExpr("F").not());
-        actionToFExpression.put("take_1", FExpression.featureExpr("F").not());
-        actionToFExpression.put("close", FExpression.featureExpr("F").not());
-        actionToFExpression.put("free", FExpression.featureExpr("F"));
-        actionToFExpression.put("take_0", FExpression.featureExpr("F"));
-        actionToFExpression.put("tea", FExpression.featureExpr("T"));
-        actionToFExpression.put("teaSoda", FExpression.featureExpr("T"));
-        actionToFExpression.put("teaSoda_0", FExpression.featureExpr("T"));
-        actionToFExpression.put("teaSoda_1", FExpression.featureExpr("T"));
-        actionToFExpression.put("soda", FExpression.featureExpr("SD"));
-        actionToFExpression.put("serveSoda", FExpression.featureExpr("SD"));
-        actionToFExpression.put("serveTea", FExpression.featureExpr("T"));
-        actionToFExpression.put("return", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancel", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoda", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoda_0", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoda_1", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoda_2", FExpression.featureExpr("X"));
-        actionToFExpression.put("cancelSoda_3", FExpression.featureExpr("X"));
+        actionToFExpression.put("no_sugar", FExpression.featureExpr("Beverages"));
+        actionToFExpression.put("pour_sugar", FExpression.featureExpr("Beverages"));
+        actionToFExpression.put("sugar", FExpression.featureExpr("Beverages"));
+
+        actionToFExpression.put("tea_bev", FExpression.featureExpr("Tea"));
+        actionToFExpression.put("pour_tea_bev", FExpression.featureExpr("Tea"));
+        actionToFExpression.put("pour_tea", FExpression.featureExpr("Tea"));
+        actionToFExpression.put("tea", FExpression.featureExpr("Tea"));
+        actionToFExpression.put("pour_tea_soda", FExpression.featureExpr("Tea"));
+        actionToFExpression.put("tea_soda", FExpression.featureExpr("Tea"));
+
+        actionToFExpression.put("soda", FExpression.featureExpr("Soda"));
+        actionToFExpression.put("pour_soda", FExpression.featureExpr("Soda"));
+
+        actionToFExpression.put("tomato", FExpression.featureExpr("TomatoSoup"));
+        actionToFExpression.put("chicken", FExpression.featureExpr("ChickenSoup"));
+        actionToFExpression.put("pea", FExpression.featureExpr("PeaSoup"));
+        actionToFExpression.put("pour_tomato", FExpression.featureExpr("TomatoSoup"));
+        actionToFExpression.put("pour_chicken", FExpression.featureExpr("ChickenSoup"));
+        actionToFExpression.put("pour_pea", FExpression.featureExpr("PeaSoup"));
+
+        actionToFExpression.put("ring_bev", FExpression.featureExpr("Ringtone"));
+        actionToFExpression.put("ring_soup", FExpression.featureExpr("Ringtone"));
+        actionToFExpression.put("ring", FExpression.featureExpr("Ringtone"));
+
+        actionToFExpression.put("take_soda", FExpression.featureExpr("VendingMachine"));
+        actionToFExpression.put("take_soup", FExpression.featureExpr("VendingMachine"));
+        actionToFExpression.put("take_bev", FExpression.featureExpr("VendingMachine"));
+        actionToFExpression.put("take", FExpression.featureExpr("VendingMachine"));
+
+        actionToFExpression.put("cancel_soup", FExpression.featureExpr("CancelPurchase"));
+        actionToFExpression.put("cancel_soda", FExpression.featureExpr("CancelPurchase"));
+        actionToFExpression.put("cancel_bev", FExpression.featureExpr("CancelPurchase"));
+        actionToFExpression.put("cancel", FExpression.featureExpr("CancelPurchase"));
+        actionToFExpression.put("return", FExpression.featureExpr("CancelPurchase"));
+
+        actionToFExpression.put("pay", FExpression.featureExpr("FreeDrinks").not());
+        actionToFExpression.put("free", FExpression.featureExpr("FreeDrinks"));
+        actionToFExpression.put("change", FExpression.featureExpr("FreeDrinks").not());
+        actionToFExpression.put("close", FExpression.featureExpr("FreeDrinks").not());
+        actionToFExpression.put("open", FExpression.featureExpr("FreeDrinks").not());
+
+        actionToFExpression.put("skip_soup", FExpression.featureExpr("Cup").not().or(FExpression.featureExpr("Ringtone").not()));
+        actionToFExpression.put("skip_bev", FExpression.featureExpr("Ringtone").not());
+        actionToFExpression.put("skip", FExpression.featureExpr("Ringtone").not());
 
         return actionToFExpression;
     }
@@ -141,8 +113,8 @@ public class VendingMachine {
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException,
             TransitionSystemDefinitionException, FExpressionException, BehavioralFeatureModelDefinitionException {
 
-        String inDirPath = "src/main/resources/fts/eval/vm/old/";
-        String outDirPath = "src/main/resources/fts/eval/vm/new/";
+        String inDirPath = "src/main/resources/fts/vm/olds/";
+        String outDirPath = "src/main/resources/fts/vm/news/";
         File dir = new File(inDirPath);
 
         File[] ftsFiles = dir.listFiles((d, name) -> name.endsWith(".dot"));
@@ -155,13 +127,18 @@ public class VendingMachine {
 
         Map<String, String> systems = new HashMap<>();
         systems.put("coffeesoda_synchro.dot","coffeesoda");
+        systems.put("coffeesoup_synchro.dot","coffeesoup");
+        systems.put("sodasoup_synchro.dot","sodasoup");
+        systems.put("svm_synchro.dot","svm");
+
         systems.put("coffeesoup.dot","coffeesoup");
         systems.put("sodasoup.dot","sodasoup");
         systems.put("coffeesoda.dot","coffeesoda");
         systems.put("svm.dot","svm");
-        systems.put("coffeesoup_synchro.dot","coffeesoup");
-        systems.put("sodasoup_synchro.dot","sodasoup");
-        systems.put("svm_synchro.dot","svm");
+
+        systems.put("soda.dot","soda");
+        systems.put("soup.dot","soup");
+        systems.put("coffee.dot","coffee");
         
         for (File file : ftsFiles) {
             String system = file.getName();

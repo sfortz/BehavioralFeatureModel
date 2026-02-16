@@ -1,15 +1,11 @@
 digraph G {
-center = TRUE;
-mclimit = 10.0;
-nodesep = 0.05;
-node [ width=0.25, height=0.25, label="" ];
-s0 [ peripheries=2 ];
-s0 [label="(1)"];
-s1 [label="(2)"];
-s2 [label="(3)"];
-s3 [label="(4)"];
-s0->s1[label="waterRise"];
-s0->s2[label="pumpRunning"];
-s1->s3[label="pumpRunning"];
-s2->s3[label="waterRise"];
+rankdir=LR;
+state0[ label = "s0", style=filled, color=green ];
+state1 [ label = "s3" ];
+state0 -> state2 [ label=" waterRise/true " ];
+state0 -> state3 [ label=" pumpRunning/true " ];
+state2 [ label = "s1" ];
+state2 -> state1 [ label=" pumpRunning/true " ];
+state3 [ label = "s2" ];
+state3 -> state1 [ label=" waterRise/true " ];
 }
