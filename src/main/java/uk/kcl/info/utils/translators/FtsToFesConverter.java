@@ -52,8 +52,9 @@ public class FtsToFesConverter implements ModelConverter<FeaturedTransitionSyste
         this.factory = new FeaturedEventStructureFactory(fm);
 
         addEvents();
-        Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
-        addCausalities(candidateBundles);
+        computeConflictsAndCandidateBundles();
+        // Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
+        //addCausalities(candidateBundles);
 
         return factory.build();
     }
@@ -85,7 +86,8 @@ public class FtsToFesConverter implements ModelConverter<FeaturedTransitionSyste
         }
     }
 
-    private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+    //private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+    private void computeConflictsAndCandidateBundles() {
         ConflictSet conflicts = new ConflictSet();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
         int i = 0;
@@ -108,23 +110,24 @@ public class FtsToFesConverter implements ModelConverter<FeaturedTransitionSyste
                         conflicts.addConflict(e1, e2);
                     }
 
-                    if (!t1ToT2 && isPredecessor(t2, t1)) {
+                    if (isPredecessor(t2, t1)) { //&& !t1ToT2 Only needed if non-linear
                         bundle.add(e2);
                     }
                 }
             }
 
             if (!bundle.isEmpty()) {
-                candidateBundles.add(new CausalityRelation(bundle, e1));
+                //candidateBundles.add(new CausalityRelation(bundle, e1));
+                factory.addCausality(new CausalityRelation(bundle, e1));
             }
 
             i++;
             LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
         }
 
-        return splitBundlesOnConflicts(candidateBundles, conflicts);
+        //return candidateBundles; //splitBundlesOnConflicts(candidateBundles, conflicts);
     }
-
+/*
     private void addCausalities(Set<CausalityRelation> bundles) {
         int i = 0;
         for (CausalityRelation causality : bundles) {
@@ -132,5 +135,5 @@ public class FtsToFesConverter implements ModelConverter<FeaturedTransitionSyste
             i++;
             LOG.trace("Adding causalities: {}/{}", i, bundles.size());
         }
-    }
+    }*/
 }

@@ -45,10 +45,11 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
         // Step 1: Collect actions & add events
         addEvents();
         // Step 2 & 3: Compute conflicts and (candidate) causality in a single loop
-        Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
+        computeConflictsAndCandidateBundles();
+        // Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
 
         // Step 4: Optimize non-conflicting bundle splitting
-        addCausalities(candidateBundles);
+        //addCausalities(candidateBundles);
 
         return factory.build();
     }
@@ -75,7 +76,9 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
         }
     }
 
-    private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+    //private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+    private void computeConflictsAndCandidateBundles() {
+
         ConflictSet conflicts = new ConflictSet();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
         int i = 0;
@@ -99,29 +102,25 @@ public class TsToBesConverter implements ModelConverter<TransitionSystem, Bundle
                         conflicts.addConflict(e1, e2);
                     }
 
-                    if(e1.getName().equals("a_1") && e2.getName().equals("b_0")){
-                        System.out.println(e1);
-                        System.out.println(e2);
-                    }
-
-                    if (!t1ToT2 && isPredecessor(t2, t1)) {
+                    if (isPredecessor(t2, t1)) { //&& !t1ToT2 Only needed if non-linear
                         bundle.add(e2);
                     }
                 }
             }
 
             if (!bundle.isEmpty()) {
-                candidateBundles.add(new CausalityRelation(bundle, e1));
+                //candidateBundles.add(new CausalityRelation(bundle, e1));
+                factory.addCausality(new CausalityRelation(bundle, e1));
             }
 
             i++;
             LOG.trace("Adding conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
         }
 
-        return splitBundlesOnConflicts(candidateBundles, conflicts);
+        //return candidateBundles; //splitBundlesOnConflicts(candidateBundles, conflicts);
     }
-
-    private void addCausalities(Set<CausalityRelation> bundles) {
+/*
+    private void addCausalities(Set<CausalityRelation> bundles) { //Can be merged
         bundles.forEach(factory::addCausality);
-    }
+    }*/
 }

@@ -53,8 +53,9 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
         this.factory = new BehavioralFeatureModelFactory(fm);
 
         addEvents();
-        Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
-        addCausalities(candidateBundles);
+        computeConflictsAndCandidateBundles();
+        // Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
+        //addCausalities(candidateBundles);
 
         return factory.build();
     }
@@ -119,7 +120,8 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
         }*/
     }
 
-    private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+    //private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
+    private void computeConflictsAndCandidateBundles() {
         ConflictSet conflicts = new ConflictSet();
         Set<CausalityRelation> candidateBundles = new HashSet<>();
         int i = 0;
@@ -144,23 +146,25 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
                         conflicts.addConflict(e1, e2);
                     }
 
-                    if (!t1ToT2 && isPredecessor(t2, t1)) {
+                    if (isPredecessor(t2, t1)) { //&& !t1ToT2 Only needed if non-linear
                         bundle.add(e2);
                     }
                 }
             }
 
             if (!bundle.isEmpty()) {
-                candidateBundles.add(new CausalityRelation(bundle, e1));
+                //candidateBundles.add(new CausalityRelation(bundle, e1));
+                factory.addCausality(fm.getRootFeature().getFeatureName(), new CausalityRelation(bundle, e1));
             }
 
             i++;
             LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
         }
 
-        return splitBundlesOnConflicts(candidateBundles, conflicts);
+        //return candidateBundles; //splitBundlesOnConflicts(candidateBundles, conflicts);
     }
 
+    /*
     private void addCausalities(Set<CausalityRelation> bundles) {
         int i = 0;
         for (CausalityRelation causality : bundles) {
@@ -168,10 +172,12 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             for (Event e : causality.getBundle()) {
                 lca = fm.getLeastCommonAncestor(lca, featureMap.get(e));
             }
-            factory.addCausality(lca.getFeatureName(), causality);*/
+            factory.addCausality(lca.getFeatureName(), causality);
+
+     *//*
             factory.addCausality(fm.getRootFeature().getFeatureName(), causality);
             i++;
             LOG.trace("Adding causalities: {}/{}", i, bundles.size());
         }
-    }
+    }*/
 }
