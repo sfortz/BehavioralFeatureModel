@@ -5,14 +5,15 @@
 		<event id="map" action="map"/>
 		<event id="liDet" action="liDet"/>
 		<event id="caDet" action="caDet"/>
-		<event id="move" action="move"/>
+		<event id="move_1" action="move"/>
+		<event id="move_2" action="move"/>
 		<event id="goAround" action="goAround"/>
 		<event id="clean" action="clean"/>
 		<event id="charge" action="charge"/>
 	</events>
 
 	<causalities>
-		<causality target="move">
+		<causality target="move_1">
 			<bundle>
 				<event id="map"/>
 			</bundle>
@@ -37,10 +38,16 @@
 			</bundle>
 		</causality>
 
-		<causality target="clean">
+		<causality target="move_2">
 			<bundle>
 				<event id="goAround"/>
-				<event id="move"/>
+				<event id="move_1"/>
+			</bundle>
+		</causality>
+
+		<causality target="clean">
+			<bundle>
+				<event id="move_2"/>
 			</bundle>
 		</causality>
 
@@ -59,7 +66,7 @@
 				<event id="goAround"/>
 			</events>
 			<events>
-				<event id="move"/>
+				<event id="move_1"/>
 			</events>
 		</conflict>
 		<conflict>

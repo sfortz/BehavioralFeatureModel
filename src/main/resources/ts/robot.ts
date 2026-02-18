@@ -17,10 +17,13 @@
 			<transition action="goAround" target="state3" />
 		</state>
 		<state id="state3">
-			<transition action="clean" target="state4" />
+			<transition action="move" target="state4" />
 		</state>
 		<state id="state4">
-			<transition action="charge" target="state5" />
+			<transition action="clean" target="state5" />
+		</state>
+		<state id="state5">
+			<transition action="charge" target="state6" />
 		</state>
 	</states>
 </ts>
