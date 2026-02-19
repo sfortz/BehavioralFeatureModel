@@ -88,6 +88,53 @@ public class TranslationUtils {
         return false;
     }
 
+    public static Map<State, Set<FExpression>> forwardSymbolicReachable(FeaturedTransitionSystem fts, Transition from) {
+
+        State start = from.getTarget();
+        FExpression startF = fts.getFExpression(from);
+
+        record Node(State s, FExpression f) {}
+
+        Map<State, Set<FExpression>> reachable = new HashMap<>();
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.push(new Node(start, startF));
+
+        while (!stack.isEmpty()) {
+
+            Node node = stack.pop();
+            State current = node.s();
+            FExpression currentF = node.f();
+
+            if (currentF.isFalse()) continue;
+
+            Set<FExpression> seen = reachable.computeIfAbsent(current, k -> new HashSet<>());
+
+            // subsumption: ∃ oldF s.t. currentF ⇒ oldF
+            boolean subsumed = false;
+            for (FExpression oldF : seen) {
+                if (currentF.not().or(oldF).applySimplification().isTrue()) {
+                    subsumed = true;
+                    break;
+                }
+            }
+
+            if (subsumed) continue;
+
+            seen.add(currentF);
+
+            for (Iterator<Transition> it = fts.getOutgoing(current); it.hasNext();) {
+                Transition t = it.next();
+                FExpression newF = currentF.and(fts.getFExpression(t)).applySimplification();
+
+                if (!newF.isFalse()) {
+                    stack.push(new Node(t.getTarget(), newF));
+                }
+            }
+        }
+
+        return reachable;
+    }
+
     public static boolean isReachable(FeaturedTransitionSystem fts, Transition from, Transition to) {
 
         State start = from.getTarget();
@@ -126,15 +173,4 @@ public class TranslationUtils {
         }
         return false;
     }
-
-
-    public static Set<CausalityRelation> splitBundlesOnConflicts(Set<CausalityRelation> bundles, ConflictSet conflicts) {
-        return bundles.stream()
-                .flatMap(causality ->
-                        conflicts.findMaximalCliques(causality.getBundle()).stream()
-                                .map(clique -> new CausalityRelation(clique, causality.getTarget()))
-                )
-                .collect(Collectors.toSet());
-    }
-
 }

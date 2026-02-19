@@ -23,6 +23,7 @@ import be.vibes.fexpression.Feature;
 import be.vibes.solver.FeatureModel;
 import be.vibes.ts.Action;
 import be.vibes.ts.FeaturedTransitionSystem;
+import be.vibes.ts.State;
 import be.vibes.ts.Transition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,6 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
     private final FeatureModel<F> fm;
 
     private BehavioralFeatureModelFactory factory;
-    //private final Map<Event, F> featureMap = new HashMap<>();
     private final Map<Transition, Event> transitionEventMap = new HashMap<>();
 
     public FtsToBfmConverter(FeatureModel<F> fm, FeaturedTransitionSystem fts) {
@@ -53,16 +53,13 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
         this.factory = new BehavioralFeatureModelFactory(fm);
 
         addEvents();
-        computeConflictsAndCandidateBundles();
-        // Set<CausalityRelation> candidateBundles = computeConflictsAndCandidateBundles();
-        //addCausalities(candidateBundles);
-
+        addConflicts();
+        addCausalities();
         return factory.build();
     }
 
     private void addEvents() {
         Map<Action, Integer> actionCounter = new HashMap<>();
-        //Map<Action, List<FExpression>> exprListMap = new HashMap<>();
 
         int i = 0;
 
@@ -77,18 +74,7 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             Event e = new Event(eventName, actionName);
             transitionEventMap.put(t, e);
 
-            /*
-            // Accumulate expressions
-            FExpression expr = fts.getFExpression(t);
-            combinedExprMap.computeIfAbsent(a, k -> FExpression.falseValue()).orWith(expr);
-            exprListMap.computeIfAbsent(a, k -> new ArrayList<>()).add(expr);
-            transitionEventMap.put(t, e);
-
-            FExpression combinedExpr = combinedExprMap.get(a).applySimplification().toCnf();*/
-
-            // F ancestor = fm.getLeastCommonAncestor(exprListMap.get(a));
             F ancestor = fm.getRootFeature();
-            //featureMap.put(e, ancestor);
 
             BehavioralFeature bf = factory.getFeature(ancestor.getFeatureName());
             FExpression fexpr = fts.getFExpression(t).applySimplification().toCnf();
@@ -98,86 +84,70 @@ public class FtsToBfmConverter<F extends Feature<F>> implements ModelConverter<F
             i++;
             LOG.trace("Transitions to events: {}/{}", i, fts.getTransitionsCount());
         }
-
-        /*
-        i = 0;
-
-        // Finalise per action
-        for (Map.Entry<Action, Event> entry : actionEventMap.entrySet()) {
-            Action a = entry.getKey();
-            Event e = entry.getValue();
-
-            FExpression combinedExpr = combinedExprMap.get(a).applySimplification().toCnf();
-            // F ancestor = fm.getLeastCommonAncestor(exprListMap.get(a));
-            F ancestor = fm.getRootFeature();
-            featureMap.put(e, ancestor);
-
-            BehavioralFeature bf = factory.getFeature(ancestor.getFeatureName());
-            factory.addEvent(bf, e.getName(), combinedExpr);
-
-            i++;
-            LOG.trace("Actions to events: {}/{}", i, actionEventMap.size());
-        }*/
     }
 
-    //private Set<CausalityRelation> computeConflictsAndCandidateBundles() {
-    private void computeConflictsAndCandidateBundles() {
-        ConflictSet conflicts = new ConflictSet();
-        Set<CausalityRelation> candidateBundles = new HashSet<>();
+    private void addConflicts() {
+
+        String rootFeature= fm.getRootFeature().getFeatureName();
+
+        // Liste indexée des transitions
+        List<Map.Entry<Transition, Event>> entries = new ArrayList<>(transitionEventMap.entrySet());
+        int n = entries.size();
+
+        // Cache global des forward reachability
+        Map<Transition, Map<State, Set<FExpression>>> reachCache = new HashMap<>();
+
+        for (int i = 0; i < n; i++) {
+
+            Transition t1 = entries.get(i).getKey();
+            Event e1 = entries.get(i).getValue();
+            Map<State, Set<FExpression>> r1 = reachCache.computeIfAbsent(t1, t -> forwardSymbolicReachable(fts, t));
+
+            for (int j = i + 1; j < n; j++) {
+
+                Transition t2 = entries.get(j).getKey();
+                Event e2 = entries.get(j).getValue();
+
+                boolean t1ToT2 = r1.getOrDefault(t2.getSource(), Set.of()).stream().anyMatch(f -> !f.isFalse());
+                if (t1ToT2) continue;   // ← EARLY EXIT
+
+                Map<State, Set<FExpression>> r2 = reachCache.computeIfAbsent(t2, t -> forwardSymbolicReachable(fts, t));
+
+                boolean t2ToT1 = r2.getOrDefault(t1.getSource(), Set.of()).stream().anyMatch(f -> !f.isFalse());
+
+                if (!t2ToT1) {
+                    factory.addConflict(rootFeature, e1, e2);
+                }
+            }
+            LOG.trace("Conflict matrix row: {}/{}", i, n);
+        }
+    }
+
+    private void addCausalities() {
+
+        String rootFeature= fm.getRootFeature().getFeatureName();
+
+        Map<State, Set<Event>> incomingEvents = new HashMap<>();
+
+        for (Map.Entry<Transition, Event> entry : transitionEventMap.entrySet()) {
+            incomingEvents.computeIfAbsent(entry.getKey().getTarget(), k -> new HashSet<>()).add(entry.getValue());
+        }
+
         int i = 0;
 
         for (Map.Entry<Transition, Event> entry1 : transitionEventMap.entrySet()) {
+
             Transition t1 = entry1.getKey();
             Event e1 = entry1.getValue();
-            Set<Event> bundle = new HashSet<>();
 
-            for (Map.Entry<Transition, Event> entry2 : transitionEventMap.entrySet()) {
-                Transition t2 = entry2.getKey();
-                if (!t1.equals(t2)) {
-                    Event e2 = entry2.getValue();
-
-                    boolean t1ToT2 = isReachable(fts, t1, t2);
-                    boolean t2ToT1 = isReachable(fts, t2, t1);
-
-                    if (!t1ToT2 && !t2ToT1) {
-                        //F lca = fm.getLeastCommonAncestor(featureMap.get(e1), featureMap.get(e2));
-                        //factory.addConflict(lca.getFeatureName(), e1, e2);
-                        factory.addConflict(fm.getRootFeature().getFeatureName(), e1, e2);
-                        conflicts.addConflict(e1, e2);
-                    }
-
-                    if (isPredecessor(t2, t1)) { //&& !t1ToT2 Only needed if non-linear
-                        bundle.add(e2);
-                    }
-                }
-            }
+            Set<Event> bundle = incomingEvents.getOrDefault(t1.getSource(), Set.of());
 
             if (!bundle.isEmpty()) {
-                //candidateBundles.add(new CausalityRelation(bundle, e1));
-                factory.addCausality(fm.getRootFeature().getFeatureName(), new CausalityRelation(bundle, e1));
+                factory.addCausality(rootFeature, new CausalityRelation(bundle, e1));
             }
 
             i++;
-            LOG.trace("Transitions to conflicts and candidate causalities: {}/{}", i, transitionEventMap.size());
+            LOG.trace("Transitions to causalities: {}/{}", i, transitionEventMap.size());
         }
-
-        //return candidateBundles; //splitBundlesOnConflicts(candidateBundles, conflicts);
     }
-
-    /*
-    private void addCausalities(Set<CausalityRelation> bundles) {
-        int i = 0;
-        for (CausalityRelation causality : bundles) {
-            /*F lca = featureMap.get(causality.getTarget());
-            for (Event e : causality.getBundle()) {
-                lca = fm.getLeastCommonAncestor(lca, featureMap.get(e));
-            }
-            factory.addCausality(lca.getFeatureName(), causality);
-
-     *//*
-            factory.addCausality(fm.getRootFeature().getFeatureName(), causality);
-            i++;
-            LOG.trace("Adding causalities: {}/{}", i, bundles.size());
-        }
-    }*/
 }
