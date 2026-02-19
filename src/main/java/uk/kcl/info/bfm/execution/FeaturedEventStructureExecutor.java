@@ -44,7 +44,6 @@ public class FeaturedEventStructureExecutor {
         this.fm = bfm;
     }
 
-
     public Map<Configuration, Set<List<String>>> getAllActionTraces() throws ConstraintSolvingException, UnresolvedFExpression {
 
         BehavioralProduct proj = SimpleBehavioralProduct.getInstance();
