@@ -113,8 +113,8 @@ public class VendingMachine {
     public static void main(String[] args) throws IOException, BundleEventStructureDefinitionException,
             TransitionSystemDefinitionException, FExpressionException, BehavioralFeatureModelDefinitionException {
 
-        String inDirPath = "src/main/resources/fts/vm/olds/";
-        String outDirPath = "src/main/resources/fts/vm/news/";
+        String inDirPath = "src/main/resources/fts/vm/old/";
+        String outDirPath = "src/main/resources/fts/vm/new/";
         File dir = new File(inDirPath);
 
         File[] ftsFiles = dir.listFiles((d, name) -> name.endsWith(".dot"));
