@@ -28,10 +28,8 @@
             <feature name="CancelPurchase"/>
         </optional>
         <feature_constraints>
-            <feature_constraints>
-                <feature_constraint fexpression="!Dollar || !Cappuccino"/>
-                <feature_constraint fexpression="!Cappuccino || Ringtone"/>
-            </feature_constraints>
+            <feature_constraint fexpression="!Dollar || !Cappuccino"/>
+            <feature_constraint fexpression="!Cappuccino || Ringtone"/>
         </feature_constraints>
     </feature>
 </fm>
