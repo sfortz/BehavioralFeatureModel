@@ -12,27 +12,26 @@
             <feature name="Ringtone"/>
         </optional>
         <mandatory>
-            <feature name="Soup"/>
-            <optional>
-                <feature name="Cup"/>
-            </optional>
-            <mandatory>
-                <feature name="SoupType">
-                    <or>
-                        <feature name="ChickenSoup"/>
-                        <feature name="PeaSoup"/>
-                        <feature name="TomatoSoup"/>
-                    </or>
-                </feature>
-            </mandatory>
+            <feature name="Soup">
+                <optional>
+                    <feature name="Cup"/>
+                </optional>
+                <mandatory>
+                    <feature name="SoupType">
+                        <or>
+                            <feature name="ChickenSoup"/>
+                            <feature name="PeaSoup"/>
+                            <feature name="TomatoSoup"/>
+                        </or>
+                    </feature>
+                </mandatory>
+            </feature>
         </mandatory>
         <optional>
             <feature name="CancelPurchase"/>
         </optional>
         <feature_constraints>
-            <feature_constraints>
-                <feature_constraint fexpression="!(Dollar &amp;&amp; Soup) || Cup"/>
-            </feature_constraints>
+            <feature_constraint fexpression="!(Dollar &amp;&amp; Soup) || Cup"/>
         </feature_constraints>
     </feature>
 </fm>
