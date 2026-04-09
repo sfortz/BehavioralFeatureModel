@@ -18,10 +18,9 @@
 
 package uk.kcl.info.bfm.compositions;
 
+import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
-import be.vibes.solver.FeatureModel;
-import be.vibes.solver.FeatureModelFactory;
-import be.vibes.solver.Group;
+import be.vibes.solver.*;
 import be.vibes.solver.Group.GroupType;
 
 import java.util.*;
@@ -31,84 +30,94 @@ import java.util.*;
  * mode = true  → UNION
  * mode = false → INTERSECTION
  */
-public class FMUnionMerger<T extends Feature<T>> implements Composition<FeatureModel<T>> {
+public class FMUnionMerger implements Composition<FeatureModel<? extends Feature<?>>> {
 
     @Override
-    public FeatureModel<T> compose(FeatureModel<T> m1, FeatureModel<T> m2, boolean mode) {
+    public FeatureModel<?> compose(FeatureModel<? extends Feature<?>> m1, FeatureModel<? extends Feature<?>> m2, boolean mode) {
 
         if (m1 == null || m2 == null) {
             throw new IllegalArgumentException("FeatureModels cannot be null");
         }
 
-        T root1 = m1.getRootFeature();
-        T root2 = m2.getRootFeature();
+        Feature<?> root1 = m1.getRootFeature();
+        Feature<?> root2 = m2.getRootFeature();
 
         if (root1 == null || root2 == null) {
             throw new IllegalArgumentException("FeatureModels must have a root feature");
         }
 
         // 1. Merge the two trees
-        T rootFeature = merge(root1, root2, mode);
+        Feature<? extends Feature<?>> mergedRoot = merge(root1, root2, mode);
 
         // 2. Build the resulting FeatureModel
-        FeatureModelFactory<T> factory = new FeatureModelFactory<>();
-        factory.setRootFeature(rootFeature);
-        FeatureModel<T> result = factory.build();
+        FeatureModelFactory factory = new FeatureModelFactory<>();
+
+        factory.setRootFeature(mergedRoot);
 
         // 3. Merge constraints
-        // TODO: only works for Union mode (mode == true)
-        result.getOwnConstraints().addAll(m1.getOwnConstraints());
-        result.getOwnConstraints().addAll(m2.getOwnConstraints());
+        for(FExpression constr: m1.getOwnConstraints()){
+            factory.addConstraint(mergedRoot, constr);
+        }
+        for(FExpression constr: m2.getOwnConstraints()){
+            factory.addConstraint(mergedRoot, constr);
+        }
 
-        return result;
+        return factory.build();
     }
 
-    private T merge(T baseFeature, T aspectFeature, boolean mode){
+    private Feature<?> merge(Feature<?> baseFeature, Feature<?> aspectFeature, boolean mode) {
 
         if (!baseFeature.getFeatureName().equals(aspectFeature.getFeatureName())) {
             throw new IllegalArgumentException("Only features with the same name can be merged!");
         }
 
-        T mergedFeature = (T) new Feature<T>(baseFeature.getFeatureName());
+        Feature mergedFeature = new Feature(baseFeature.getFeatureName());
 
-        List<GroupPairer.Pair<T>> pairedGroups = new GroupPairer<T>().pairGroups(baseFeature, aspectFeature);
+        List<GroupPairer.Pair> pairedGroups = new GroupPairer().pairGroups(baseFeature, aspectFeature);
 
-        for(GroupPairer.Pair<T> pair: pairedGroups){
+        for (GroupPairer.Pair pair : pairedGroups) {
 
             if (pair.left != null && pair.right != null) {
 
-                Set<T> leftOnlyFeatures = new HashSet<>(pair.left.getFeatures());
-                Set<T> rightOnlyFeatures = new HashSet<>(pair.right.getFeatures());
+                Set<Feature<?>> leftOnlyFeatures = new HashSet<>(pair.left.getFeatures());
+                Set<Feature<?>> rightOnlyFeatures = new HashSet<>(pair.right.getFeatures());
                 GroupType op = computeOperator(pair.left.GROUPTYPE, pair.right.GROUPTYPE, mode);
-                Group<T> group = new Group<>(op);
 
-                for(GroupPairer.FeatureMatch<T> match: pair.getMatches().values()){
-                    leftOnlyFeatures.remove(match.left);
-                    rightOnlyFeatures.remove(match.right);
-                    T mergedChild = merge(match.left, match.right, mode);
-                    group.getFeatures().add(mergedChild);
+                // 1. matched features
+                for (Object o : pair.getMatches().values()) {
+                    GroupPairer.FeatureMatch match = (GroupPairer.FeatureMatch) o;
+
+                    Feature<?> left = (Feature<?>) match.left;
+                    Feature<?> right = (Feature<?>) match.right;
+
+                    leftOnlyFeatures.remove(left);
+                    rightOnlyFeatures.remove(right);
+
+                    Feature<?> mergedChild = merge(left, right, mode);
+                    addFeatureWithCorrectGrouping(mergedFeature, (Feature) mergedChild, op);
                 }
-                if(mode) {
-                    for (T feature : leftOnlyFeatures) {
-                        group.getFeatures().add((T) feature.clone());
+
+                // 2. unmatched features (UNION)
+                if (mode) {
+                    for (Feature<?> f : leftOnlyFeatures) {
+                        GroupType type = computeOperator(pair.left.GROUPTYPE, GroupType.OPTIONAL, true); // <-- pretend "absent" = OPTIONAL
+                        addFeatureWithCorrectGrouping(mergedFeature, (Feature) f.clone(), type);
                     }
-                    for (T feature : rightOnlyFeatures) {
-                        group.getFeatures().add((T) feature.clone());
+
+                    for (Feature<?> f : rightOnlyFeatures) {
+                        GroupType type = computeOperator(GroupType.OPTIONAL, pair.right.GROUPTYPE, true);
+                        addFeatureWithCorrectGrouping(mergedFeature, (Feature) f.clone(), type);
                     }
                 }
-                if (!group.getFeatures().isEmpty()) {
-                    mergedFeature.addChildren(group);
-                    //group.setParentFeature(mergedFeature);
-                }
+
             } else if (mode && pair.left != null) {
                 // TODO: check precondition: the intersection between the set of features of the base FM and the one of the aspect FM is empty.
-                Group<T> cloned = pair.left.clone();
-                //cloned.setParentFeature(mergedFeature);
+                Group<?> cloned = pair.left.clone();
                 mergedFeature.addChildren(cloned);
+
             } else if (mode && pair.right != null) {
                 // TODO: check precondition: the intersection between the set of features of the base FM and the one of the aspect FM is empty.
-                Group<T> cloned = pair.right.clone();
-                //cloned.setParentFeature(mergedFeature);
+                Group<?> cloned = pair.right.clone();
                 mergedFeature.addChildren(cloned);
             }
         }
@@ -145,5 +154,28 @@ public class FMUnionMerger<T extends Feature<T>> implements Composition<FeatureM
 
     private GroupType computeOperator(GroupType baseType, GroupType aspectType, boolean mode) {
         return OP_TABLE[mode ? 1 : 0][idx(baseType)][idx(aspectType)];
+    }
+
+    private <T extends Feature<T>> void addFeatureWithCorrectGrouping(T parent, T child, GroupType type) {
+
+        switch (type) {
+            case MANDATORY, OPTIONAL -> {
+                Group<T> group = new Group<>(type);
+                group.getFeatures().add(child);
+                parent.addChildren(group);
+            }
+
+            case OR, ALTERNATIVE -> {
+                Optional<Group<T>> existing = parent.getChildren().stream().filter(g -> g.GROUPTYPE == type).findFirst();
+
+                if (existing.isPresent()) {
+                    existing.get().getFeatures().add(child);
+                } else {
+                    Group<T> group = new Group<>(type);
+                    group.getFeatures().add(child);
+                    parent.addChildren(group);
+                }
+            }
+        }
     }
 }
