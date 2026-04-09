@@ -32,6 +32,11 @@ import java.util.*;
  */
 public class FMUnionMerger implements Composition<FeatureModel<? extends Feature<?>>> {
 
+    /* =========================================
+       INTERNAL STATE (for strict union)
+       ========================================= */
+    private final List<FExpression> strictUnionConstraints = new ArrayList<>();
+
     @Override
     public FeatureModel<?> compose(FeatureModel<? extends Feature<?>> m1, FeatureModel<? extends Feature<?>> m2, boolean mode) {
 
@@ -46,32 +51,39 @@ public class FMUnionMerger implements Composition<FeatureModel<? extends Feature
             throw new IllegalArgumentException("FeatureModels must have a root feature");
         }
 
-        // 1. Merge the two trees
-        Feature<? extends Feature<?>> mergedRoot = merge(root1, root2, mode);
+        // 1. Merge trees
+        Feature<?> mergedRoot = merge(root1, root2, mode);
 
-        // 2. Build the resulting FeatureModel
+        // 2. Build FM
         FeatureModelFactory factory = new FeatureModelFactory<>();
-
         factory.setRootFeature(mergedRoot);
 
-        // 3. Merge constraints
-        for(FExpression constr: m1.getOwnConstraints()){
+        // 3. Merge original constraints
+        for (FExpression constr : m1.getOwnConstraints()) {
             factory.addConstraint(mergedRoot, constr);
         }
-        for(FExpression constr: m2.getOwnConstraints()){
+        for (FExpression constr : m2.getOwnConstraints()) {
+            factory.addConstraint(mergedRoot, constr);
+        }
+
+        // 4. Add strict union constraints (collected during merge)
+        for (FExpression constr : strictUnionConstraints) {
             factory.addConstraint(mergedRoot, constr);
         }
 
         return factory.build();
     }
 
+    /* =========================================
+       MERGE
+       ========================================= */
     private Feature<?> merge(Feature<?> baseFeature, Feature<?> aspectFeature, boolean mode) {
 
         if (!baseFeature.getFeatureName().equals(aspectFeature.getFeatureName())) {
             throw new IllegalArgumentException("Only features with the same name can be merged!");
         }
 
-        Feature mergedFeature = new Feature(baseFeature.getFeatureName());
+        Feature mergedFeature = new Feature<>(baseFeature.getFeatureName());
 
         List<GroupPairer.Pair> pairedGroups = new GroupPairer().pairGroups(baseFeature, aspectFeature);
 
@@ -79,52 +91,160 @@ public class FMUnionMerger implements Composition<FeatureModel<? extends Feature
 
             if (pair.left != null && pair.right != null) {
 
-                Set<Feature<?>> leftOnlyFeatures = new HashSet<>(pair.left.getFeatures());
-                Set<Feature<?>> rightOnlyFeatures = new HashSet<>(pair.right.getFeatures());
-                GroupType op = computeOperator(pair.left.GROUPTYPE, pair.right.GROUPTYPE, mode);
+                List<Feature<?>> leftOnly = new ArrayList<Feature<?>>(pair.left.getFeatures());
+                List<Feature<?>> rightOnly = new ArrayList<Feature<?>>(pair.right.getFeatures());
+                Collection<GroupPairer.FeatureMatch> matches = pair.getMatches().values();
 
                 // 1. matched features
-                for (Object o : pair.getMatches().values()) {
-                    GroupPairer.FeatureMatch match = (GroupPairer.FeatureMatch) o;
+                for (GroupPairer.FeatureMatch match : matches) {
 
                     Feature<?> left = (Feature<?>) match.left;
                     Feature<?> right = (Feature<?>) match.right;
 
-                    leftOnlyFeatures.remove(left);
-                    rightOnlyFeatures.remove(right);
+                    leftOnly.remove(left);
+                    rightOnly.remove(right);
 
                     Feature<?> mergedChild = merge(left, right, mode);
+
+                    GroupType op = computeOperator(pair.left.GROUPTYPE, pair.right.GROUPTYPE, mode);
                     addFeatureWithCorrectGrouping(mergedFeature, (Feature) mergedChild, op);
                 }
 
-                // 2. unmatched features (UNION)
+                // 2. unmatched features (UNION only)
                 if (mode) {
-                    for (Feature<?> f : leftOnlyFeatures) {
-                        GroupType type = computeOperator(pair.left.GROUPTYPE, GroupType.OPTIONAL, true); // <-- pretend "absent" = OPTIONAL
-                        addFeatureWithCorrectGrouping(mergedFeature, (Feature) f.clone(), type);
+
+                    // LEFT
+                    if (!leftOnly.isEmpty()) {
+
+                        GroupType lifted = liftAbsent(pair.left.GROUPTYPE);
+                        List<Feature<?>> liftedFeatures = new ArrayList<>();
+
+                        for (Feature<?> f : leftOnly) {
+                            Feature<?> clone = f.clone();
+                            addFeatureWithCorrectGrouping(mergedFeature, (Feature) clone, lifted);
+                            liftedFeatures.add(clone);
+                        }
+
+                        if (pair.left.GROUPTYPE == GroupType.ALTERNATIVE) {
+                            addMutualExclusionConstraints(liftedFeatures);
+                        }
                     }
 
-                    for (Feature<?> f : rightOnlyFeatures) {
-                        GroupType type = computeOperator(GroupType.OPTIONAL, pair.right.GROUPTYPE, true);
-                        addFeatureWithCorrectGrouping(mergedFeature, (Feature) f.clone(), type);
+                    // RIGHT
+                    if (!rightOnly.isEmpty()) {
+
+                        GroupType lifted = liftAbsent(pair.right.GROUPTYPE);
+                        List<Feature<?>> liftedFeatures = new ArrayList<>();
+
+                        for (Feature<?> f : rightOnly) {
+                            Feature<?> clone = f.clone();
+                            addFeatureWithCorrectGrouping(mergedFeature, (Feature) clone, lifted);
+                            liftedFeatures.add(clone);
+                        }
+
+                        if (pair.right.GROUPTYPE == GroupType.ALTERNATIVE) {
+                            addMutualExclusionConstraints(liftedFeatures);
+                        }
                     }
                 }
 
             } else if (mode && pair.left != null) {
                 // TODO: check precondition: the intersection between the set of features of the base FM and the one of the aspect FM is empty.
-                Group<?> cloned = pair.left.clone();
-                mergedFeature.addChildren(cloned);
+                mergedFeature.addChildren(pair.left.clone());
 
             } else if (mode && pair.right != null) {
                 // TODO: check precondition: the intersection between the set of features of the base FM and the one of the aspect FM is empty.
-                Group<?> cloned = pair.right.clone();
-                mergedFeature.addChildren(cloned);
+                mergedFeature.addChildren(pair.right.clone());
             }
         }
+
+        // 3. normalize OR and ALTERNATIVE singleton groups
+        normalizeGroups(mergedFeature);
 
         return mergedFeature;
     }
 
+    /* =========================================
+       NORMALISATION
+       ========================================= */
+    private <T extends Feature<T>> void normalizeGroups(T feature) {
+
+        List<Group<T>> newGroups = new ArrayList<>();
+
+        for (Group<T> group : feature.getChildren()) {
+
+            if (group.getFeatures().size() == 1) {
+
+                GroupType newType = switch (group.GROUPTYPE) {
+                    case OR, ALTERNATIVE -> GroupType.MANDATORY;
+                    default -> group.GROUPTYPE;
+                };
+
+                if (newType != group.GROUPTYPE) {
+                    Group<T> newGroup = new Group<>(newType);
+                    newGroup.getFeatures().addAll(group.getFeatures());
+                    newGroups.add(newGroup);
+                    continue;
+                }
+            }
+
+            newGroups.add(group);
+        }
+
+        feature.getChildren().clear();
+        feature.getChildren().addAll(newGroups);
+    }
+
+    /* =========================================
+       STRICT UNION (ALTERNATIVE)
+       ========================================= */
+    private void addMutualExclusionConstraints(List<Feature<?>> features) {
+
+        for (int i = 0; i < features.size(); i++) {
+            for (int j = i + 1; j < features.size(); j++) {
+
+                Feature<?> f1 = features.get(i);
+                Feature<?> f2 = features.get(j);
+
+                // ¬(f1 ∧ f2)
+                FExpression c =
+                        FExpression.featureExpr(f1.getFeatureName())
+                                .not()
+                                .or(FExpression.featureExpr(f2.getFeatureName()).not());
+
+                strictUnionConstraints.add(c);
+            }
+        }
+    }
+
+    /* =========================================
+       GROUP HANDLING
+       ========================================= */
+    private <T extends Feature<T>> void addFeatureWithCorrectGrouping(T parent, T child, GroupType type) {
+
+        switch (type) {
+            case MANDATORY, OPTIONAL -> {
+                Group<T> group = new Group<>(type);
+                group.getFeatures().add(child);
+                parent.addChildren(group);
+            }
+            case OR, ALTERNATIVE -> {
+                Optional<Group<T>> existing = parent.getChildren().stream().filter(g -> g.GROUPTYPE == type).findFirst();
+
+                if (existing.isPresent()) {
+                    existing.get().getFeatures().add(child);
+                } else {
+                    Group<T> group = new Group<>(type);
+                    group.getFeatures().add(child);
+                    parent.addChildren(group);
+                }
+            }
+        }
+    }
+
+    /* =========================================
+       OPERATOR TABLE
+       ========================================= */
     private static final GroupType[][][] OP_TABLE = {
             // INTERSECTION (mode=false)
             {
@@ -148,7 +268,7 @@ public class FMUnionMerger implements Composition<FeatureModel<? extends Feature
             case OPTIONAL -> 1;
             case ALTERNATIVE -> 2;
             case OR -> 3;
-            default -> throw new IllegalArgumentException("Cardinalities are not yet supported in FM!");
+            default -> throw new IllegalArgumentException();
         };
     }
 
@@ -156,26 +276,16 @@ public class FMUnionMerger implements Composition<FeatureModel<? extends Feature
         return OP_TABLE[mode ? 1 : 0][idx(baseType)][idx(aspectType)];
     }
 
-    private <T extends Feature<T>> void addFeatureWithCorrectGrouping(T parent, T child, GroupType type) {
-
-        switch (type) {
-            case MANDATORY, OPTIONAL -> {
-                Group<T> group = new Group<>(type);
-                group.getFeatures().add(child);
-                parent.addChildren(group);
-            }
-
-            case OR, ALTERNATIVE -> {
-                Optional<Group<T>> existing = parent.getChildren().stream().filter(g -> g.GROUPTYPE == type).findFirst();
-
-                if (existing.isPresent()) {
-                    existing.get().getFeatures().add(child);
-                } else {
-                    Group<T> group = new Group<>(type);
-                    group.getFeatures().add(child);
-                    parent.addChildren(group);
-                }
-            }
-        }
+    /* =========================================
+       LIFT ABSENT
+       ========================================= */
+    private GroupType liftAbsent(GroupType existingType) {
+        return switch (existingType) {
+            case MANDATORY -> GroupType.OPTIONAL;
+            case OPTIONAL -> GroupType.OPTIONAL;
+            case OR -> GroupType.OPTIONAL;
+            case ALTERNATIVE -> GroupType.OPTIONAL;
+            default -> throw new IllegalArgumentException("Cardinalities are not yet supported in FM!");
+        };
     }
 }
