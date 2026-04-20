@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fm namespace="VendingMachine">
+    <feature name="VendingMachine">
+        <mandatory>
+            <feature name="Currency">
+                <alternative>
+                    <feature name="Euro"></feature>
+                    <feature name="Dollar"></feature>
+                </alternative>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="FreeDrinks"></feature>
+        </optional>
+        <mandatory>
+            <feature name="Beverages">
+                <or>
+                    <feature name="Soda"></feature>
+                    <feature name="Tea"></feature>
+                </or>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="CancelPurchase"></feature>
+        </optional>
+    </feature>
+</fm>

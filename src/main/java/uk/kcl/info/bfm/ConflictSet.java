@@ -21,6 +21,8 @@ package uk.kcl.info.bfm;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import uk.kcl.info.utils.Pair;
+
 import java.util.*;
 
 // Conflict set with directional mapping and compact printing
@@ -74,6 +76,59 @@ public class ConflictSet {
             allEvents.addAll(entry.getValue());
         }
         return allEvents;
+    }
+
+    public Iterable<Pair<Event>> conflictPairs() {
+        return this::conflictPairIterator;
+    }
+
+    public Iterator<Pair<Event>> conflictPairIterator() {
+        Iterator<Map.Entry<Event, Set<Event>>> outer = conflictMap.entrySet().iterator();
+
+        return new Iterator<>() {
+
+            private Event current = null;
+            private Iterator<Event> inner = Collections.emptyIterator();
+            private Pair<Event> next = null;
+
+            {advance();}
+
+            private void advance() {
+                next = null;
+
+                while (true) {
+
+                    // Move to next source event if needed
+                    while (!inner.hasNext()) {
+                        if (!outer.hasNext()) return;
+                        Map.Entry<Event, Set<Event>> entry = outer.next();
+                        current = entry.getKey(); // e1
+                        inner = entry.getValue().iterator(); // iterator over neighbors
+                    }
+
+                    Event candidate = inner.next(); // take next neighbor e2
+
+                    // Canonical ordering → avoids duplicates
+                    if (current.getName().compareTo(candidate.getName()) < 0){
+                        next = new Pair<>(current, candidate);
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Pair<Event> next() {
+                if (next == null) throw new NoSuchElementException();
+                Pair<Event> result = next;
+                advance();
+                return result;
+            }
+        };
     }
 
 

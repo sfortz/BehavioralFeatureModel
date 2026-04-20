@@ -16,11 +16,11 @@
  *
  */
 
-package uk.kcl.info.bfm.compositions;
+package uk.kcl.info.utils;
 
 import java.util.Objects;
 
-class Pair<T> {
+public class Pair<T> {
     T e;
     T f;
 

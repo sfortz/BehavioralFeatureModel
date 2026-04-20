@@ -30,7 +30,7 @@ import java.util.*;
  * mode = true  → UNION
  * mode = false → INTERSECTION
  */
-public class FMUnionMerger implements Composition<FeatureModel<? extends Feature<?>>> {
+public class FMMerger implements Composition<FeatureModel<? extends Feature<?>>> {
 
     /* =========================================
        INTERNAL STATE (for strict union)

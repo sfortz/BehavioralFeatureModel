@@ -37,7 +37,7 @@ import java.util.*;
 public class TSToBESIntegrationTest {
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
-    private static final String TS_IN_PATH = BASE_PATH + "ts/xml/";
+    private static final String TS_IN_PATH = BASE_PATH + "ts/";
 
     @ParameterizedTest
     @ValueSource(strings = {"robot.ts", "parallel.ts"})

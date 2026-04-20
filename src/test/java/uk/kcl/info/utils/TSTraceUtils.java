@@ -37,49 +37,39 @@ public class TSTraceUtils {
      */
     public static Set<List<String>> getAllTsTraces(TransitionSystem ts) throws TransitionSystenExecutionException {
         Set<List<String>> traces = new HashSet<>();
-        TransitionSystemExecutor executor = new TransitionSystemExecutor(ts);
-        Set<String> visited = new HashSet<>();
-        exploreTsTraces(ts, executor, new ArrayList<>(), traces, visited);
+        //TransitionSystemExecutor executor = new TransitionSystemExecutor(ts);
+        //Set<String> visited = new HashSet<>();
+        State initial = ts.getInitialState();
+        explore(ts, initial, new ArrayList<>(), traces, new HashSet<>());
+        //exploreTsTraces(ts, executor, new ArrayList<>(), traces, visited);
         return traces;
     }
 
     /**
      * Recursively explores the transition system to generate all execution traces.
      */
-    private static void exploreTsTraces(TransitionSystem ts, TransitionSystemExecutor executor, List<String> currentTrace,
-                                 Set<List<String>> traces, Set<String> visited) throws TransitionSystenExecutionException {
+    private static void explore(TransitionSystem ts, State current, List<String> currentTrace, Set<List<String>> traces, Set<State> visited) {
+
         // Save current trace
         traces.add(new ArrayList<>(currentTrace));
 
-        // Use trace + enabled actions as a pseudo-state identifier
-        Set<String> enabled = new HashSet<>();
-        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
-            Action action = it.next();
-            if (executor.canExecute(action)) {
-                enabled.add(action.getName());
-            }
+        if (!visited.add(current)) return;
+
+        Iterator<Transition> it = ts.getOutgoing(current);
+
+        while (it.hasNext()) {
+            Transition t = it.next();
+            Action action = t.getAction();
+            State target = t.getTarget();
+
+            currentTrace.add(action.getName());
+
+            explore(ts, target, currentTrace, traces, visited);
+
+            currentTrace.removeLast();
         }
 
-        String traceKey = String.join("→", currentTrace) + "::" + String.join(",", new TreeSet<>(enabled));
-        // Prevent revisiting same trace
-        if (!visited.add(traceKey)) return;
-
-        for (String actionName : enabled) {
-            // Clone executor by replaying current trace
-            TransitionSystemExecutor clonedExecutor = new TransitionSystemExecutor(ts);
-            for (String act : currentTrace) {
-                clonedExecutor.execute(act);
-            }
-
-            // Execute current action
-            clonedExecutor.execute(actionName);
-
-            // Build new trace
-            List<String> newTrace = new ArrayList<>(currentTrace);
-            newTrace.add(actionName);
-
-            exploreTsTraces(ts, clonedExecutor, newTrace, traces, visited);
-        }
+        visited.remove(current); // allow other paths
     }
 
     /**

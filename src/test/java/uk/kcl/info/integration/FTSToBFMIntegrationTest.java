@@ -46,7 +46,7 @@ public class FTSToBFMIntegrationTest {
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
     private static final String FM_IN_PATH = BASE_PATH + "fm/xml/";
-    private static final String FTS_IN_PATH = BASE_PATH + "fts/xml/";
+    private static final String FTS_IN_PATH = BASE_PATH + "fts/";
 
     @ParameterizedTest
     @ValueSource(strings = {"robot.fts"})
