@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts>
+    <start>state0</start>
+    <states>
+        <state id="state0">
+            <transition action="pay" target="state8" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9" fexpression="FreeDrinks"></transition>
+        </state>
+        <state id="state9">
+            <transition action="soda" target="state1" fexpression="Soda"></transition>
+            <transition action="tea_soda" target="state3" fexpression="Tea"></transition>
+            <transition action="cancel_soda" target="state4" fexpression="CancelPurchase"></transition>
+        </state>
+        <state id="state6">
+            <transition action="take_soda" target="state7" fexpression="VendingMachine"></transition>
+        </state>
+        <state id="state5"></state>
+        <state id="state8">
+            <transition action="change" target="state9" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state7">
+            <transition action="close" target="state5" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state2">
+            <transition action="open" target="state6" fexpression="!FreeDrinks"></transition>
+            <transition action="take_soda" target="state5" fexpression="VendingMachine"></transition>
+        </state>
+        <state id="state1">
+            <transition action="pour_soda" target="state2" fexpression="Soda"></transition>
+        </state>
+        <state id="state4">
+            <transition action="return" target="state5" fexpression="CancelPurchase"></transition>
+        </state>
+        <state id="state3">
+            <transition action="pour_tea_soda" target="state2" fexpression="Tea"></transition>
+        </state>
+    </states>
+</fts>

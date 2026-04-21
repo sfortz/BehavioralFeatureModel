@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts>
+    <start>state0</start>
+    <states>
+        <state id="state0">
+            <transition action="insert_dollar_soup" target="state10" fexpression="Dollar"></transition>
+            <transition action="insert_euro_soup" target="state10" fexpression="Euro"></transition>
+        </state>
+        <state id="state9">
+            <transition action="pour_pea" target="state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state6">
+            <transition action="bad_luck" target="state7" fexpression="!Cup"></transition>
+            <transition action="take_soup" target="state7" fexpression="VendingMachine"></transition>
+        </state>
+        <state id="state5">
+            <transition action="pour_tomato" target="state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state8">
+            <transition action="ring_soup" target="state6" fexpression="Ringtone"></transition>
+            <transition action="skip_soup" target="state6" fexpression="(!Ringtone || !Cup)"></transition>
+        </state>
+        <state id="state11">
+            <transition action="skip_soup" target="state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state9" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state7"></state>
+        <state id="state10">
+            <transition action="cancel_soup" target="state7" fexpression="CancelPurchase"></transition>
+            <transition action="chicken" target="state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state2">
+            <transition action="pour_chicken" target="state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state1">
+            <transition action="skip_soup" target="state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state2" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state4">
+            <transition action="no_cup" target="state3" fexpression="Cup"></transition>
+            <transition action="skip_soup" target="state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state3">
+            <transition action="cancel_soup" target="state7" fexpression="CancelPurchase"></transition>
+        </state>
+    </states>
+</fts>

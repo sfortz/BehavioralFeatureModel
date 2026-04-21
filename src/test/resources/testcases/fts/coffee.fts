@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts>
+    <start>state0</start>
+    <states>
+        <state id="state9">
+            <transition action="pour_milk" target="state6" fexpression="Cappuccino"></transition>
+            <transition action="pour_coffee" target="state10" fexpression="(Cappuccino || Coffee)"></transition>
+        </state>
+        <state id="state6">
+            <transition action="pour_coffee" target="state7" fexpression="(Cappuccino || Coffee)"></transition>
+        </state>
+        <state id="state5"></state>
+        <state id="state8">
+            <transition action="pour_tea_bev" target="state7" fexpression="Tea"></transition>
+        </state>
+        <state id="state7">
+            <transition action="ring_bev" target="state11" fexpression="Ringtone"></transition>
+            <transition action="skip_bev" target="state11" fexpression="!Ringtone"></transition>
+        </state>
+        <state id="state2">
+            <transition action="pour_sugar" target="state9" fexpression="Beverages"></transition>
+        </state>
+        <state id="state1">
+            <transition action="cappuccino" target="state2" fexpression="Cappuccino"></transition>
+            <transition action="tea_bev" target="state3" fexpression="Tea"></transition>
+            <transition action="coffee" target="state4" fexpression="Coffee"></transition>
+        </state>
+        <state id="state4">
+            <transition action="pour_sugar" target="state6" fexpression="Beverages"></transition>
+        </state>
+        <state id="state3">
+            <transition action="pour_sugar" target="state8" fexpression="Beverages"></transition>
+        </state>
+        <state id="state0">
+            <transition action="insert_euro_bev" target="state12" fexpression="Euro"></transition>
+            <transition action="insert_dollar_bev" target="state12" fexpression="Dollar"></transition>
+        </state>
+        <state id="state13">
+            <transition action="coffee" target="state6" fexpression="Coffee"></transition>
+            <transition action="tea_bev" target="state8" fexpression="Tea"></transition>
+            <transition action="cappuccino" target="state9" fexpression="Cappuccino"></transition>
+        </state>
+        <state id="state12">
+            <transition action="cancel_bev" target="state5" fexpression="CancelPurchase"></transition>
+            <transition action="no_sugar" target="state13" fexpression="Beverages"></transition>
+            <transition action="sugar" target="state1" fexpression="Beverages"></transition>
+        </state>
+        <state id="state11">
+            <transition action="take_bev" target="state5" fexpression="VendingMachine"></transition>
+        </state>
+        <state id="state10">
+            <transition action="pour_milk" target="state7" fexpression="Cappuccino"></transition>
+        </state>
+    </states>
+</fts>
