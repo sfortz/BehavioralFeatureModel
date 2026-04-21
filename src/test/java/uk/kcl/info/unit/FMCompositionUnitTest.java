@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FMCompositionUnitTest {
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
-    private static final String FM_IN_PATH = BASE_PATH + "fm/xml/";
+    private static final String FM_PATH = BASE_PATH + "fm/xml/";
     private static final String XML_EXT = ".xml";
 
     static Stream<Arguments> testCases() {
@@ -93,8 +93,8 @@ public class FMCompositionUnitTest {
     @MethodSource("testCases")
     public void testCommutativeUnionStructure(String f1FileName, String f2FileName) {
 
-        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f1FileName + XML_EXT);
-        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f2FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_PATH + f1FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_PATH + f2FileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> fm1fm2 = merger.compose(fm1, fm2, true);
@@ -107,8 +107,8 @@ public class FMCompositionUnitTest {
     @MethodSource("testCases")
     public void testCommutativeUnionConstraints(String f1FileName, String f2FileName) {
 
-        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f1FileName + XML_EXT);
-        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f2FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_PATH + f1FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_PATH + f2FileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> fm1fm2 = merger.compose(fm1, fm2, true);
@@ -124,7 +124,7 @@ public class FMCompositionUnitTest {
     @ValueSource(strings = {"coffee","soda","soup"})
     public void testUnionIdempotentStructure(String fileName) {
 
-        FeatureModel<? extends Feature<?>> fm = XmlLoaders.loadFeatureModel(FM_IN_PATH + fileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm = XmlLoaders.loadFeatureModel(FM_PATH + fileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> result = merger.compose(fm, fm, true);
@@ -136,7 +136,7 @@ public class FMCompositionUnitTest {
     @ValueSource(strings = {"coffee","soda","soup"})
     public void testUnionIdempotentConstraints(String fileName) {
 
-        FeatureModel<? extends Feature<?>> fm = XmlLoaders.loadFeatureModel(FM_IN_PATH + fileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm = XmlLoaders.loadFeatureModel(FM_PATH + fileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> result = merger.compose(fm, fm, true);
@@ -151,14 +151,14 @@ public class FMCompositionUnitTest {
     @MethodSource("testCases")
     public void testFMUnionStructure(String f1FileName, String f2FileName) {
 
-        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f1FileName + XML_EXT);
-        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f2FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_PATH + f1FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_PATH + f2FileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> result = merger.compose(fm1, fm2, true);
 
         String expectedFileName = f1FileName + f2FileName + "_union";
-        FeatureModel<? extends Feature<?>> expected = XmlLoaders.loadFeatureModel(FM_IN_PATH + expectedFileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> expected = XmlLoaders.loadFeatureModel(FM_PATH + expectedFileName + XML_EXT);
 
         assertEquals(canonical(expected), canonical(result));
     }
@@ -167,14 +167,14 @@ public class FMCompositionUnitTest {
     @MethodSource("testCases")
     public void testFMUnionConstraints(String f1FileName, String f2FileName) {
 
-        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f1FileName + XML_EXT);
-        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f2FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_PATH + f1FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_PATH + f2FileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> result = merger.compose(fm1, fm2, true);
 
         String expectedFileName = f1FileName + f2FileName + "_union";
-        FeatureModel<? extends Feature<?>> expected = XmlLoaders.loadFeatureModel(FM_IN_PATH + expectedFileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> expected = XmlLoaders.loadFeatureModel(FM_PATH + expectedFileName + XML_EXT);
 
         List<FExpression> resultConstraints = normalizeConstraints(result);
         List<FExpression> expectedConstraints = normalizeConstraints(expected);
@@ -187,14 +187,14 @@ public class FMCompositionUnitTest {
     @MethodSource("testCases")
     public void testFMIntersectionMerger(String f1FileName, String f2FileName) {
 
-        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f1FileName + XML_EXT);
-        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_IN_PATH + f2FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm1 = XmlLoaders.loadFeatureModel(FM_PATH + f1FileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> fm2 = XmlLoaders.loadFeatureModel(FM_PATH + f2FileName + XML_EXT);
 
         FMMerger merger = new FMMerger();
         FeatureModel<? extends Feature<?>> result = merger.compose(fm1, fm2, false);
 
         String expectedFileName = f1FileName + f2FileName + "_intersection";
-        FeatureModel<? extends Feature<?>> expected = XmlLoaders.loadFeatureModel(FM_IN_PATH + expectedFileName + XML_EXT);
+        FeatureModel<? extends Feature<?>> expected = XmlLoaders.loadFeatureModel(FM_PATH + expectedFileName + XML_EXT);
 
         assertEquals(canonical(expected), canonical(result));
         }

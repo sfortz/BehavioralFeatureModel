@@ -1,43 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <fm namespace="VendingMachine">
     <feature name="VendingMachine">
         <mandatory>
             <feature name="Currency">
                 <alternative>
-                    <feature name="Euro"/>
-                    <feature name="Dollar"/>
+                    <feature name="Dollar"></feature>
+                    <feature name="Euro"></feature>
                 </alternative>
             </feature>
         </mandatory>
         <optional>
-            <feature name="FreeDrinks"/>
-        </optional>
-        <optional>
-            <feature name="Ringtone"/>
+            <feature name="FreeDrinks"></feature>
         </optional>
         <mandatory>
             <feature name="Beverages">
+                <optional>
+                    <feature name="Tea"></feature>
+                </optional>
+                <optional>
+                    <feature name="Soda"></feature>
+                </optional>
                 <mandatory>
-                    <feature name="Coffee"/>
+                    <feature name="Coffee"></feature>
                 </mandatory>
                 <optional>
-                    <feature name="Tea"/>
-                </optional>
-                <optional>
-                    <feature name="Cappuccino"/>
-                </optional>
-                <optional>
-                    <feature name="Soda"/>
+                    <feature name="Cappuccino"></feature>
                 </optional>
             </feature>
         </mandatory>
         <optional>
-            <feature name="CancelPurchase"/>
+            <feature name="CancelPurchase"></feature>
+        </optional>
+        <optional>
+            <feature name="Ringtone"></feature>
         </optional>
         <feature_constraints>
-            <feature_constraints>
-                <feature_constraint fexpression="!Dollar || !Cappuccino"/>
-                <feature_constraint fexpression="!Cappuccino || Ringtone"/>
-            </feature_constraints>
+            <feature_constraint fexpression="(!Cappuccino || !Dollar)"></feature_constraint>
+            <feature_constraint fexpression="(!Cappuccino || Ringtone)"></feature_constraint>
         </feature_constraints>
     </feature>
 </fm>

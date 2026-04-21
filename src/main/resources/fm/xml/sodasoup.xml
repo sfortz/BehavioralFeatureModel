@@ -1,49 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <fm namespace="VendingMachine">
     <feature name="VendingMachine">
         <mandatory>
             <feature name="Currency">
                 <alternative>
-                    <feature name="Euro"/>
-                    <feature name="Dollar"/>
+                    <feature name="Dollar"></feature>
+                    <feature name="Euro"></feature>
                 </alternative>
             </feature>
         </mandatory>
         <optional>
-            <feature name="FreeDrinks"/>
-        </optional>
-        <optional>
-            <feature name="Ringtone"/>
+            <feature name="FreeDrinks"></feature>
         </optional>
         <mandatory>
             <feature name="Beverages">
                 <or>
-                    <feature name="Tea"/>
-                    <feature name="Soda"/>
+                    <feature name="Soda"></feature>
+                    <feature name="Tea"></feature>
                 </or>
             </feature>
         </mandatory>
-        <mandatory>
-            <feature name="Soup"/>
-            <optional>
-                <feature name="Cup"/>
-            </optional>
-            <mandatory>
-                <feature name="SoupType">
-                    <or>
-                        <feature name="ChickenSoup"/>
-                        <feature name="PeaSoup"/>
-                        <feature name="TomatoSoup"/>
-                    </or>
-                </feature>
-            </mandatory>
-        </mandatory>
         <optional>
-            <feature name="CancelPurchase"/>
+            <feature name="CancelPurchase"></feature>
         </optional>
+        <optional>
+            <feature name="Ringtone"></feature>
+        </optional>
+        <mandatory>
+            <feature name="Soup">
+                <optional>
+                    <feature name="Cup"></feature>
+                </optional>
+                <mandatory>
+                    <feature name="SoupType">
+                        <or>
+                            <feature name="ChickenSoup"></feature>
+                            <feature name="PeaSoup"></feature>
+                            <feature name="TomatoSoup"></feature>
+                        </or>
+                    </feature>
+                </mandatory>
+            </feature>
+        </mandatory>
         <feature_constraints>
-            <feature_constraints>
-                <feature_constraint fexpression="!(Dollar &amp;&amp; Soup) || Cup"/>
-            </feature_constraints>
+            <feature_constraint fexpression="(Cup || !(Soup &amp;&amp; Dollar))"></feature_constraint>
         </feature_constraints>
     </feature>
 </fm>
