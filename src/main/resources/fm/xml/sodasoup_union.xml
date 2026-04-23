@@ -1,0 +1,50 @@
+<fm namespace="VendingMachine">
+    <feature name="VendingMachine">
+        <mandatory>
+            <feature name="Currency">
+                <alternative>
+                    <feature name="Euro"/>
+                    <feature name="Dollar"/>
+                </alternative>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="FreeDrinks"/>
+        </optional>
+        <optional>
+            <feature name="Ringtone"/>
+        </optional>
+        <mandatory>
+            <feature name="Beverages">
+                <or>
+                    <feature name="Tea"/>
+                    <feature name="Soda"/>
+                </or>
+            </feature>
+        </mandatory>
+        <mandatory>
+            <feature name="Soup">
+                <optional>
+                    <feature name="Cup"/>
+                </optional>
+                <mandatory>
+                    <feature name="SoupType">
+                        <or>
+                            <feature name="ChickenSoup"/>
+                            <feature name="PeaSoup"/>
+                            <feature name="TomatoSoup"/>
+                        </or>
+                    </feature>
+                </mandatory>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="CancelPurchase"/>
+        </optional>
+        <feature_constraints>
+            <feature_constraints>
+                <feature_constraint fexpression="!(Dollar &amp;&amp; Soup) || Cup"/>
+            </feature_constraints>
+        </feature_constraints>
+    </feature>
+</fm>

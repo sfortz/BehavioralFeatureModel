@@ -1,0 +1,43 @@
+<fm namespace="VendingMachine">
+    <feature name="VendingMachine">
+        <mandatory>
+            <feature name="Currency">
+                <alternative>
+                    <feature name="Euro"/>
+                    <feature name="Dollar"/>
+                </alternative>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="FreeDrinks"/>
+        </optional>
+        <optional>
+            <feature name="Ringtone"/>
+        </optional>
+        <mandatory>
+            <feature name="Beverages">
+                <mandatory>
+                    <feature name="Coffee"/>
+                </mandatory>
+                <optional>
+                    <feature name="Tea"/>
+                </optional>
+                <optional>
+                    <feature name="Cappuccino"/>
+                </optional>
+                <optional>
+                    <feature name="Soda"/>
+                </optional>
+            </feature>
+        </mandatory>
+        <optional>
+            <feature name="CancelPurchase"/>
+        </optional>
+        <feature_constraints>
+            <feature_constraints>
+                <feature_constraint fexpression="!Dollar || !Cappuccino"/>
+                <feature_constraint fexpression="!Cappuccino || Ringtone"/>
+            </feature_constraints>
+        </feature_constraints>
+    </feature>
+</fm>
