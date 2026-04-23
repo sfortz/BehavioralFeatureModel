@@ -16,7 +16,7 @@
  *
  */
 
-package uk.kcl.info.utils.translators;
+package uk.kcl.info.bfm.translators;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.ts.FeaturedTransitionSystem;
@@ -29,7 +29,7 @@ import uk.kcl.info.bfm.Event;
 
 import java.util.*;
 
-import static uk.kcl.info.utils.translators.TranslationUtils.*;
+import static uk.kcl.info.bfm.translators.TranslationUtils.*;
 
 public class BfmToFtsConverter implements ModelConverter<BehavioralFeatureModel, FeaturedTransitionSystem> {
 

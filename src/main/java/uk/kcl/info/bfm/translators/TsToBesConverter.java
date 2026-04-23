@@ -16,7 +16,7 @@
  *
  */
 
-package uk.kcl.info.utils.translators;
+package uk.kcl.info.bfm.translators;
 
 import be.vibes.ts.*;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import uk.kcl.info.bfm.*;
 
 import java.util.*;
 
-import static uk.kcl.info.utils.translators.TranslationUtils.*;
+import static uk.kcl.info.bfm.translators.TranslationUtils.*;
 
 public class TsToBesConverter implements ModelConverter<TransitionSystem, BundleEventStructure> {
 

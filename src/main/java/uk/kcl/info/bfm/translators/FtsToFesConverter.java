@@ -16,7 +16,7 @@
  *
  */
 
-package uk.kcl.info.utils.translators;
+package uk.kcl.info.bfm.translators;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
@@ -30,7 +30,7 @@ import uk.kcl.info.bfm.*;
 
 import java.util.*;
 
-import static uk.kcl.info.utils.translators.TranslationUtils.*;
+import static uk.kcl.info.bfm.translators.TranslationUtils.*;
 
 public class FtsToFesConverter implements ModelConverter<FeaturedTransitionSystem, FeaturedEventStructure<?>> {
 

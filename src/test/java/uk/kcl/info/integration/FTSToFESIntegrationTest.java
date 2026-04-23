@@ -30,7 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
-import uk.kcl.info.utils.translators.FtsToFesConverter;
+import uk.kcl.info.bfm.translators.FtsToFesConverter;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 
 import java.io.File;

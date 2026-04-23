@@ -16,11 +16,23 @@
  *
  */
 
-package uk.kcl.info.utils.translators;
+package uk.kcl.info.bfm.translators;
 
-/**
- * Interface to standardize the conversion behavior.
- */
-public interface ModelConverter<In, Out> {
-    Out convert();
+import be.vibes.solver.FeatureModel;
+import be.vibes.solver.FeatureModelFactory;
+import uk.kcl.info.bfm.BehavioralFeature;
+import uk.kcl.info.bfm.BehavioralFeatureModel;
+
+public class BfmToFmConverter implements ModelConverter<BehavioralFeatureModel, FeatureModel<BehavioralFeature>> {
+
+    private final BehavioralFeatureModel bfm;
+
+    public BfmToFmConverter(BehavioralFeatureModel bfm) {
+        this.bfm = bfm;
+    }
+
+    @Override
+    public FeatureModel<BehavioralFeature> convert() {
+        return new FeatureModelFactory<>(bfm).build();
+    }
 }

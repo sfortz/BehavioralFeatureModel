@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.FtsToBfmConverter;
+import uk.kcl.info.bfm.translators.FtsToBfmConverter;
 
 import java.io.File;
 import java.util.List;

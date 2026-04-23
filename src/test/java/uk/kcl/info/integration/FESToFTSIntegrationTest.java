@@ -31,7 +31,7 @@ import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 import uk.kcl.info.bfm.FeaturedEventStructure;
-import uk.kcl.info.utils.translators.FesToFtsConverter;
+import uk.kcl.info.bfm.translators.FesToFtsConverter;
 
 import java.util.List;
 import java.util.Map;

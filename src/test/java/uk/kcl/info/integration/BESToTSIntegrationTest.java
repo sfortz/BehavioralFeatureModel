@@ -29,7 +29,7 @@ import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.execution.BundleEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.BesToTsConverter;
+import uk.kcl.info.bfm.translators.BesToTsConverter;
 
 import java.io.File;
 import java.util.*;

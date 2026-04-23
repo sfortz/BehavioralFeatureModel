@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.execution.BundleEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.TsToBesConverter;
+import uk.kcl.info.bfm.translators.TsToBesConverter;
 
 import java.io.File;
 import java.util.*;

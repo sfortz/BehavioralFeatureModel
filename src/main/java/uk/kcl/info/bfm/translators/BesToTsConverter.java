@@ -16,7 +16,7 @@
  *
  */
 
-package uk.kcl.info.utils.translators;
+package uk.kcl.info.bfm.translators;
 
 import be.vibes.ts.*;
 import com.google.common.collect.BiMap;
@@ -27,7 +27,7 @@ import uk.kcl.info.bfm.Event;
 
 import java.util.*;
 
-import static uk.kcl.info.utils.translators.TranslationUtils.*;
+import static uk.kcl.info.bfm.translators.TranslationUtils.*;
 
 public class BesToTsConverter implements ModelConverter<BundleEventStructure, TransitionSystem> {
 
