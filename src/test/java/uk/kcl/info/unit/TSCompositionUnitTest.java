@@ -30,6 +30,8 @@ import java.util.stream.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static be.vibes.ts.io.xml.XmlLoaders.loadTransitionSystem;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.kcl.info.utils.TSTraceUtils.actionsOf;
 import static uk.kcl.info.utils.TSTraceUtils.getAllTsTraces;
 
 public class TSCompositionUnitTest {
@@ -45,54 +47,66 @@ public class TSCompositionUnitTest {
      */
     static Stream<Arguments> testCases() {
         return Stream.of(
-                Arguments.of("a", "b"),
-                Arguments.of("a", "c"),
-                Arguments.of("b", "c")
+                Arguments.of("a", "b", true),
+                Arguments.of("a", "c", true),
+                Arguments.of("b", "c", true),
+                Arguments.of("a", "b", false),
+                Arguments.of("a", "c", false),
+                Arguments.of("b", "c", false)
         );
     }
 
     /*
      * -------------------------
-     * UNION (async composition)
+     * Composition (SYNC and ASYNC)
      * -------------------------
      */
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testAsyncParallelComposition(String f1, String f2) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
+    public void testAsyncParallelComposition(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
 
         TransitionSystem ts1 = loadTransitionSystem(TS_PATH + f1 + TS_EXT);
         TransitionSystem ts2 = loadTransitionSystem(TS_PATH + f2 + TS_EXT);
 
         TSParallelComposer composer = new TSParallelComposer();
-        TransitionSystem result = composer.compose(ts1, ts2, false);
+        TransitionSystem result = composer.compose(ts1, ts2, sync);
 
-        TransitionSystem expected = loadTransitionSystem(TS_PATH + f1 + f2 + "_async" + TS_EXT);
+        String suffix = sync ? "_sync" : "_async";
+        TransitionSystem expected = loadTransitionSystem(TS_PATH + f1 + f2 + suffix + TS_EXT);
 
         Set<List<String>> expectedTraces = getAllTsTraces(expected);
         Set<List<String>> resultTraces = getAllTsTraces(result);
-        assertEquals(expectedTraces, resultTraces);
+        assertEquals(expectedTraces, resultTraces, "Parallel composition mismatch (" + f1 + ", " + f2 + ", sync=" + sync + ")");
     }
 
     /*
      * -------------------------
-     * SYNCHRONOUS composition
+     * ALPHABET CHECK
      * -------------------------
      */
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testSyncParallelComposition(String f1, String f2) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
+    public void testAlphabetIsUnion(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException {
 
         TransitionSystem ts1 = loadTransitionSystem(TS_PATH + f1 + TS_EXT);
         TransitionSystem ts2 = loadTransitionSystem(TS_PATH + f2 + TS_EXT);
 
         TSParallelComposer composer = new TSParallelComposer();
-        TransitionSystem result = composer.compose(ts1, ts2, true);
+        TransitionSystem result = composer.compose(ts1, ts2, sync);
 
-        TransitionSystem expected = loadTransitionSystem(TS_PATH + f1 + f2 + "_sync" + TS_EXT);
+        Set<Action> sigma1 = new HashSet<>(actionsOf(ts1));
+        Set<Action> sigma2 = new HashSet<>(actionsOf(ts2));
+        Set<Action> sigmaC = new HashSet<>(actionsOf(result));
 
-        Set<List<String>> expectedTraces = getAllTsTraces(expected);
-        Set<List<String>> resultTraces = getAllTsTraces(result);
-        assertEquals(expectedTraces, resultTraces);
+        Set<Action> expectedUnion = new HashSet<>(sigma1);
+        expectedUnion.addAll(sigma2);
+
+        // ✔️ main check
+        assertEquals(expectedUnion, sigmaC, "Composed TS alphabet is not equal to Σ1 ∪ Σ2");
+
+        // ✔️ optional sanity checks
+        assertTrue(sigmaC.containsAll(sigma1), "Composed TS is missing actions from TS1");
+        assertTrue(sigmaC.containsAll(sigma2), "Composed TS is missing actions from TS2");
     }
 
     /*
@@ -102,19 +116,19 @@ public class TSCompositionUnitTest {
      */
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testCommutativity(String f1, String f2) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
+    public void testCommutativity(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
 
         TransitionSystem ts1 = loadTransitionSystem(TS_PATH + f1 + TS_EXT);
         TransitionSystem ts2 = loadTransitionSystem(TS_PATH + f2 + TS_EXT);
 
         TSParallelComposer composer = new TSParallelComposer();
 
-        TransitionSystem res1 = composer.compose(ts1, ts2, true);
-        TransitionSystem res2 = composer.compose(ts2, ts1, true);
+        TransitionSystem res1 = composer.compose(ts1, ts2, sync);
+        TransitionSystem res2 = composer.compose(ts2, ts1, sync);
 
         Set<List<String>> res1Traces = getAllTsTraces(res1);
         Set<List<String>> res2Traces = getAllTsTraces(res2);
-        assertEquals(res1Traces, res2Traces);
+        assertEquals(res1Traces, res2Traces, "Commutativity violated (" + f1 + ", " + f2 + ", sync=" + sync + ")");
     }
 
     /*
@@ -154,5 +168,32 @@ public class TSCompositionUnitTest {
         Set<List<String>> expectedTraces = getAllTsTraces(ts);
         Set<List<String>> resultTraces = getAllTsTraces(result);
         assertEquals(expectedTraces, resultTraces);
+    }
+
+    /*
+     * -------------------------
+     * Associativity
+     * -------------------------
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testAssociativity(boolean sync) throws Exception {
+
+        String f1 = "a";
+        String f2 = "b";
+        String f3 = "c";
+
+        TransitionSystem ts1 = loadTransitionSystem(TS_PATH + f1 + TS_EXT);
+        TransitionSystem ts2 = loadTransitionSystem(TS_PATH + f2 + TS_EXT);
+        TransitionSystem ts3 = loadTransitionSystem(TS_PATH + f3 + TS_EXT);
+
+        TSParallelComposer composer = new TSParallelComposer();
+
+        // (A || B) || C
+        TransitionSystem left = composer.compose(composer.compose(ts1, ts2, sync), ts3, sync);
+        // A || (B || C)
+        TransitionSystem right = composer.compose(ts1, composer.compose(ts2, ts3, sync), sync);
+
+        assertEquals(left,right,"Associativity violated for sync=" + sync);
     }
 }
