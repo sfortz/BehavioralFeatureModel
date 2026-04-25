@@ -30,6 +30,8 @@ public interface BundleEventStructure {
 
     List<Event> getAllEvents();
 
+    List<String> getAllActions();
+
     Event getEvent(String var1);
 
     Iterator<CausalityRelation> causalities();

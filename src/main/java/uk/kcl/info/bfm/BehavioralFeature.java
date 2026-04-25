@@ -26,6 +26,7 @@ import be.vibes.solver.Group;
 import com.google.common.base.Preconditions;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class BehavioralFeature extends Feature<BehavioralFeature> {
     private final Map<Event, FExpression> events;
@@ -86,12 +87,12 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
         return this.addEvent(new Event(eventName, actionName), fexpr);
     }
 
-    public Iterator<String> actions() {
-        return this.events.keySet().stream().map(Event::getAction).distinct().iterator();
+    public Stream<String> actions() {
+        return this.events.keySet().stream().map(Event::getAction).distinct();
     }
 
-    public Iterator<String> recursiveActions() {
-        return this.getAllRecursiveEvents().stream().map(Event::getAction).distinct().iterator();
+    public Stream<String> recursiveActions() {
+        return this.getAllRecursiveEvents().stream().map(Event::getAction).distinct();
     }
 
     protected void updateEventFexpr(String eventName, FExpression fexpr) {

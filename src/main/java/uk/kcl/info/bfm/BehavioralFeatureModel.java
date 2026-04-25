@@ -100,7 +100,7 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
 
     @Override
     public Iterator<String> actions() {
-        return this.getRootFeature().recursiveActions();
+        return this.getRootFeature().recursiveActions().iterator();
     }
 
     @Override
@@ -145,6 +145,11 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     @Override
     public List<Event> getAllEvents() {
         return this.getRootFeature().getAllRecursiveEvents().stream().toList();
+    }
+
+    @Override
+    public List<String> getAllActions() {
+        return this.getRootFeature().recursiveActions().toList();
     }
 
     @Override

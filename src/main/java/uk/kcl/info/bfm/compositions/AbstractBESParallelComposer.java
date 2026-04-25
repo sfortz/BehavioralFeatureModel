@@ -28,6 +28,10 @@ public abstract class AbstractBESParallelComposer <T extends BundleEventStructur
 
     protected abstract BundleEventStructureFactory createFactory();
 
+    public static String getStarSymbol() {
+        return STAR;
+    }
+
     @Override
     public T compose(T bes1, T bes2, boolean sync) {
 

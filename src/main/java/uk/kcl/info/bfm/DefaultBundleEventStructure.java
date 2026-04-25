@@ -19,6 +19,8 @@
 package uk.kcl.info.bfm;
 
 import java.util.*;
+
+import be.vibes.ts.Action;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 
@@ -92,6 +94,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     @Override
     public List<Event> getAllEvents() {
         return this.events.values().stream().toList();
+    }
+
+    @Override
+    public List<String> getAllActions() {
+        return this.events.values().stream().map(Event::getAction).distinct().toList();
     }
 
     @Override
@@ -255,4 +262,15 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return this.causalities.column(var1).keySet();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultBundleEventStructure that = (DefaultBundleEventStructure) o;
+        return Objects.equals(events, that.events) && Objects.equals(allCausalities, that.allCausalities) && Objects.equals(allConflicts, that.allConflicts) && Objects.equals(causalities, that.causalities);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(events, allCausalities, allConflicts, causalities);
+    }
 }
