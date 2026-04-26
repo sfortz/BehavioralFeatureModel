@@ -32,11 +32,12 @@ import be.vibes.ts.io.dot.FeaturedTransitionSystemDotHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
-import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
+import uk.kcl.info.bfm.compositions.BFMParallelComposer;
+import uk.kcl.info.bfm.compositions.FTSParallelComposer;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
-import uk.kcl.info.utils.translators.*;
+import uk.kcl.info.bfm.translators.*;
 
 public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
@@ -56,7 +57,7 @@ public class Main {
     private static final String FES_OUTPUT_DIR = FES_DIR + "output/";
     private static final String BES_OUTPUT_DIR = BES_DIR + "output/";
 
-    public static void main(String[] args) throws IOException, TransitionSystemDefinitionException, BehavioralFeatureModelDefinitionException, BundleEventStructureDefinitionException {
+    public static void main(String[] args) throws Exception {
 
         LOG.info("convertBesToTs");
         convertBesToTs("robot");
@@ -80,6 +81,89 @@ public class Main {
         for (Map.Entry<String, String> entry : getSystems().entrySet()) {
             convertFtsToBfm(entry.getValue(), entry.getKey());
         }
+
+        List<String> svmSystems = List.of("coffee","soup","soda");
+        List<String> minePumpSystems = List.of("controller_state", "controller", "methane", "pump", "water");
+
+        generateCombinations("/vm/", svmSystems,0, new ArrayList<>());
+        generateCombinations("/minepump/", minePumpSystems,0, new ArrayList<>());
+    }
+
+    private static final Set<Set<String>> FORBIDDEN_COMBINATIONS = Set.of(
+            Set.of("controller", "controller_state")
+    );
+
+    private static boolean isValidCombination(List<String> combo) {
+        Set<String> comboSet = new HashSet<>(combo);
+
+        for (Set<String> forbidden : FORBIDDEN_COMBINATIONS) {
+            if (comboSet.containsAll(forbidden)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void generateCombinations(String sub_dir, List<String> systems, int start, List<String> current) throws Exception {
+
+        if (current.size() >= 2 && isValidCombination(current)) {
+            runEvaluation(sub_dir, new ArrayList<>(current));
+        }
+
+        for (int i = start; i < systems.size(); i++) {
+            current.add(systems.get(i));
+            generateCombinations(sub_dir, systems, i + 1, current);
+            current.removeLast();
+        }
+    }
+
+    public static void runEvaluation(String sub_dir, List<String> systems) throws IOException, TransitionSystemDefinitionException {
+
+        List<FeaturedTransitionSystem> ftsList = new ArrayList<>();
+        List<BehavioralFeatureModel> bfmList = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+
+        for(String system: systems){
+            sb.append(system).append("_");
+            ftsList.add(loadFts(sub_dir + system));
+            bfmList.add(XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + sub_dir +  system + ".bfm")));
+        }
+
+        String systemName = sb.toString();
+        LOG.info("************ Processing system: {} ************", systemName);
+
+        // Compose
+        evaluateComposition(systemName, ftsList, bfmList, true);
+        evaluateComposition(systemName, ftsList, bfmList, false);
+    }
+
+    private static void evaluateComposition(String systemName, List<FeaturedTransitionSystem> ftsList, List<BehavioralFeatureModel> bfmList, boolean sync) throws TransitionSystemDefinitionException {
+
+        Iterator<FeaturedTransitionSystem> ftsQueue = ftsList.iterator();
+        Iterator<BehavioralFeatureModel> bfmQueue = bfmList.iterator();
+        FTSParallelComposer ftsComposer = new FTSParallelComposer();
+        FeaturedTransitionSystem ftsResult = ftsQueue.next();
+
+        while (ftsQueue.hasNext()) {
+            ftsResult = ftsComposer.compose(ftsResult, ftsQueue.next(), sync);
+        }
+
+        BFMParallelComposer bfmComposer = new BFMParallelComposer();
+        BehavioralFeatureModel bfmResult = bfmQueue.next();
+
+        while (ftsQueue.hasNext()) {
+            bfmResult = bfmComposer.compose(bfmResult, bfmQueue.next(), sync);
+        }
+
+        logSummary(ftsResult, bfmResult);
+
+        // Save output
+        String ftsOutputPath = FTS_OUTPUT_DIR + systemName + sync + ".fts";
+        ensureParentDirExists(ftsOutputPath);
+        XmlSaverUtility.save(ftsResult, ftsOutputPath);
+        String bfmOutputPath = BFM_OUTPUT_DIR + systemName + sync + ".bfm";
+        ensureParentDirExists(bfmOutputPath);
+        XmlSaverUtility.save(bfmResult, bfmOutputPath);
     }
 
     public static void convertBfmToFm(String system) {
@@ -221,6 +305,11 @@ public class Main {
         }
     }
 
+    private static <In, Out> void logSummary(In input, Out output) {
+        logModelSize(input);
+        logModelSize(output);
+    }
+    
     private static <In, Out> void logSummary(In input, Out output, double executionTime) {
         logModelSize(input);
         logModelSize(output);
@@ -261,13 +350,13 @@ public class Main {
     }
 
     public static Map<String, String> getSystems() {
-        Map<String, String> systems = new HashMap<>();
+        Map<String, String> systems = new LinkedHashMap<>();
 
         systems.put("cpterminal", "cpterminal");
         systems.put("robot", "robot");
         systems.put("/vm/coffee", "coffee");
         systems.put("/vm/soup", "soup");
-        systems.put("/vm/soda", "soda");
+        systems.put("/vm/soda", "soda");/*
         systems.put("/vm/coffeesoda_synchro", "coffeesoda");
         systems.put("/vm/coffeesoup_synchro", "coffeesoup");
         systems.put("/vm/sodasoup_synchro", "sodasoup");
@@ -275,11 +364,12 @@ public class Main {
         systems.put("/vm/sodasoup", "sodasoup");
         systems.put("/vm/coffeesoda", "coffeesoda");
         systems.put("/vm/svm_synchro", "svm");
-        systems.put("/vm/svm", "svm");
+        systems.put("/vm/svm", "svm");*/
 
-        String minepumpPath = "minepump/";
+        String minepumpPath = "/minepump/";
+
         File minepumpDir = new File(FTS_DIR + minepumpPath);
-        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith(".dot"));
+        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith("synchro.dot"));
 
         if (ftsFiles == null) {
             String msg = "Directory not found or IO error: " + minepumpDir;
