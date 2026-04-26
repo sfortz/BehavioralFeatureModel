@@ -18,9 +18,10 @@
 
 package uk.kcl.info.bfm.execution;
 
-import uk.kcl.info.bfm.BundleEventStructure;
-import uk.kcl.info.bfm.CausalityRelation;
-import uk.kcl.info.bfm.Event;
+import be.vibes.fexpression.Feature;
+import be.vibes.fexpression.configuration.Configuration;
+import be.vibes.ts.exception.UnresolvedFExpression;
+import uk.kcl.info.bfm.*;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 
 import java.io.File;
@@ -32,6 +33,40 @@ public class BundleEventStructureExecutor {
 
     public BundleEventStructureExecutor(BundleEventStructure bes) {
         this.bes = bes;
+    }
+
+
+    public boolean canExecute(List<Event> trace) {
+
+        Set<Event> executed = new HashSet<>();
+
+        for (Event event : trace) {
+
+            // 1. Event must belong to the BES (sanity check)
+            if (!bes.getAllEvents().contains(event)) {
+                return false;
+            }
+
+            // 2. No repetition (configurations are sets in BES semantics)
+            if (executed.contains(event)) {
+                return false;
+            }
+
+            // 3. Conflict check
+            if (isInConflictWithExecuted(event, executed)) {
+                return false;
+            }
+
+            // 4. Causality (bundle satisfaction)
+            if (!areAllCausalPredecessorsExecuted(event, executed)) {
+                return false;
+            }
+
+            // 5. Execute event
+            executed.add(event);
+        }
+
+        return true;
     }
 
     /**
@@ -105,4 +140,64 @@ public class BundleEventStructureExecutor {
         return false;
     }
 
+    public Set<List<String>> getRandomActionTraces(int numTraces) {
+        Set<List<Event>> eventTraces = getRandomEventTraces(numTraces);
+        Set<List<String>> actionTraces = new HashSet<>();
+
+        for (List<Event> trace : eventTraces) {
+            List<String> actions = trace.stream()
+                    .map(Event::getAction)
+                    .toList();
+            actionTraces.add(actions);
+        }
+
+        return actionTraces;
+    }
+
+    public Set<List<Event>> getRandomEventTraces(int numTraces) {
+        Set<List<Event>> traces = new HashSet<>();
+        Random random = new Random();
+
+        int attempts = 0;
+        int maxAttempts = numTraces * 10; // avoid infinite loops if duplicates
+
+        while (traces.size() < numTraces && attempts < maxAttempts) {
+            traces.add(generateRandomEventTrace(random));
+            attempts++;
+        }
+
+        return traces;
+    }
+
+    private List<Event> generateRandomEventTrace(Random random) {
+        List<Event> trace = new ArrayList<>();
+        Set<Event> executed = new HashSet<>();
+
+        while (true) {
+            List<Event> enabled = getEnabledEvents(executed);
+
+            if (enabled.isEmpty()) break;
+
+            Event chosen = enabled.get(random.nextInt(enabled.size()));
+
+            trace.add(chosen);
+            executed.add(chosen);
+        }
+
+        return trace;
+    }
+
+    private List<Event> getEnabledEvents(Set<Event> executed) {
+        List<Event> enabled = new ArrayList<>();
+
+        for (Event event : bes.getAllEvents()) {
+            if (executed.contains(event)) continue;
+            if (isInConflictWithExecuted(event, executed)) continue;
+            if (!areAllCausalPredecessorsExecuted(event, executed)) continue;
+
+            enabled.add(event);
+        }
+
+        return enabled;
+    }
 }

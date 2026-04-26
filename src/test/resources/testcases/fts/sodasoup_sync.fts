@@ -1,419 +1,419 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fts>
-    <start>state0</start>
+    <start>state0||state0</start>
     <states>
-        <state id="state53">
-            <transition action="no_cup" target="state17" fexpression="Cup"></transition>
-            <transition action="tea_soda" target="state14" fexpression="Tea"></transition>
-            <transition action="soda" target="state84" fexpression="Soda"></transition>
-            <transition action="cup_present" target="state30" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state30" fexpression="(!Ringtone || !Cup)"></transition>
-        </state>
-        <state id="state9">
-            <transition action="no_cup" target="state10" fexpression="Cup"></transition>
-            <transition action="cup_present" target="state11" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state11" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="pour_tea_soda" target="state12" fexpression="Tea"></transition>
-        </state>
-        <state id="state52">
-            <transition action="no_cup" target="state17" fexpression="Cup"></transition>
-            <transition action="tea_soda" target="state9" fexpression="Tea"></transition>
-            <transition action="soda" target="state85" fexpression="Soda"></transition>
-            <transition action="skip_soup" target="state26" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state26" fexpression="Cup"></transition>
-        </state>
-        <state id="state51">
-            <transition action="chicken" target="state9" fexpression="ChickenSoup"></transition>
-            <transition action="tomato" target="state23" fexpression="TomatoSoup"></transition>
-            <transition action="pea" target="state14" fexpression="PeaSoup"></transition>
-            <transition action="pour_tea_soda" target="state79" fexpression="Tea"></transition>
-        </state>
-        <state id="state50">
-            <transition action="open" target="state78" fexpression="!FreeDrinks"></transition>
-            <transition action="insert_euro_soup" target="state79" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state79" fexpression="Dollar"></transition>
-        </state>
-        <state id="state6">
-            <transition action="pour_soda" target="state7" fexpression="Soda"></transition>
-            <transition action="bad_luck" target="state8" fexpression="!Cup"></transition>
-        </state>
-        <state id="state5">
-            <transition action="pour_chicken" target="state2" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state8">
-            <transition action="pour_soda" target="state61" fexpression="Soda"></transition>
-        </state>
-        <state id="state7">
-            <transition action="take" target="state33" fexpression="VendingMachine"></transition>
-            <transition action="bad_luck" target="state61" fexpression="!Cup"></transition>
-            <transition action="open" target="state29" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state2">
-            <transition action="skip_soup" target="state29" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="ring_soup" target="state29" fexpression="Ringtone"></transition>
-        </state>
-        <state id="state1">
-            <transition action="pour_pea" target="state2" fexpression="PeaSoup"></transition>
-        </state>
-        <state id="state4">
-            <transition action="pour_tomato" target="state2" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state3"></state>
-        <state id="state19">
-            <transition action="pour_soda" target="state69" fexpression="Soda"></transition>
-        </state>
-        <state id="state18">
-            <transition action="return" target="state33" fexpression="CancelPurchase"></transition>
-        </state>
-        <state id="state13">
-            <transition action="skip_soup" target="state7" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="ring_soup" target="state7" fexpression="Ringtone"></transition>
-            <transition action="open" target="state2" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state57">
-            <transition action="change" target="state53" fexpression="!FreeDrinks"></transition>
-            <transition action="cup_present" target="state36" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state36" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="no_cup" target="state38" fexpression="Cup"></transition>
-        </state>
-        <state id="state12">
-            <transition action="skip_soup" target="state75" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state75" fexpression="Cup"></transition>
-            <transition action="no_cup" target="state69" fexpression="Cup"></transition>
-            <transition action="open" target="state73" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state56">
-            <transition action="cup_present" target="state62" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state62" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="no_cup" target="state38" fexpression="Cup"></transition>
-            <transition action="change" target="state52" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state11">
-            <transition action="pour_tea_soda" target="state75" fexpression="Tea"></transition>
-            <transition action="pour_chicken" target="state77" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state55">
-            <transition action="change" target="state54" fexpression="!FreeDrinks"></transition>
-            <transition action="no_cup" target="state38" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state67" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state67" fexpression="Cup"></transition>
-        </state>
-        <state id="state10">
-            <transition action="pour_tea_soda" target="state69" fexpression="Tea"></transition>
-        </state>
-        <state id="state54">
-            <transition action="soda" target="state86" fexpression="Soda"></transition>
-            <transition action="no_cup" target="state17" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state34" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state34" fexpression="Cup"></transition>
-            <transition action="tea_soda" target="state23" fexpression="Tea"></transition>
-        </state>
-        <state id="state17">
-            <transition action="tea_soda" target="state10" fexpression="Tea"></transition>
-            <transition action="cancel" target="state18" fexpression="CancelPurchase"></transition>
-            <transition action="soda" target="state19" fexpression="Soda"></transition>
-        </state>
-        <state id="state16">
-            <transition action="skip_soup" target="state68" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state68" fexpression="Cup"></transition>
-            <transition action="no_cup" target="state69" fexpression="Cup"></transition>
-            <transition action="open" target="state70" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state15">
-            <transition action="pour_pea" target="state77" fexpression="PeaSoup"></transition>
-            <transition action="pour_tea_soda" target="state68" fexpression="Tea"></transition>
-        </state>
-        <state id="state59">
-            <transition action="free" target="state17" fexpression="FreeDrinks"></transition>
-            <transition action="pay" target="state38" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state14">
-            <transition action="no_cup" target="state10" fexpression="Cup"></transition>
-            <transition action="cup_present" target="state15" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state15" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="pour_tea_soda" target="state16" fexpression="Tea"></transition>
-        </state>
-        <state id="state58">
-            <transition action="free" target="state30" fexpression="FreeDrinks"></transition>
-            <transition action="pay" target="state36" fexpression="!FreeDrinks"></transition>
-            <transition action="pour_pea" target="state65" fexpression="PeaSoup"></transition>
-        </state>
-        <state id="state82">
-            <transition action="free" target="state20" fexpression="FreeDrinks"></transition>
-            <transition action="pay" target="state32" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state81">
-            <transition action="free" target="state34" fexpression="FreeDrinks"></transition>
-            <transition action="pay" target="state67" fexpression="!FreeDrinks"></transition>
-            <transition action="pour_tomato" target="state65" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state80">
-            <transition action="tea_soda" target="state22" fexpression="Tea"></transition>
-            <transition action="bad_luck" target="state20" fexpression="!Cup"></transition>
-            <transition action="soda" target="state6" fexpression="Soda"></transition>
-        </state>
-        <state id="state42">
-            <transition action="insert_euro_soup" target="state51" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state51" fexpression="Dollar"></transition>
-            <transition action="pour_tea_soda" target="state50" fexpression="Tea"></transition>
-        </state>
-        <state id="state86">
-            <transition action="skip_soup" target="state35" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state35" fexpression="Cup"></transition>
-            <transition action="no_cup" target="state19" fexpression="Cup"></transition>
-            <transition action="pour_soda" target="state25" fexpression="Soda"></transition>
-        </state>
-        <state id="state41">
-            <transition action="tea_soda" target="state42" fexpression="Tea"></transition>
-            <transition action="insert_euro_soup" target="state43" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state43" fexpression="Dollar"></transition>
-            <transition action="soda" target="state44" fexpression="Soda"></transition>
-        </state>
-        <state id="state85">
-            <transition action="skip_soup" target="state27" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state27" fexpression="Cup"></transition>
-            <transition action="no_cup" target="state19" fexpression="Cup"></transition>
-            <transition action="pour_soda" target="state12" fexpression="Soda"></transition>
-        </state>
-        <state id="state40">
-            <transition action="pay" target="state45" fexpression="!FreeDrinks"></transition>
-            <transition action="free" target="state43" fexpression="FreeDrinks"></transition>
-            <transition action="chicken" target="state46" fexpression="ChickenSoup"></transition>
-            <transition action="pea" target="state47" fexpression="PeaSoup"></transition>
-            <transition action="tomato" target="state48" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state84">
-            <transition action="no_cup" target="state19" fexpression="Cup"></transition>
-            <transition action="cup_present" target="state31" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state31" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="pour_soda" target="state16" fexpression="Soda"></transition>
-        </state>
-        <state id="state83">
-            <transition action="change" target="state80" fexpression="!FreeDrinks"></transition>
-            <transition action="bad_luck" target="state32" fexpression="!Cup"></transition>
-        </state>
-        <state id="state46">
-            <transition action="pay" target="state56" fexpression="!FreeDrinks"></transition>
-            <transition action="cup_present" target="state60" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state60" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="free" target="state52" fexpression="FreeDrinks"></transition>
-            <transition action="no_cup" target="state59" fexpression="Cup"></transition>
-        </state>
-        <state id="state45">
-            <transition action="tomato" target="state55" fexpression="TomatoSoup"></transition>
-            <transition action="chicken" target="state56" fexpression="ChickenSoup"></transition>
-            <transition action="change" target="state43" fexpression="!FreeDrinks"></transition>
-            <transition action="pea" target="state57" fexpression="PeaSoup"></transition>
-        </state>
-        <state id="state44">
-            <transition action="insert_euro_soup" target="state49" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state49" fexpression="Dollar"></transition>
-            <transition action="pour_soda" target="state50" fexpression="Soda"></transition>
-        </state>
-        <state id="state43">
-            <transition action="tea_soda" target="state51" fexpression="Tea"></transition>
-            <transition action="chicken" target="state52" fexpression="ChickenSoup"></transition>
-            <transition action="cancel" target="state18" fexpression="CancelPurchase"></transition>
-            <transition action="pea" target="state53" fexpression="PeaSoup"></transition>
-            <transition action="soda" target="state49" fexpression="Soda"></transition>
-            <transition action="tomato" target="state54" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state49">
-            <transition action="pea" target="state84" fexpression="PeaSoup"></transition>
-            <transition action="chicken" target="state85" fexpression="ChickenSoup"></transition>
-            <transition action="pour_soda" target="state79" fexpression="Soda"></transition>
-            <transition action="tomato" target="state86" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state48">
-            <transition action="no_cup" target="state59" fexpression="Cup"></transition>
-            <transition action="free" target="state54" fexpression="FreeDrinks"></transition>
-            <transition action="cup_present" target="state81" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state81" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="pay" target="state55" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state47">
-            <transition action="pay" target="state57" fexpression="!FreeDrinks"></transition>
-            <transition action="cup_present" target="state58" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state58" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="free" target="state53" fexpression="FreeDrinks"></transition>
-            <transition action="no_cup" target="state59" fexpression="Cup"></transition>
-        </state>
-        <state id="state71">
-            <transition action="tomato" target="state72" fexpression="TomatoSoup"></transition>
-            <transition action="pea" target="state70" fexpression="PeaSoup"></transition>
-            <transition action="chicken" target="state73" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state70">
-            <transition action="cup_present" target="state1" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state1" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="no_cup" target="state3" fexpression="Cup"></transition>
-        </state>
-        <state id="state31">
-            <transition action="pour_pea" target="state76" fexpression="PeaSoup"></transition>
-            <transition action="pour_soda" target="state68" fexpression="Soda"></transition>
-        </state>
-        <state id="state75">
-            <transition action="pour_chicken" target="state13" fexpression="ChickenSoup"></transition>
-            <transition action="open" target="state5" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state30">
-            <transition action="tea_soda" target="state15" fexpression="Tea"></transition>
-            <transition action="soda" target="state31" fexpression="Soda"></transition>
-            <transition action="pour_pea" target="state28" fexpression="PeaSoup"></transition>
-        </state>
-        <state id="state74">
-            <transition action="pour_tomato" target="state13" fexpression="TomatoSoup"></transition>
-            <transition action="open" target="state4" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state73">
-            <transition action="skip_soup" target="state5" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state5" fexpression="Cup"></transition>
-            <transition action="no_cup" target="state3" fexpression="Cup"></transition>
-        </state>
-        <state id="state72">
-            <transition action="skip_soup" target="state4" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state4" fexpression="Cup"></transition>
-            <transition action="no_cup" target="state3" fexpression="Cup"></transition>
-        </state>
-        <state id="state35">
-            <transition action="pour_tomato" target="state76" fexpression="TomatoSoup"></transition>
-            <transition action="pour_soda" target="state74" fexpression="Soda"></transition>
-        </state>
-        <state id="state79">
-            <transition action="tomato" target="state25" fexpression="TomatoSoup"></transition>
-            <transition action="open" target="state71" fexpression="!FreeDrinks"></transition>
-            <transition action="pea" target="state16" fexpression="PeaSoup"></transition>
-            <transition action="chicken" target="state12" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state34">
-            <transition action="tea_soda" target="state24" fexpression="Tea"></transition>
-            <transition action="pour_tomato" target="state28" fexpression="TomatoSoup"></transition>
-            <transition action="soda" target="state35" fexpression="Soda"></transition>
-        </state>
-        <state id="state78">
-            <transition action="insert_euro_soup" target="state71" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state71" fexpression="Dollar"></transition>
-        </state>
-        <state id="state33"></state>
-        <state id="state77">
-            <transition action="pour_tea_soda" target="state13" fexpression="Tea"></transition>
-            <transition action="ring_soup" target="state22" fexpression="Ringtone"></transition>
-            <transition action="skip_soup" target="state22" fexpression="(!Ringtone || !Cup)"></transition>
-        </state>
-        <state id="state32">
-            <transition action="change" target="state20" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state76">
-            <transition action="pour_soda" target="state13" fexpression="Soda"></transition>
-            <transition action="ring_soup" target="state6" fexpression="Ringtone"></transition>
-            <transition action="skip_soup" target="state6" fexpression="(!Ringtone || !Cup)"></transition>
-        </state>
-        <state id="state39">
-            <transition action="change" target="state41" fexpression="!FreeDrinks"></transition>
-            <transition action="insert_euro_soup" target="state45" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state45" fexpression="Dollar"></transition>
-        </state>
-        <state id="state38">
-            <transition action="change" target="state17" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state37">
-            <transition action="skip_soup" target="state83" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="ring_soup" target="state83" fexpression="Ringtone"></transition>
-            <transition action="change" target="state28" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state36">
-            <transition action="pour_pea" target="state37" fexpression="PeaSoup"></transition>
-            <transition action="change" target="state30" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state60">
-            <transition action="free" target="state26" fexpression="FreeDrinks"></transition>
-            <transition action="pour_chicken" target="state65" fexpression="ChickenSoup"></transition>
-            <transition action="pay" target="state62" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state20">
-            <transition action="soda" target="state8" fexpression="Soda"></transition>
-            <transition action="tea_soda" target="state21" fexpression="Tea"></transition>
-        </state>
-        <state id="state64">
-            <transition action="close" target="state33" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state63"></state>
-        <state id="state62">
-            <transition action="change" target="state26" fexpression="!FreeDrinks"></transition>
-            <transition action="pour_chicken" target="state37" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state61">
-            <transition action="open" target="state63" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state0">
-            <transition action="pay" target="state39" fexpression="!FreeDrinks"></transition>
-            <transition action="insert_euro_soup" target="state40" fexpression="Euro"></transition>
-            <transition action="insert_dollar_soup" target="state40" fexpression="Dollar"></transition>
-            <transition action="free" target="state41" fexpression="FreeDrinks"></transition>
-        </state>
-        <state id="state29">
-            <transition action="bad_luck" target="state63" fexpression="!Cup"></transition>
-            <transition action="take" target="state64" fexpression="VendingMachine"></transition>
-        </state>
-        <state id="state24">
-            <transition action="pour_tea_soda" target="state74" fexpression="Tea"></transition>
-            <transition action="pour_tomato" target="state77" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state68">
-            <transition action="pour_pea" target="state13" fexpression="PeaSoup"></transition>
-            <transition action="open" target="state1" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state23">
-            <transition action="no_cup" target="state10" fexpression="Cup"></transition>
-            <transition action="skip_soup" target="state24" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state24" fexpression="Cup"></transition>
-            <transition action="pour_tea_soda" target="state25" fexpression="Tea"></transition>
-        </state>
-        <state id="state67">
-            <transition action="change" target="state34" fexpression="!FreeDrinks"></transition>
-            <transition action="pour_tomato" target="state37" fexpression="TomatoSoup"></transition>
-        </state>
-        <state id="state22">
-            <transition action="pour_tea_soda" target="state7" fexpression="Tea"></transition>
-            <transition action="bad_luck" target="state21" fexpression="!Cup"></transition>
-        </state>
-        <state id="state66">
-            <transition action="bad_luck" target="state82" fexpression="!Cup"></transition>
-            <transition action="free" target="state80" fexpression="FreeDrinks"></transition>
-            <transition action="pay" target="state83" fexpression="!FreeDrinks"></transition>
-        </state>
-        <state id="state21">
-            <transition action="pour_tea_soda" target="state61" fexpression="Tea"></transition>
-        </state>
-        <state id="state65">
-            <transition action="pay" target="state37" fexpression="!FreeDrinks"></transition>
-            <transition action="skip_soup" target="state66" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="ring_soup" target="state66" fexpression="Ringtone"></transition>
-            <transition action="free" target="state28" fexpression="FreeDrinks"></transition>
-        </state>
-        <state id="state28">
-            <transition action="tea_soda" target="state77" fexpression="Tea"></transition>
-            <transition action="skip_soup" target="state80" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="ring_soup" target="state80" fexpression="Ringtone"></transition>
-            <transition action="soda" target="state76" fexpression="Soda"></transition>
-        </state>
-        <state id="state27">
-            <transition action="pour_soda" target="state75" fexpression="Soda"></transition>
-            <transition action="pour_chicken" target="state76" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state26">
-            <transition action="tea_soda" target="state11" fexpression="Tea"></transition>
-            <transition action="soda" target="state27" fexpression="Soda"></transition>
-            <transition action="pour_chicken" target="state28" fexpression="ChickenSoup"></transition>
-        </state>
-        <state id="state25">
-            <transition action="skip_soup" target="state74" fexpression="(!Ringtone || !Cup)"></transition>
-            <transition action="cup_present" target="state74" fexpression="Cup"></transition>
-            <transition action="open" target="state72" fexpression="!FreeDrinks"></transition>
-            <transition action="no_cup" target="state69" fexpression="Cup"></transition>
-        </state>
-        <state id="state69">
-            <transition action="open" target="state3" fexpression="!FreeDrinks"></transition>
+        <state id="state9||state4">
+            <transition action="soda" target="state1||state4" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state4" fexpression="Tea"></transition>
+            <transition action="no_cup" target="state9||state3" fexpression="Cup"></transition>
+            <transition action="skip" target="state9||state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state9||state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state9||state3">
+            <transition action="soda" target="state1||state3" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state3" fexpression="Tea"></transition>
+            <transition action="cancel" target="state4||state7" fexpression="CancelPurchase"></transition>
+        </state>
+        <state id="state9||state2">
+            <transition action="soda" target="state1||state2" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state2" fexpression="Tea"></transition>
+            <transition action="pour_chicken" target="state9||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state9||state1">
+            <transition action="soda" target="state1||state1" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state1" fexpression="Tea"></transition>
+            <transition action="cup_present" target="state9||state2" fexpression="Cup"></transition>
+            <transition action="skip" target="state9||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state9||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state9||state8">
+            <transition action="soda" target="state1||state8" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state8" fexpression="Tea"></transition>
+            <transition action="ring" target="state9||state6" fexpression="Ringtone"></transition>
+            <transition action="skip" target="state9||state6" fexpression="(!Ringtone || !Cup)"></transition>
+        </state>
+        <state id="state9||state7">
+            <transition action="soda" target="state1||state7" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state7" fexpression="Tea"></transition>
+        </state>
+        <state id="state9||state6">
+            <transition action="soda" target="state1||state6" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state6" fexpression="Tea"></transition>
+            <transition action="bad_luck" target="state9||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state9||state5">
+            <transition action="soda" target="state1||state5" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state5" fexpression="Tea"></transition>
+            <transition action="pour_tomato" target="state9||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state9||state0">
+            <transition action="soda" target="state1||state0" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state0" fexpression="Tea"></transition>
+            <transition action="insert_dollar" target="state9||state10" fexpression="Dollar"></transition>
+            <transition action="insert_euro" target="state9||state10" fexpression="Euro"></transition>
+        </state>
+        <state id="state7||state7">
+            <transition action="close" target="state5||state7" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state1||state11">
+            <transition action="pour" target="state2||state11" fexpression="Soda"></transition>
+            <transition action="skip" target="state1||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state1||state9" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state1||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state1||state10">
+            <transition action="pour" target="state2||state10" fexpression="Soda"></transition>
+            <transition action="chicken" target="state1||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state1||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state1||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state1||state0">
+            <transition action="pour" target="state2||state0" fexpression="Soda"></transition>
+            <transition action="insert_euro" target="state1||state10" fexpression="Euro"></transition>
+            <transition action="insert_dollar" target="state1||state10" fexpression="Dollar"></transition>
+        </state>
+        <state id="state9||state9">
+            <transition action="soda" target="state1||state9" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state9" fexpression="Tea"></transition>
+            <transition action="pour_pea" target="state9||state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state0||state5">
+            <transition action="pay" target="state8||state5" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state5" fexpression="FreeDrinks"></transition>
+            <transition action="pour_tomato" target="state0||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state0||state4">
+            <transition action="pay" target="state8||state4" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state4" fexpression="FreeDrinks"></transition>
+            <transition action="no_cup" target="state0||state3" fexpression="Cup"></transition>
+            <transition action="skip" target="state0||state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state0||state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state0||state3">
+            <transition action="pay" target="state8||state3" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state3" fexpression="FreeDrinks"></transition>
+        </state>
+        <state id="state0||state2">
+            <transition action="pay" target="state8||state2" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state2" fexpression="FreeDrinks"></transition>
+            <transition action="pour_chicken" target="state0||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state0||state9">
+            <transition action="pay" target="state8||state9" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state9" fexpression="FreeDrinks"></transition>
+            <transition action="pour_pea" target="state0||state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state2||state8">
+            <transition action="open" target="state6||state8" fexpression="!FreeDrinks"></transition>
+            <transition action="skip" target="state2||state6" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="ring" target="state2||state6" fexpression="Ringtone"></transition>
+        </state>
+        <state id="state2||state10">
+            <transition action="open" target="state6||state10" fexpression="!FreeDrinks"></transition>
+            <transition action="chicken" target="state2||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state2||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state2||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state0||state8">
+            <transition action="pay" target="state8||state8" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state8" fexpression="FreeDrinks"></transition>
+            <transition action="skip" target="state0||state6" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="ring" target="state0||state6" fexpression="Ringtone"></transition>
+        </state>
+        <state id="state2||state9">
+            <transition action="open" target="state6||state9" fexpression="!FreeDrinks"></transition>
+            <transition action="pour_pea" target="state2||state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state0||state7">
+            <transition action="pay" target="state8||state7" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state7" fexpression="FreeDrinks"></transition>
+        </state>
+        <state id="state0||state6">
+            <transition action="pay" target="state8||state6" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state6" fexpression="FreeDrinks"></transition>
+            <transition action="bad_luck" target="state0||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state2||state4">
+            <transition action="open" target="state6||state4" fexpression="!FreeDrinks"></transition>
+            <transition action="no_cup" target="state2||state3" fexpression="Cup"></transition>
+            <transition action="skip" target="state2||state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state2||state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state8||state11">
+            <transition action="change" target="state9||state11" fexpression="!FreeDrinks"></transition>
+            <transition action="cup_present" target="state8||state9" fexpression="Cup"></transition>
+            <transition action="skip" target="state8||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state8||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state2||state5">
+            <transition action="open" target="state6||state5" fexpression="!FreeDrinks"></transition>
+            <transition action="pour_tomato" target="state2||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state8||state10">
+            <transition action="change" target="state9||state10" fexpression="!FreeDrinks"></transition>
+            <transition action="chicken" target="state8||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state8||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state8||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state2||state6">
+            <transition action="open" target="state6||state6" fexpression="!FreeDrinks"></transition>
+            <transition action="take" target="state5||state7" fexpression="VendingMachine"></transition>
+            <transition action="bad_luck" target="state2||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state2||state7">
+            <transition action="open" target="state6||state7" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state2||state0">
+            <transition action="open" target="state6||state0" fexpression="!FreeDrinks"></transition>
+            <transition action="insert_dollar" target="state2||state10" fexpression="Dollar"></transition>
+            <transition action="insert_euro" target="state2||state10" fexpression="Euro"></transition>
+        </state>
+        <state id="state2||state1">
+            <transition action="open" target="state6||state1" fexpression="!FreeDrinks"></transition>
+            <transition action="cup_present" target="state2||state2" fexpression="Cup"></transition>
+            <transition action="skip" target="state2||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state2||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state2||state2">
+            <transition action="open" target="state6||state2" fexpression="!FreeDrinks"></transition>
+            <transition action="pour_chicken" target="state2||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state2||state3">
+            <transition action="open" target="state6||state3" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state6||state8">
+            <transition action="skip" target="state6||state6" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="ring" target="state6||state6" fexpression="Ringtone"></transition>
+        </state>
+        <state id="state6||state9">
+            <transition action="pour_pea" target="state6||state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state6||state6">
+            <transition action="take" target="state7||state7" fexpression="VendingMachine"></transition>
+            <transition action="bad_luck" target="state6||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state6||state7"></state>
+        <state id="state6||state4">
+            <transition action="no_cup" target="state6||state3" fexpression="Cup"></transition>
+            <transition action="skip" target="state6||state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state6||state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state6||state5">
+            <transition action="pour_tomato" target="state6||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state6||state2">
+            <transition action="pour_chicken" target="state6||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state6||state3"></state>
+        <state id="state6||state0">
+            <transition action="insert_euro" target="state6||state10" fexpression="Euro"></transition>
+            <transition action="insert_dollar" target="state6||state10" fexpression="Dollar"></transition>
+        </state>
+        <state id="state2||state11">
+            <transition action="open" target="state6||state11" fexpression="!FreeDrinks"></transition>
+            <transition action="cup_present" target="state2||state9" fexpression="Cup"></transition>
+            <transition action="skip" target="state2||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state2||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state6||state1">
+            <transition action="cup_present" target="state6||state2" fexpression="Cup"></transition>
+            <transition action="skip" target="state6||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state6||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state4||state7">
+            <transition action="return" target="state5||state7" fexpression="CancelPurchase"></transition>
+        </state>
+        <state id="state8||state1">
+            <transition action="change" target="state9||state1" fexpression="!FreeDrinks"></transition>
+            <transition action="skip" target="state8||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state8||state2" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state8||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state8||state0">
+            <transition action="change" target="state9||state0" fexpression="!FreeDrinks"></transition>
+            <transition action="insert_dollar" target="state8||state10" fexpression="Dollar"></transition>
+            <transition action="insert_euro" target="state8||state10" fexpression="Euro"></transition>
+        </state>
+        <state id="state9||state10">
+            <transition action="soda" target="state1||state10" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state10" fexpression="Tea"></transition>
+            <transition action="cancel" target="state4||state7" fexpression="CancelPurchase"></transition>
+            <transition action="chicken" target="state9||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state9||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state9||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state0||state11">
+            <transition action="pay" target="state8||state11" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state11" fexpression="FreeDrinks"></transition>
+            <transition action="cup_present" target="state0||state9" fexpression="Cup"></transition>
+            <transition action="skip" target="state0||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state0||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state9||state11">
+            <transition action="soda" target="state1||state11" fexpression="Soda"></transition>
+            <transition action="tea" target="state3||state11" fexpression="Tea"></transition>
+            <transition action="cup_present" target="state9||state9" fexpression="Cup"></transition>
+            <transition action="skip" target="state9||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state9||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state0||state10">
+            <transition action="pay" target="state8||state10" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state10" fexpression="FreeDrinks"></transition>
+            <transition action="chicken" target="state0||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state0||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state0||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state8||state9">
+            <transition action="change" target="state9||state9" fexpression="!FreeDrinks"></transition>
+            <transition action="pour_pea" target="state8||state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state8||state8">
+            <transition action="change" target="state9||state8" fexpression="!FreeDrinks"></transition>
+            <transition action="skip" target="state8||state6" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="ring" target="state8||state6" fexpression="Ringtone"></transition>
+        </state>
+        <state id="state8||state7">
+            <transition action="change" target="state9||state7" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state8||state6">
+            <transition action="change" target="state9||state6" fexpression="!FreeDrinks"></transition>
+            <transition action="bad_luck" target="state8||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state8||state5">
+            <transition action="change" target="state9||state5" fexpression="!FreeDrinks"></transition>
+            <transition action="pour_tomato" target="state8||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state8||state4">
+            <transition action="change" target="state9||state4" fexpression="!FreeDrinks"></transition>
+            <transition action="no_cup" target="state8||state3" fexpression="Cup"></transition>
+            <transition action="skip" target="state8||state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state8||state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state8||state3">
+            <transition action="change" target="state9||state3" fexpression="!FreeDrinks"></transition>
+        </state>
+        <state id="state8||state2">
+            <transition action="change" target="state9||state2" fexpression="!FreeDrinks"></transition>
+            <transition action="pour_chicken" target="state8||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state6||state10">
+            <transition action="chicken" target="state6||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state6||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state6||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state0||state1">
+            <transition action="pay" target="state8||state1" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state1" fexpression="FreeDrinks"></transition>
+            <transition action="skip" target="state0||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state0||state2" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state0||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state3||state11">
+            <transition action="pour_tea" target="state2||state11" fexpression="Tea"></transition>
+            <transition action="skip" target="state3||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state3||state9" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state3||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state6||state11">
+            <transition action="skip" target="state6||state9" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state6||state9" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state6||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state0||state0">
+            <transition action="pay" target="state8||state0" fexpression="!FreeDrinks"></transition>
+            <transition action="free" target="state9||state0" fexpression="FreeDrinks"></transition>
+            <transition action="insert_euro" target="state0||state10" fexpression="Euro"></transition>
+            <transition action="insert_dollar" target="state0||state10" fexpression="Dollar"></transition>
+        </state>
+        <state id="state3||state10">
+            <transition action="pour_tea" target="state2||state10" fexpression="Tea"></transition>
+            <transition action="chicken" target="state3||state1" fexpression="ChickenSoup"></transition>
+            <transition action="pea" target="state3||state11" fexpression="PeaSoup"></transition>
+            <transition action="tomato" target="state3||state4" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state1||state9">
+            <transition action="pour" target="state2||state9" fexpression="Soda"></transition>
+            <transition action="pour_pea" target="state1||state8" fexpression="PeaSoup"></transition>
+        </state>
+        <state id="state1||state1">
+            <transition action="pour" target="state2||state1" fexpression="Soda"></transition>
+            <transition action="skip" target="state1||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state1||state2" fexpression="Cup"></transition>
+            <transition action="no_cup" target="state1||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state1||state2">
+            <transition action="pour" target="state2||state2" fexpression="Soda"></transition>
+            <transition action="pour_chicken" target="state1||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state1||state3">
+            <transition action="pour" target="state2||state3" fexpression="Soda"></transition>
+        </state>
+        <state id="state1||state4">
+            <transition action="pour" target="state2||state4" fexpression="Soda"></transition>
+            <transition action="no_cup" target="state1||state3" fexpression="Cup"></transition>
+            <transition action="cup_present" target="state1||state5" fexpression="Cup"></transition>
+            <transition action="skip" target="state1||state5" fexpression="(!Ringtone || !Cup)"></transition>
+        </state>
+        <state id="state1||state5">
+            <transition action="pour" target="state2||state5" fexpression="Soda"></transition>
+            <transition action="pour_tomato" target="state1||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state1||state6">
+            <transition action="pour" target="state2||state6" fexpression="Soda"></transition>
+            <transition action="bad_luck" target="state1||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state1||state7">
+            <transition action="pour" target="state2||state7" fexpression="Soda"></transition>
+        </state>
+        <state id="state1||state8">
+            <transition action="pour" target="state2||state8" fexpression="Soda"></transition>
+            <transition action="ring" target="state1||state6" fexpression="Ringtone"></transition>
+            <transition action="skip" target="state1||state6" fexpression="(!Ringtone || !Cup)"></transition>
+        </state>
+        <state id="state3||state0">
+            <transition action="pour_tea" target="state2||state0" fexpression="Tea"></transition>
+            <transition action="insert_dollar" target="state3||state10" fexpression="Dollar"></transition>
+            <transition action="insert_euro" target="state3||state10" fexpression="Euro"></transition>
+        </state>
+        <state id="state5||state7"></state>
+        <state id="state3||state2">
+            <transition action="pour_tea" target="state2||state2" fexpression="Tea"></transition>
+            <transition action="pour_chicken" target="state3||state8" fexpression="ChickenSoup"></transition>
+        </state>
+        <state id="state3||state1">
+            <transition action="pour_tea" target="state2||state1" fexpression="Tea"></transition>
+            <transition action="cup_present" target="state3||state2" fexpression="Cup"></transition>
+            <transition action="skip" target="state3||state2" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="no_cup" target="state3||state3" fexpression="Cup"></transition>
+        </state>
+        <state id="state3||state4">
+            <transition action="pour_tea" target="state2||state4" fexpression="Tea"></transition>
+            <transition action="no_cup" target="state3||state3" fexpression="Cup"></transition>
+            <transition action="skip" target="state3||state5" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="cup_present" target="state3||state5" fexpression="Cup"></transition>
+        </state>
+        <state id="state3||state3">
+            <transition action="pour_tea" target="state2||state3" fexpression="Tea"></transition>
+        </state>
+        <state id="state3||state6">
+            <transition action="pour_tea" target="state2||state6" fexpression="Tea"></transition>
+            <transition action="bad_luck" target="state3||state7" fexpression="!Cup"></transition>
+        </state>
+        <state id="state3||state5">
+            <transition action="pour_tea" target="state2||state5" fexpression="Tea"></transition>
+            <transition action="pour_tomato" target="state3||state8" fexpression="TomatoSoup"></transition>
+        </state>
+        <state id="state3||state8">
+            <transition action="pour_tea" target="state2||state8" fexpression="Tea"></transition>
+            <transition action="skip" target="state3||state6" fexpression="(!Ringtone || !Cup)"></transition>
+            <transition action="ring" target="state3||state6" fexpression="Ringtone"></transition>
+        </state>
+        <state id="state3||state7">
+            <transition action="pour_tea" target="state2||state7" fexpression="Tea"></transition>
+        </state>
+        <state id="state3||state9">
+            <transition action="pour_tea" target="state2||state9" fexpression="Tea"></transition>
+            <transition action="pour_pea" target="state3||state8" fexpression="PeaSoup"></transition>
         </state>
     </states>
 </fts>
