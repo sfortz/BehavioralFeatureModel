@@ -35,9 +35,11 @@ import java.util.stream.Collectors;
 
 public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> implements FeaturedEventStructure<BehavioralFeature> {
 
-    private final Table<Set<Event>, Event, CausalityRelation> causalityTable;
+    private transient final Table<Set<Event>, Event, CausalityRelation> causalityTable;
 
-    private Map<Set<Event>, FExpression> configFexpressions;
+    private transient Map<Set<Event>, FExpression> configFexpressions;
+
+    private final transient Map<String, List<Event>> actionToEvents = new HashMap<>();
 
     protected BehavioralFeatureModel() {
         super();
@@ -179,6 +181,18 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     @Override
     public Iterator<CausalityRelation> causalities() {
         return this.causalityTable.values().iterator();
+    }
+
+    @Override
+    public Map<String, List<Event>> getActionEventMapping() {
+
+        if (actionToEvents.isEmpty()) {
+            for (Event e : this.getAllEvents()) {
+                String action = e.getAction();
+                actionToEvents.computeIfAbsent(action, k -> new ArrayList<>()).add(e);
+            }
+        }
+        return actionToEvents;
     }
 
     @Override

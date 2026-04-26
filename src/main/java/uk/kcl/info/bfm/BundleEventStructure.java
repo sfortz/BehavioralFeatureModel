@@ -36,6 +36,8 @@ public interface BundleEventStructure {
 
     Iterator<CausalityRelation> causalities();
 
+    Map<String, List<Event>> getActionEventMapping();
+
     ConflictSet getConflictSetCopy();
 
     Iterator<CausalityRelation> getAllCausalitiesOfEvent(Event event);

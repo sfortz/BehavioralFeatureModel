@@ -38,7 +38,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
 
     private final FeatureModel<F> fm;
 
-    private Map<Set<Event>, FExpression> configFexpressions;
+    private transient Map<Set<Event>, FExpression> configFexpressions;
 
     public DefaultFeaturedEventStructure(FeatureModel<F> fm) {
         super();
@@ -254,16 +254,4 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
         return allFExps;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        DefaultFeaturedEventStructure<?> that = (DefaultFeaturedEventStructure<?>) o;
-        return Objects.equals(features, that.features) && Objects.equals(eventFexpressions, that.eventFexpressions); // && Objects.equals(fm, that.fm) && Objects.equals(configFexpressions, that.configFexpressions)
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), features, eventFexpressions); //fm, configFexpressions
-    }
 }

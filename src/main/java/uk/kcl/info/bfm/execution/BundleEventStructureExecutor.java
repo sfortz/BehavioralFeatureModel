@@ -35,39 +35,51 @@ public class BundleEventStructureExecutor {
         this.bes = bes;
     }
 
-
     public boolean canExecute(List<Event> trace) {
+        return canExecute(trace, 0, new HashSet<>());
+    }
 
-        Set<Event> executed = new HashSet<>();
+    private boolean canExecute(List<Event> trace, int index, Set<Event> executed) {
 
-        for (Event event : trace) {
-
-            // 1. Event must belong to the BES (sanity check)
-            if (!bes.getAllEvents().contains(event)) {
-                return false;
-            }
-
-            // 2. No repetition (configurations are sets in BES semantics)
-            if (executed.contains(event)) {
-                return false;
-            }
-
-            // 3. Conflict check
-            if (isInConflictWithExecuted(event, executed)) {
-                return false;
-            }
-
-            // 4. Causality (bundle satisfaction)
-            if (!areAllCausalPredecessorsExecuted(event, executed)) {
-                return false;
-            }
-
-            // 5. Execute event
-            executed.add(event);
+        // --- success ---
+        if (index == trace.size()) {
+            return true;
         }
 
-        return true;
+        String action = trace.get(index).getAction();
+
+        List<Event> candidates = bes.getActionEventMapping().get(action);
+        if (candidates == null || candidates.isEmpty()) {
+            return false;
+        }
+
+        // --- try all matching events ---
+        for (Event candidate : candidates) {
+
+            // skip already executed
+            if (executed.contains(candidate)) continue;
+
+            // conflict check
+            if (isInConflictWithExecuted(candidate, executed)) continue;
+
+            // causality check
+            if (!areAllCausalPredecessorsExecuted(candidate, executed)) continue;
+
+            // --- choose ---
+            executed.add(candidate);
+
+            if (canExecute(trace, index + 1, executed)) {
+                return true;
+            }
+
+            // --- undo ---
+            executed.remove(candidate);
+        }
+
+        // no candidate worked
+        return false;
     }
+
 
     /**
      * Return all traces as sequences of action names.
