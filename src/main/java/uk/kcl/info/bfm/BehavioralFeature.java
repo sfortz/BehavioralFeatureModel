@@ -120,7 +120,7 @@ public class BehavioralFeature extends Feature<BehavioralFeature> {
                 return bf;
             }
         }
-        return null;
+        throw new IllegalStateException("Feature not found in FM: " + feature.getFeatureName());
     }
 
     private class BFexpFromFMBuilder implements FExpressionVisitorWithReturn<FExpression> {

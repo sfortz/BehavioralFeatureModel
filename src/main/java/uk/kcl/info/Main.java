@@ -133,11 +133,11 @@ public class Main {
         LOG.info("************ Processing system: {} ************", systemName);
 
         // Compose
-        evaluateComposition(systemName, ftsList, bfmList, true);
-        evaluateComposition(systemName, ftsList, bfmList, false);
+        evaluateComposition(systemName, sub_dir, ftsList, bfmList, true);
+        evaluateComposition(systemName, sub_dir, ftsList, bfmList, false);
     }
 
-    private static void evaluateComposition(String systemName, List<FeaturedTransitionSystem> ftsList, List<BehavioralFeatureModel> bfmList, boolean sync) throws TransitionSystemDefinitionException {
+    private static void evaluateComposition(String sub_dir, String systemName, List<FeaturedTransitionSystem> ftsList, List<BehavioralFeatureModel> bfmList, boolean sync) throws TransitionSystemDefinitionException {
 
         Iterator<FeaturedTransitionSystem> ftsQueue = ftsList.iterator();
         Iterator<BehavioralFeatureModel> bfmQueue = bfmList.iterator();
@@ -158,10 +158,10 @@ public class Main {
         logSummary(ftsResult, bfmResult);
 
         // Save output
-        String ftsOutputPath = FTS_OUTPUT_DIR + systemName + sync + ".fts";
+        String ftsOutputPath = FTS_OUTPUT_DIR + sub_dir + systemName + sync + ".fts";
         ensureParentDirExists(ftsOutputPath);
         XmlSaverUtility.save(ftsResult, ftsOutputPath);
-        String bfmOutputPath = BFM_OUTPUT_DIR + systemName + sync + ".bfm";
+        String bfmOutputPath = BFM_OUTPUT_DIR + sub_dir + systemName + sync + ".bfm";
         ensureParentDirExists(bfmOutputPath);
         XmlSaverUtility.save(bfmResult, bfmOutputPath);
     }
@@ -308,6 +308,7 @@ public class Main {
     private static <In, Out> void logSummary(In input, Out output) {
         logModelSize(input);
         logModelSize(output);
+        LOG.info("\n");
     }
     
     private static <In, Out> void logSummary(In input, Out output, double executionTime) {
@@ -325,9 +326,9 @@ public class Main {
             case BundleEventStructure bes ->
                     logBesStructure("BES", bes.getEventsCount(), bes.getConflictsCount(), bes.getMaxConflictSize(), bes.getCausalitiesCount());
             case FeaturedTransitionSystem fts ->
-                    logTsStructure("FTS", fts.getActionsCount(), fts.getStatesCount(), fts.getTransitionsCount());
+                    logTsStructure("FTS", fts.getStatesCount(), fts.getTransitionsCount()); //fts.getActionsCount(),
             case TransitionSystem ts ->
-                    logTsStructure("TS", ts.getActionsCount(), ts.getStatesCount(), ts.getTransitionsCount());
+                    logTsStructure("TS", ts.getStatesCount(), ts.getTransitionsCount()); // ts.getActionsCount(),
             case FeatureModel<?> fm -> {
                 LOG.info("[{}] - Features: {}, Constraints: {}",
                         "FM", fm.getFeatures().size(), fm.getConstraints().size());
@@ -337,10 +338,10 @@ public class Main {
         }
     }
 
-    private static void logTsStructure(String label, int actions, int states, int transitions) {
-        int total = actions + states + transitions;
-        LOG.info("[{}] - Actions: {}, States: {}, Transitions: {}, Total: {}",
-                label, actions, states, transitions, total);
+    private static void logTsStructure(String label, int states, int transitions) {
+        int total = states + transitions;
+        LOG.info("[{}] - States: {}, Transitions: {}, Total: {}",
+                label, states, transitions, total);
     }
 
     private static void logBesStructure(String label, int events, int conflicts, int maxConflictSize, int causalities) {
@@ -356,20 +357,12 @@ public class Main {
         systems.put("robot", "robot");
         systems.put("/vm/coffee", "coffee");
         systems.put("/vm/soup", "soup");
-        systems.put("/vm/soda", "soda");/*
-        systems.put("/vm/coffeesoda_synchro", "coffeesoda");
-        systems.put("/vm/coffeesoup_synchro", "coffeesoup");
-        systems.put("/vm/sodasoup_synchro", "sodasoup");
-        systems.put("/vm/coffeesoup", "coffeesoup");
-        systems.put("/vm/sodasoup", "sodasoup");
-        systems.put("/vm/coffeesoda", "coffeesoda");
-        systems.put("/vm/svm_synchro", "svm");
-        systems.put("/vm/svm", "svm");*/
+        systems.put("/vm/soda", "soda");
 
         String minepumpPath = "/minepump/";
 
         File minepumpDir = new File(FTS_DIR + minepumpPath);
-        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith("synchro.dot"));
+        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith(".fts"));
 
         if (ftsFiles == null) {
             String msg = "Directory not found or IO error: " + minepumpDir;
