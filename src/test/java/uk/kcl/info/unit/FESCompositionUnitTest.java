@@ -56,6 +56,7 @@ public class FESCompositionUnitTest {
     // --- sampling parameters ---
     private static final int MAX_CONFIG = 5;
     private static final int MAX_TRACES = 500;
+    private static final int MAX_ATTEMPTS = 10;
     private static final long TIMEOUT_MILLIS = 100;// 1000;
     private static final int LOG_LIMIT = 5;
 
@@ -80,7 +81,7 @@ public class FESCompositionUnitTest {
 
         int i = 0;
         for (Map.Entry<Configuration, Set<List<Event>>> t: traces.entrySet()) {
-            if (i++ >= FESCompositionUnitTest.LOG_LIMIT) break;
+            if (i++ >= LOG_LIMIT) break;
             sb.append("  ").append(t).append("\n");
         }
         return sb.toString();
@@ -93,8 +94,8 @@ public class FESCompositionUnitTest {
         FeaturedEventStructureExecutor rightExec = new FeaturedEventStructureExecutor(right, fm);
 
         // Sample traces
-        Map<Configuration, Set<List<Event>>> leftTraces = leftExec.getRandomEventTraces(MAX_CONFIG, TIMEOUT_MILLIS, MAX_TRACES);
-        Map<Configuration, Set<List<Event>>> rightTraces = rightExec.getRandomEventTraces(MAX_CONFIG, TIMEOUT_MILLIS, MAX_TRACES);
+        Map<Configuration, Set<List<Event>>> leftTraces = leftExec.getRandomEventTraces(MAX_CONFIG, TIMEOUT_MILLIS, MAX_TRACES, MAX_ATTEMPTS);
+        Map<Configuration, Set<List<Event>>> rightTraces = rightExec.getRandomEventTraces(MAX_CONFIG, TIMEOUT_MILLIS, MAX_TRACES, MAX_ATTEMPTS);
 
         // Left ⊆ Right
         Map<Configuration, Set<List<Event>>> missingLR = notExecutable(leftTraces, rightExec);

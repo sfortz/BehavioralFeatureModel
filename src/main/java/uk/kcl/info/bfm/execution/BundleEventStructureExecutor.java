@@ -152,8 +152,8 @@ public class BundleEventStructureExecutor {
         return false;
     }
 
-    public Set<List<String>> getRandomActionTraces(int numTraces) {
-        Set<List<Event>> eventTraces = getRandomEventTraces(numTraces);
+    public Set<List<String>> getRandomActionTraces(int maxTraces, int maxAttempts) {
+        Set<List<Event>> eventTraces = getRandomEventTraces(maxTraces, maxAttempts);
         Set<List<String>> actionTraces = new HashSet<>();
 
         for (List<Event> trace : eventTraces) {
@@ -166,14 +166,14 @@ public class BundleEventStructureExecutor {
         return actionTraces;
     }
 
-    public Set<List<Event>> getRandomEventTraces(int numTraces) {
+    public Set<List<Event>> getRandomEventTraces(int maxTraces, int maxAttempts) {
         Set<List<Event>> traces = new HashSet<>();
         Random random = new Random();
 
         int attempts = 0;
-        int maxAttempts = numTraces * 10; // avoid infinite loops if duplicates
+        maxAttempts = maxTraces * maxAttempts; // avoid infinite loops if duplicates
 
-        while (traces.size() < numTraces && attempts < maxAttempts) {
+        while (traces.size() < maxTraces && attempts < maxAttempts) {
             traces.add(generateRandomEventTrace(random));
             attempts++;
         }
