@@ -1,97 +1,98 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<fts xmlns="http://www.unamur.be/fts/">
-	<start>s6</start>
-	<states>
-		<state id="s6">
-			<transition target="s7" action="receiveMsg"/>
-		</state>
-		<state id="s7">
-			<transition target="s8" fexpression="Command" action="commandMsg"/>
-			<transition target="s16" fexpression="MethaneDetect" action="palarmMsg"/>
-			<transition target="s20" fexpression="WaterRegulation" action="levelMsg"/>
-		</state>
-		<state id="s8">
-			<transition target="s9" fexpression="Stop" action="stopCmd"/>
-			<transition target="s13" fexpression="Start" action="startCmd"/>
-		</state>
-		<state id="s9">
-			<transition target="s10" action="isRunning"/>
-			<transition target="s11" action="isNotRunning"/>
-		</state>
-		<state id="s10">
-			<transition target="s11" action="pumpStop"/>
-		</state>
-		<state id="s11">
-			<transition target="s12" action="setStop"/>
-		</state>
-		<state id="s12">
-			<transition target="s6" action="end"/>
-		</state>
-		<state id="s13">
-			<transition target="s14" action="isNotRunning"/>
-			<transition target="s15" action="isRunning"/>
-			<transition target="s15" action="isReady"/>
-		</state>
-		<state id="s14">
-			<transition target="s15" action="setReady"/>
-		</state>
-		<state id="s15">
-			<transition target="s6" action="end"/>
-		</state>
-		<state id="s16">
-			<transition target="s17" action="isRunning"/>
-			<transition target="s18" action="isNotRunning"/>
-		</state>
-		<state id="s17">
-			<transition target="s18" action="pumpStop"/>
-		</state>
-		<state id="s18">
-			<transition target="s19" action="setMethaneStop"/>
-		</state>
-		<state id="s19">
-			<transition target="s6" action="end"/>
-		</state>
-		<state id="s20">
-			<transition target="s6" fexpression="Normal" action="end"/>
-			<transition target="s21" fexpression="High" action="highLevel"/>
-			<transition target="s27" fexpression="Low" action="lowLevel"/>
-		</state>
-		<state id="s21">
-			<transition target="s22" fexpression="High" action="isReady"/>
-			<transition target="s22" fexpression="Low" action="isLowStop"/>
-			<transition target="s26" action="isRunning"/>
-			<transition target="s26" action="isStopped"/>
-			<transition target="s26" fexpression="MethaneDetect" action="isMethaneStop"/>
-		</state>
-		<state id="s22">
-			<transition target="s23" action="setReady"/>
-			<transition target="s23" fexpression="MethaneDetect" action="setMethaneStop"/>
-		</state>
-		<state id="s23">
-			<transition target="s24" action="isReady"/>
-			<transition target="s26" action="isNotReady"/>
-		</state>
-		<state id="s24">
-			<transition target="s25" action="pumpStart"/>
-		</state>
-		<state id="s25">
-			<transition target="s26" action="setRunning"/>
-		</state>
-		<state id="s26">
-			<transition target="s6" fexpression="High" action="end"/>
-		</state>
-		<state id="s27">
-			<transition target="s28" action="isRunning"/>
-			<transition target="s30" action="isNotRunning"/>
-		</state>
-		<state id="s28">
-			<transition target="s29" action="pumpStop"/>
-		</state>
-		<state id="s29">
-			<transition target="s30" action="setLowStop"/>
-		</state>
-		<state id="s30">
-			<transition target="s6" action="end"/>
-		</state>
-	</states>			
+<?xml version="1.0" encoding="UTF-8"?>
+<fts>
+    <start>state0</start>
+    <states>
+        <state id="state9">
+            <transition action="end" target="state10" fexpression="true"></transition>
+        </state>
+        <state id="state6">
+            <transition action="setReady" target="state5" fexpression="Start"></transition>
+        </state>
+        <state id="state5">
+            <transition action="end" target="state10" fexpression="true"></transition>
+        </state>
+        <state id="state8">
+            <transition action="setLowStop" target="state9" fexpression="Low"></transition>
+        </state>
+        <state id="state7">
+            <transition action="pumpStop" target="state8" fexpression="Low"></transition>
+        </state>
+        <state id="state2">
+            <transition action="setStop" target="state15" fexpression="Stop"></transition>
+        </state>
+        <state id="state1">
+            <transition action="isNotRunning" target="state2" fexpression="MethaneDetect"></transition>
+            <transition action="isRunning" target="state3" fexpression="MethaneDetect"></transition>
+        </state>
+        <state id="state4">
+            <transition action="isReady" target="state5" fexpression="Start"></transition>
+            <transition action="isRunning" target="state5" fexpression="Stop"></transition>
+            <transition action="isNotRunning" target="state6" fexpression="Stop"></transition>
+        </state>
+        <state id="state3">
+            <transition action="pumpStop" target="state2" fexpression="MethaneDetect"></transition>
+        </state>
+        <state id="state19">
+            <transition action="isRunning" target="state22" fexpression="Start"></transition>
+            <transition action="isNotRunning" target="state23" fexpression="Start"></transition>
+        </state>
+        <state id="state18">
+            <transition action="stopCmd" target="state1" fexpression="Stop"></transition>
+            <transition action="startCmd" target="state4" fexpression="Start"></transition>
+        </state>
+        <state id="state13">
+            <transition action="end" target="state10" fexpression="true"></transition>
+        </state>
+        <state id="state12">
+            <transition action="isNotReady" target="state13" fexpression="High"></transition>
+            <transition action="isReady" target="state24" fexpression="High"></transition>
+        </state>
+        <state id="state11">
+            <transition action="setReady" target="state12" fexpression="Start"></transition>
+            <transition action="setMethaneStop" target="state12" fexpression="MethaneDetect"></transition>
+        </state>
+        <state id="state10"></state>
+        <state id="state17">
+            <transition action="highLevel" target="state20" fexpression="High"></transition>
+            <transition action="lowLevel" target="state21" fexpression="Low"></transition>
+            <transition action="end" target="state10" fexpression="true"></transition>
+        </state>
+        <state id="state16">
+            <transition action="levelMsg" target="state17" fexpression="WaterRegulation"></transition>
+            <transition action="commandMsg" target="state18" fexpression="Command"></transition>
+            <transition action="palarmMsg" target="state19" fexpression="MethaneDetect"></transition>
+        </state>
+        <state id="state15">
+            <transition action="end" target="state10" fexpression="true"></transition>
+        </state>
+        <state id="state14">
+            <transition action="end" target="state10" fexpression="true"></transition>
+        </state>
+        <state id="state20">
+            <transition action="isStopped" target="state13" fexpression="High"></transition>
+            <transition action="isRunning" target="state13" fexpression="High"></transition>
+            <transition action="isMethaneStop" target="state13" fexpression="MethaneDetect"></transition>
+            <transition action="isReady" target="state11" fexpression="High"></transition>
+            <transition action="isLowStop" target="state11" fexpression="Low"></transition>
+        </state>
+        <state id="state0">
+            <transition action="receiveMsg" target="state16" fexpression="true"></transition>
+        </state>
+        <state id="state24">
+            <transition action="pumpStart" target="state25" fexpression="High"></transition>
+        </state>
+        <state id="state23">
+            <transition action="setMethaneStop" target="state14" fexpression="MethaneDetect"></transition>
+        </state>
+        <state id="state22">
+            <transition action="pumpStop" target="state23" fexpression="Stop"></transition>
+        </state>
+        <state id="state21">
+            <transition action="isNotRunning" target="state9" fexpression="Low"></transition>
+            <transition action="isRunning" target="state7" fexpression="Low"></transition>
+        </state>
+        <state id="state25">
+            <transition action="setRunning" target="state13" fexpression="High"></transition>
+        </state>
+    </states>
 </fts>
