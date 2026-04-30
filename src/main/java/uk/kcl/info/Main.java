@@ -57,8 +57,11 @@ public class Main {
     private static final String FES_OUTPUT_DIR = FES_DIR + "output/";
     private static final String BES_OUTPUT_DIR = BES_DIR + "output/";
 
-    public static void main(String[] args) throws Exception {
+    private static final Map<String, FeaturedTransitionSystem> ftsCache = new HashMap<>();
+    private static final Map<String, BehavioralFeatureModel> bfmCache = new HashMap<>();
 
+    public static void main(String[] args) throws Exception {
+/*
         LOG.info("convertBesToTs");
         convertBesToTs("robot");
 
@@ -75,7 +78,7 @@ public class Main {
         convertTsToBes("parallel");
 
         LOG.info("convertFtsToFes");
-        convertFtsToFes("robot", "robot");
+        convertFtsToFes("robot", "robot");*/
 
         LOG.info("convertFtsToBfm");
         for (Map.Entry<String, String> entry : getSystems().entrySet()) {
@@ -85,9 +88,11 @@ public class Main {
         List<String> svmSystems = List.of("coffee","soup","soda");
         List<String> minePumpSystems = List.of("controller_state", "controller", "methane", "pump", "water");
 
-        generateCombinations("/vm/", svmSystems,0, new ArrayList<>());
-        generateCombinations("/minepump/", minePumpSystems,0, new ArrayList<>());
+        //generateCombinations("/vm/", svmSystems,0, new ArrayList<>());
+        //generateCombinations("/minepump/", minePumpSystems,0, new ArrayList<>());
     }
+
+    private static final Set<String> MANDATORY_COMPONENTS = Set.of("controller","controller_state","coffee","soup","soda");
 
     private static final Set<Set<String>> FORBIDDEN_COMBINATIONS = Set.of(
             Set.of("controller", "controller_state")
@@ -96,17 +101,14 @@ public class Main {
     private static boolean isValidCombination(List<String> combo) {
         Set<String> comboSet = new HashSet<>(combo);
 
-        for (Set<String> forbidden : FORBIDDEN_COMBINATIONS) {
-            if (comboSet.containsAll(forbidden)) {
-                return false;
-            }
-        }
-        return true;
+        return MANDATORY_COMPONENTS.stream().anyMatch(comboSet::contains)
+                && FORBIDDEN_COMBINATIONS.stream().noneMatch(comboSet::containsAll);
     }
 
     private static void generateCombinations(String sub_dir, List<String> systems, int start, List<String> current) throws Exception {
 
         if (current.size() >= 2 && isValidCombination(current)) {
+            //runOldEvaluation(sub_dir, new ArrayList<>(current));
             runEvaluation(sub_dir, new ArrayList<>(current));
         }
 
@@ -117,24 +119,117 @@ public class Main {
         }
     }
 
-    public static void runEvaluation(String sub_dir, List<String> systems) throws IOException, TransitionSystemDefinitionException {
+    public static void runEvaluation(String sub_dir, List<String> systems) throws Exception {
+
+        List<String> sorted = new ArrayList<>(systems);
+        Collections.sort(sorted);
+        String systemName = String.join("_", sorted);
+
+        LOG.info("************ Processing system: {} in Sync Mode ************", systemName);
+        FeaturedTransitionSystem ftsSync = getOrComputeFts(sub_dir, sorted, true);
+        BehavioralFeatureModel bfmSync = getOrComputeBfm(sub_dir, sorted, true);
+        logSummary(ftsSync, bfmSync);
+
+        LOG.info("************ Processing system: {} in Interleaving Mode ************", systemName);
+        FeaturedTransitionSystem ftsAsync = getOrComputeFts(sub_dir, sorted, false);
+        BehavioralFeatureModel bfmAsync = getOrComputeBfm(sub_dir, sorted, false);
+        logSummary(ftsAsync, bfmAsync);
+    }
+
+    private static FeaturedTransitionSystem getOrComputeFts(String subDir, List<String> systems, boolean sync) throws TransitionSystemDefinitionException, IOException {
+
+        String name = String.join("_", systems);
+        String key = name + "_" + sync;
+
+        if (ftsCache.containsKey(key)) {
+            return ftsCache.get(key);
+        }
+
+        String path = FTS_OUTPUT_DIR + subDir + name + sync + ".fts";
+
+        FeaturedTransitionSystem result;
+
+        if (systems.size() == 1) {
+            result = loadFts(subDir + systems.getFirst());
+        } else {
+            // Split: (A,B,C,D) -> (A,B,C) + D
+            List<String> prefix = new ArrayList<>(systems.subList(0, systems.size() - 1));
+            String last = systems.getLast();
+
+            FeaturedTransitionSystem left = getOrComputeFts(subDir, prefix, sync);
+            FeaturedTransitionSystem right = loadFts(subDir + last);
+
+            result = new FTSParallelComposer().compose(left, right, sync);
+        }
+
+        ensureParentDirExists(path);
+        XmlSaverUtility.save(result, path);
+        ftsCache.put(key, result);
+
+        return result;
+    }
+
+    private static BehavioralFeatureModel getOrComputeBfm(String subDir, List<String> systems, boolean sync) {
+
+        String name = String.join("_", systems);
+        String key = name + "_" + sync;
+
+        if (bfmCache.containsKey(key)) {
+            return bfmCache.get(key);
+        }
+
+        String path = BFM_OUTPUT_DIR + subDir + name + sync + ".bfm";
+
+        BehavioralFeatureModel result;
+
+        if (systems.size() == 1) {
+            result = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + subDir + systems.getFirst() + ".bfm"));
+        } else {
+            // Split: (A,B,C,D) -> (A,B,C) + D
+            List<String> prefix = new ArrayList<>(systems.subList(0, systems.size() - 1));
+            String last = systems.getLast();
+
+            BehavioralFeatureModel left = getOrComputeBfm(subDir, prefix, sync);
+            BehavioralFeatureModel right = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + subDir + last + ".bfm"));
+
+            try {
+                result = new BFMParallelComposer().compose(left, right, sync);
+            } catch (Exception e) {
+                LOG.warn("Compose failed for {} (sync={}), retrying without cache", name, sync, e);
+                bfmCache.remove(key); // important: invalidate current node only
+                BehavioralFeatureModel freshLeft = getOrComputeBfm(subDir, new ArrayList<>(prefix), sync);
+                BehavioralFeatureModel freshRight = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + subDir + last + ".bfm"));
+                result = new BFMParallelComposer().compose(freshLeft, freshRight, sync);
+            }
+        }
+
+        ensureParentDirExists(path);
+        XmlSaverUtility.save(result, path);
+        bfmCache.put(key, result);
+
+        return result;
+    }
+
+
+    public static void runOldEvaluation(String sub_dir, List<String> systems) throws IOException, TransitionSystemDefinitionException {
+
+        List<String> sorted = new ArrayList<>(systems);
+        Collections.sort(sorted);
+        String systemName = String.join("_", sorted);
 
         List<FeaturedTransitionSystem> ftsList = new ArrayList<>();
         List<BehavioralFeatureModel> bfmList = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
 
         for(String system: systems){
-            sb.append(system).append("_");
             ftsList.add(loadFts(sub_dir + system));
             bfmList.add(XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + sub_dir +  system + ".bfm")));
         }
 
-        String systemName = sb.toString();
         LOG.info("************ Processing system: {} ************", systemName);
 
         // Compose
-        evaluateComposition(systemName, sub_dir, ftsList, bfmList, true);
-        evaluateComposition(systemName, sub_dir, ftsList, bfmList, false);
+        evaluateComposition(sub_dir, systemName, ftsList, bfmList, true);
+        evaluateComposition(sub_dir, systemName, ftsList, bfmList, false);
     }
 
     private static void evaluateComposition(String sub_dir, String systemName, List<FeaturedTransitionSystem> ftsList, List<BehavioralFeatureModel> bfmList, boolean sync) throws TransitionSystemDefinitionException {
@@ -151,20 +246,24 @@ public class Main {
         BFMParallelComposer bfmComposer = new BFMParallelComposer();
         BehavioralFeatureModel bfmResult = bfmQueue.next();
 
-        while (ftsQueue.hasNext()) {
+        while (bfmQueue.hasNext()) {
             bfmResult = bfmComposer.compose(bfmResult, bfmQueue.next(), sync);
         }
 
         logSummary(ftsResult, bfmResult);
 
         // Save output
-        String ftsOutputPath = FTS_OUTPUT_DIR + sub_dir + systemName + sync + ".fts";
+        String filename = systemName + "_" + sync;
+        String ftsOutputPath = FTS_OUTPUT_DIR + sub_dir + filename + ".fts";
+        //String ftsOutputPath = FTS_OUTPUT_DIR + sub_dir + systemName + "_" + sync + ".fts";
         ensureParentDirExists(ftsOutputPath);
         XmlSaverUtility.save(ftsResult, ftsOutputPath);
-        String bfmOutputPath = BFM_OUTPUT_DIR + sub_dir + systemName + sync + ".bfm";
+        String bfmOutputPath = BFM_OUTPUT_DIR + sub_dir + filename + ".bfm";
+        //String bfmOutputPath = BFM_OUTPUT_DIR + sub_dir + systemName + "_" + sync + ".bfm";
         ensureParentDirExists(bfmOutputPath);
         XmlSaverUtility.save(bfmResult, bfmOutputPath);
     }
+
 
     public static void convertBfmToFm(String system) {
         BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_DIR + system + ".bfm"));
