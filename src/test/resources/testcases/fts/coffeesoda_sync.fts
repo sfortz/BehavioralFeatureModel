@@ -14,7 +14,7 @@
         <state id="state9||state1">
             <transition action="pour_milk" target="state6||state1" fexpression="Cappuccino"></transition>
             <transition action="pour_coffee" target="state10||state1" fexpression="(Cappuccino || Coffee)"></transition>
-            <transition action="pour" target="state9||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state9||state2" fexpression="Soda"></transition>
         </state>
         <state id="state10||state6">
             <transition action="pour_milk" target="state7||state6" fexpression="Cappuccino"></transition>
@@ -27,7 +27,7 @@
         <state id="state7||state1">
             <transition action="ring" target="state11||state1" fexpression="Ringtone"></transition>
             <transition action="skip" target="state11||state1" fexpression="!Ringtone"></transition>
-            <transition action="pour" target="state7||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state7||state2" fexpression="Soda"></transition>
         </state>
         <state id="state12||state9">
             <transition action="cancel" target="state5||state4" fexpression="CancelPurchase"></transition>
@@ -47,7 +47,7 @@
         </state>
         <state id="state10||state1">
             <transition action="pour_milk" target="state7||state1" fexpression="Cappuccino"></transition>
-            <transition action="pour" target="state10||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state10||state2" fexpression="Soda"></transition>
         </state>
         <state id="state9||state6">
             <transition action="pour_milk" target="state6||state6" fexpression="Cappuccino"></transition>
@@ -90,7 +90,7 @@
         <state id="state12||state1">
             <transition action="no_sugar" target="state13||state1" fexpression="Beverages"></transition>
             <transition action="sugar" target="state1||state1" fexpression="Beverages"></transition>
-            <transition action="pour" target="state12||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state12||state2" fexpression="Soda"></transition>
         </state>
         <state id="state12||state0">
             <transition action="no_sugar" target="state13||state0" fexpression="Beverages"></transition>
@@ -160,7 +160,7 @@
         </state>
         <state id="state2||state1">
             <transition action="pour_sugar" target="state9||state1" fexpression="Beverages"></transition>
-            <transition action="pour" target="state2||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state2||state2" fexpression="Soda"></transition>
         </state>
         <state id="state2||state2">
             <transition action="pour_sugar" target="state9||state2" fexpression="Beverages"></transition>
@@ -194,7 +194,7 @@
         </state>
         <state id="state4||state1">
             <transition action="pour_sugar" target="state6||state1" fexpression="Beverages"></transition>
-            <transition action="pour" target="state4||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state4||state2" fexpression="Soda"></transition>
         </state>
         <state id="state4||state0">
             <transition action="pour_sugar" target="state6||state0" fexpression="Beverages"></transition>
@@ -204,7 +204,7 @@
         <state id="state13||state1">
             <transition action="coffee" target="state6||state1" fexpression="Coffee"></transition>
             <transition action="cappuccino" target="state9||state1" fexpression="Cappuccino"></transition>
-            <transition action="pour" target="state13||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state13||state2" fexpression="Soda"></transition>
         </state>
         <state id="state6||state2">
             <transition action="pour_coffee" target="state7||state2" fexpression="(Cappuccino || Coffee)"></transition>
@@ -217,7 +217,7 @@
         </state>
         <state id="state6||state1">
             <transition action="pour_coffee" target="state7||state1" fexpression="(Cappuccino || Coffee)"></transition>
-            <transition action="pour" target="state6||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state6||state2" fexpression="Soda"></transition>
         </state>
         <state id="state13||state6">
             <transition action="coffee" target="state6||state6" fexpression="Coffee"></transition>
@@ -256,7 +256,7 @@
             <transition action="open" target="state11||state6" fexpression="!FreeDrinks"></transition>
         </state>
         <state id="state11||state1">
-            <transition action="pour" target="state11||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state11||state2" fexpression="Soda"></transition>
         </state>
         <state id="state11||state0">
             <transition action="pay" target="state11||state8" fexpression="!FreeDrinks"></transition>
@@ -271,7 +271,7 @@
         <state id="state0||state1">
             <transition action="insert_dollar" target="state12||state1" fexpression="Dollar"></transition>
             <transition action="insert_euro" target="state12||state1" fexpression="Euro"></transition>
-            <transition action="pour" target="state0||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state0||state2" fexpression="Soda"></transition>
         </state>
         <state id="state0||state0">
             <transition action="insert_dollar" target="state12||state0" fexpression="Dollar"></transition>
@@ -288,7 +288,7 @@
         <state id="state1||state1">
             <transition action="cappuccino" target="state2||state1" fexpression="Cappuccino"></transition>
             <transition action="coffee" target="state4||state1" fexpression="Coffee"></transition>
-            <transition action="pour" target="state1||state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state1||state2" fexpression="Soda"></transition>
         </state>
         <state id="state1||state2">
             <transition action="cappuccino" target="state2||state2" fexpression="Cappuccino"></transition>
