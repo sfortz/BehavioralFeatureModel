@@ -169,22 +169,30 @@ public class FTSCompositionUnitTest {
 
     /*
      * -------------------------
-     * INITIAL STATE
+     * Associativity
      * -------------------------
      */
     @ParameterizedTest
-    @MethodSource("testCases")
-    public void testInitialState(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException {
+    @ValueSource(booleans = {true, false})
+    public void testAssociativity(boolean sync) throws Exception {
 
-        FeaturedTransitionSystem ts1 = loadFeaturedTransitionSystem(FTS_PATH + f1 + FTS_EXT);
-        FeaturedTransitionSystem ts2 = loadFeaturedTransitionSystem(FTS_PATH + f2 + FTS_EXT);
+        String f1 = "coffee";
+        String f2 = "soda";
+        String f3 = "soup";
+
+        FeatureModel<?> fm = XmlLoaders.loadFeatureModel(new File(FM_PATH + "svm_union.xml"));
+        FeaturedTransitionSystem fts1 = loadFeaturedTransitionSystem(FTS_PATH + f1 + FTS_EXT);
+        FeaturedTransitionSystem fts2 = loadFeaturedTransitionSystem(FTS_PATH + f2 + FTS_EXT);
+        FeaturedTransitionSystem fts3 = loadFeaturedTransitionSystem(FTS_PATH + f3 + FTS_EXT);
 
         FTSParallelComposer composer = new FTSParallelComposer();
-        FeaturedTransitionSystem result = composer.compose(ts1, ts2, sync);
 
-        String expectedInit = ts1.getInitialState().getName() + "||" + ts2.getInitialState().getName();
+        // (A || B) || C
+        FeaturedTransitionSystem left = composer.compose(composer.compose(fts1, fts2, sync), fts3, sync);
+        // A || (B || C)
+        FeaturedTransitionSystem right = composer.compose(fts1, composer.compose(fts2, fts3, sync), sync);
 
-        assertEquals(expectedInit, result.getInitialState().getName());
+        assertEquivalent(fm, left, right,"Associativity violated for sync=" + sync);
     }
 
     /*
@@ -205,15 +213,14 @@ public class FTSCompositionUnitTest {
         assertEquivalent(fm, fts, result, "Idempotency violated for " + fileName);
     }
 
-
     /*
      * -------------------------
-     * FEATURE PRUNING
+     * INITIAL STATE
      * -------------------------
      */
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testNoFalseFeatureTransitionsAreCreated(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException {
+    public void testInitialState(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException {
 
         FeaturedTransitionSystem ts1 = loadFeaturedTransitionSystem(FTS_PATH + f1 + FTS_EXT);
         FeaturedTransitionSystem ts2 = loadFeaturedTransitionSystem(FTS_PATH + f2 + FTS_EXT);
@@ -221,18 +228,9 @@ public class FTSCompositionUnitTest {
         FTSParallelComposer composer = new FTSParallelComposer();
         FeaturedTransitionSystem result = composer.compose(ts1, ts2, sync);
 
-        for (Iterator<Transition> it = result.transitions(); it.hasNext(); ) {
-            FExpression expr = result.getFExpression(it.next());
-            assert !expr.isFalse() : "Found pruned (false) transition in result!";
-        }
-    }
+        String expectedInit = ts1.getInitialState().getName() + "||" + ts2.getInitialState().getName();
 
-    private Transition getUniqueTransition(FeaturedTransitionSystem ts, String source, String action, String target) {
-        Iterator<Transition> it = ts.getTransitions(source, action, target);
-        assertTrue(it.hasNext(), "No matching transition for (" + source + ", " + action + ", " + target + ")");
-        Transition t = it.next();
-        assertFalse(it.hasNext(), "Multiple matching transitions for (" + source + ", " + action + ", " + target + ")");
-        return t;
+        assertEquals(expectedInit, result.getInitialState().getName());
     }
 
     /*
@@ -289,30 +287,30 @@ public class FTSCompositionUnitTest {
 
     /*
      * -------------------------
-     * Associativity
+     * FEATURE PRUNING
      * -------------------------
      */
     @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void testAssociativity(boolean sync) throws Exception {
+    @MethodSource("testCases")
+    public void testNoFalseFeatureTransitionsAreCreated(String f1, String f2, boolean sync) throws TransitionSystemDefinitionException {
 
-        String f1 = "coffee";
-        String f2 = "soda";
-        String f3 = "soup";
-
-        FeatureModel<?> fm = XmlLoaders.loadFeatureModel(new File(FM_PATH + "svm_union.xml"));
-        FeaturedTransitionSystem fts1 = loadFeaturedTransitionSystem(FTS_PATH + f1 + FTS_EXT);
-        FeaturedTransitionSystem fts2 = loadFeaturedTransitionSystem(FTS_PATH + f2 + FTS_EXT);
-        FeaturedTransitionSystem fts3 = loadFeaturedTransitionSystem(FTS_PATH + f3 + FTS_EXT);
+        FeaturedTransitionSystem ts1 = loadFeaturedTransitionSystem(FTS_PATH + f1 + FTS_EXT);
+        FeaturedTransitionSystem ts2 = loadFeaturedTransitionSystem(FTS_PATH + f2 + FTS_EXT);
 
         FTSParallelComposer composer = new FTSParallelComposer();
+        FeaturedTransitionSystem result = composer.compose(ts1, ts2, sync);
 
-        // (A || B) || C
-        FeaturedTransitionSystem left = composer.compose(composer.compose(fts1, fts2, sync), fts3, sync);
-        // A || (B || C)
-        FeaturedTransitionSystem right = composer.compose(fts1, composer.compose(fts2, fts3, sync), sync);
-
-        assertEquivalent(fm, left, right,"Associativity violated for sync=" + sync);
+        for (Iterator<Transition> it = result.transitions(); it.hasNext(); ) {
+            FExpression expr = result.getFExpression(it.next());
+            assert !expr.isFalse() : "Found pruned (false) transition in result!";
+        }
     }
 
+    private Transition getUniqueTransition(FeaturedTransitionSystem ts, String source, String action, String target) {
+        Iterator<Transition> it = ts.getTransitions(source, action, target);
+        assertTrue(it.hasNext(), "No matching transition for (" + source + ", " + action + ", " + target + ")");
+        Transition t = it.next();
+        assertFalse(it.hasNext(), "Multiple matching transitions for (" + source + ", " + action + ", " + target + ")");
+        return t;
+    }
 }
