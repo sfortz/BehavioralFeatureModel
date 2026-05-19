@@ -58,7 +58,7 @@ public class FTSToFESIntegrationTest {
         FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(new File(FTS_IN_PATH + ftsFileName));
 
         // Convert to FES
-        FtsToFesConverter converter = new FtsToFesConverter(fm, fts);
+        FtsToFesConverter<?> converter = new FtsToFesConverter<>(fm, fts);
         FeaturedEventStructure<?> fes = converter.convert();
 
         // Execute both FTS and FES
