@@ -91,13 +91,58 @@ public class TranslationUtils {
     public static Map<State, Set<FExpression>> forwardSymbolicReachable(FeaturedTransitionSystem fts, Transition from) {
 
         State start = from.getTarget();
-        FExpression startF = fts.getFExpression(from);
 
         record Node(State s, FExpression f) {}
 
         Map<State, Set<FExpression>> reachable = new HashMap<>();
         Deque<Node> stack = new ArrayDeque<>();
-        stack.push(new Node(start, startF));
+        stack.push(new Node(start, fts.getFExpression(from)));
+
+        while (!stack.isEmpty()) {
+
+            Node node = stack.pop();
+            State current = node.s();
+            FExpression currentF = node.f();
+
+            if (currentF.isFalse()) continue;
+
+            Set<FExpression> seen = reachable.computeIfAbsent(current, k -> new HashSet<>());
+
+            // subsumption: ∃ oldF s.t. currentF ⇒ oldF
+            boolean subsumed = false;
+            for (FExpression oldF : seen) {
+                if (currentF.not().or(oldF).applySimplification().isTrue()) {
+                    subsumed = true;
+                    break;
+                }
+            }
+
+            if (subsumed) continue;
+
+            seen.add(currentF);
+
+            for (Iterator<Transition> it = fts.getOutgoing(current); it.hasNext();) {
+                Transition t = it.next();
+                FExpression newF = currentF.and(fts.getFExpression(t)).applySimplification();
+
+                if (!newF.isFalse()) {
+                    stack.push(new Node(t.getTarget(), newF));
+                }
+            }
+        }
+
+        return reachable;
+    }
+
+    public static Map<State, Set<FExpression>> forwardSymbolicReachable(FeaturedTransitionSystem fts, State start) {// Transition from) {
+
+        //State start = from.getTarget();
+
+        record Node(State s, FExpression f) {}
+
+        Map<State, Set<FExpression>> reachable = new HashMap<>();
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.push(new Node(start, FExpression.trueValue()));
 
         while (!stack.isEmpty()) {
 
