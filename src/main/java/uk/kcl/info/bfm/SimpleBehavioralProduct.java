@@ -37,7 +37,7 @@ public class SimpleBehavioralProduct implements BehavioralProduct {
     }
 
     @Override
-    public BundleEventStructure project(FeaturedEventStructure<?> fes, Collection<Feature<?>> features, Configuration product) {
+    public BundleEventStructure project(FeaturedEventStructure<?> fes, Collection<? extends Feature<?>> features, Configuration product) {
         BundleEventStructureFactory factory = new BundleEventStructureFactory();
 
         FExpression productFexpr = FExpression.trueValue();

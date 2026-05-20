@@ -18,11 +18,12 @@
 
 package uk.kcl.info.bfm.compositions;
 
-import uk.kcl.info.utils.Pair;
 import uk.kcl.info.bfm.*;
+import uk.kcl.info.utils.Pair;
+
 import java.util.*;
 
-public abstract class AbstractBESParallelComposer <T extends BundleEventStructure> implements Composition<T>{
+public abstract class AbstractBESParallelComposer<T extends BundleEventStructure> implements Composition<T>{
 
     protected static final String STAR = "*";
 
