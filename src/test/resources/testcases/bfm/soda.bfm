@@ -3,7 +3,6 @@
     <feature name="VendingMachine">
         <events>
             <event id="take_0" action="take" fexpression="(VendingMachine &amp;&amp; (Tea || Soda))"> </event>
-            <event id="pour_0" action="pour" fexpression="Soda"> </event>
             <event id="change_0" action="change" fexpression="!FreeDrinks"> </event>
             <event id="free_0" action="free" fexpression="FreeDrinks"> </event>
             <event id="pay_0" action="pay" fexpression="!FreeDrinks"> </event>
@@ -14,6 +13,7 @@
             <event id="close_0" action="close" fexpression="(VendingMachine &amp;&amp; (Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
             <event id="tea_0" action="tea" fexpression="Tea"> </event>
             <event id="return_0" action="return" fexpression="CancelPurchase"> </event>
+            <event id="pour_soda_0" action="pour_soda" fexpression="Soda"> </event>
             <event id="open_0" action="open" fexpression="((Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
         </events>
         <mandatory>
@@ -40,20 +40,15 @@
         </optional>
         <event_constraints>
             <causalities>
-                <causality target="take_0">
+                <causality target="open_0">
                     <bundle>
-                        <event id="pour_0"> </event>
                         <event id="pour_tea_0"> </event>
+                        <event id="pour_soda_0"> </event>
                     </bundle>
                 </causality>
                 <causality target="take_1">
                     <bundle>
                         <event id="open_0"> </event>
-                    </bundle>
-                </causality>
-                <causality target="pour_0">
-                    <bundle>
-                        <event id="soda_0"> </event>
                     </bundle>
                 </causality>
                 <causality target="pour_tea_0">
@@ -77,10 +72,15 @@
                         <event id="free_0"> </event>
                     </bundle>
                 </causality>
-                <causality target="open_0">
+                <causality target="take_0">
                     <bundle>
-                        <event id="pour_0"> </event>
                         <event id="pour_tea_0"> </event>
+                        <event id="pour_soda_0"> </event>
+                    </bundle>
+                </causality>
+                <causality target="pour_soda_0">
+                    <bundle>
+                        <event id="soda_0"> </event>
                     </bundle>
                 </causality>
                 <causality target="return_0">
@@ -104,13 +104,37 @@
             <conflicts>
                 <conflict>
                     <events>
+                        <event id="cancel_0"> </event>
+                        <event id="take_1"> </event>
+                        <event id="return_0"> </event>
+                        <event id="close_0"> </event>
+                        <event id="open_0"> </event>
+                    </events>
+                    <events>
                         <event id="take_0"> </event>
-                        <event id="pour_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="soda_0"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="return_0"> </event>
+                        <event id="pour_soda_0"> </event>
+                    </events>
+                    <events>
+                        <event id="tea_0"> </event>
+                        <event id="pour_tea_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="take_0"> </event>
                         <event id="soda_0"> </event>
                         <event id="tea_0"> </event>
                         <event id="take_1"> </event>
                         <event id="pour_tea_0"> </event>
                         <event id="close_0"> </event>
+                        <event id="pour_soda_0"> </event>
                         <event id="open_0"> </event>
                     </events>
                     <events>
@@ -121,25 +145,13 @@
                 <conflict>
                     <events>
                         <event id="take_0"> </event>
+                        <event id="free_0"> </event>
                         <event id="cancel_0"> </event>
                         <event id="return_0"> </event>
                     </events>
                     <events>
                         <event id="take_1"> </event>
                         <event id="close_0"> </event>
-                        <event id="open_0"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="pour_0"> </event>
-                        <event id="soda_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="return_0"> </event>
-                    </events>
-                    <events>
-                        <event id="tea_0"> </event>
-                        <event id="pour_tea_0"> </event>
                     </events>
                 </conflict>
                 <conflict>
@@ -147,8 +159,10 @@
                         <event id="free_0"> </event>
                     </events>
                     <events>
-                        <event id="change_0"> </event>
                         <event id="pay_0"> </event>
+                        <event id="change_0"> </event>
+                        <event id="take_1"> </event>
+                        <event id="close_0"> </event>
                     </events>
                 </conflict>
             </conflicts>

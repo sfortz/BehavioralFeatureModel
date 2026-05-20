@@ -185,11 +185,79 @@
             <conflicts>
                 <conflict>
                     <events>
+                        <event id="skip_0"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_1"> </event>
+                        <event id="chicken_0"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="pour_pea_0"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="cup_present_0"> </event>
+                        <event id="pea_0"> </event>
+                    </events>
+                    <events>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="cup_present_2"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cup_present_2"> </event>
+                        <event id="tomato_0"> </event>
+                        <event id="cup_present_0"> </event>
+                        <event id="chicken_0"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                    </events>
+                    <events>
+                        <event id="skip_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="pea_0"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="pour_pea_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
                         <event id="take_0"> </event>
                         <event id="skip_0"> </event>
                         <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
                         <event id="bad_luck_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cup_present_2"> </event>
+                        <event id="skip_2"> </event>
+                        <event id="ring_0"> </event>
+                        <event id="pour_pea_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="cup_present_0"> </event>
+                    </events>
+                    <events>
+                        <event id="cancel_1"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="take_0"> </event>
+                        <event id="skip_0"> </event>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="bad_luck_0"> </event>
+                        <event id="skip_3"> </event>
                         <event id="pour_chicken_0"> </event>
                         <event id="skip_1"> </event>
                         <event id="ring_0"> </event>
@@ -212,146 +280,112 @@
                 </conflict>
                 <conflict>
                     <events>
-                        <event id="take_0"> </event>
                         <event id="skip_0"> </event>
                         <event id="pour_tomato_0"> </event>
                         <event id="skip_3"> </event>
-                        <event id="bad_luck_0"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cancel_1"> </event>
+                        <event id="cup_present_2"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="pour_pea_0"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                        <event id="tomato_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="cup_present_0"> </event>
+                        <event id="pea_0"> </event>
+                    </events>
+                    <events>
+                        <event id="skip_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cup_present_2"> </event>
+                        <event id="cancel_1"> </event>
+                        <event id="chicken_0"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                        <event id="tomato_0"> </event>
+                        <event id="cup_present_0"> </event>
+                    </events>
+                    <events>
+                        <event id="skip_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="pour_pea_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="skip_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cancel_1"> </event>
+                        <event id="chicken_0"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="pour_pea_0"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="cup_present_0"> </event>
+                        <event id="pea_0"> </event>
+                    </events>
+                    <events>
+                        <event id="cup_present_2"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="skip_3"> </event>
                         <event id="pour_chicken_0"> </event>
                         <event id="cancel_0"> </event>
                         <event id="skip_1"> </event>
-                        <event id="ring_0"> </event>
+                        <event id="cancel_1"> </event>
+                        <event id="cup_present_2"> </event>
+                        <event id="chicken_0"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="no_cup_0"> </event>
+                        <event id="tomato_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="cup_present_0"> </event>
+                    </events>
+                    <events>
+                        <event id="skip_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="take_0"> </event>
+                        <event id="skip_0"> </event>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="bad_luck_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cup_present_2"> </event>
                         <event id="skip_2"> </event>
-                        <event id="cup_present_2"> </event>
-                        <event id="pour_pea_0"> </event>
-                        <event id="cup_present_1"> </event>
-                        <event id="cup_present_0"> </event>
-                    </events>
-                    <events>
-                        <event id="cancel_1"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="no_cup_1"> </event>
-                        <event id="no_cup_0"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="skip_0"> </event>
-                        <event id="pour_chicken_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="skip_1"> </event>
-                        <event id="cancel_1"> </event>
+                        <event id="ring_0"> </event>
                         <event id="chicken_0"> </event>
                         <event id="no_cup_2"> </event>
-                        <event id="pour_pea_0"> </event>
                         <event id="no_cup_1"> </event>
-                        <event id="no_cup_0"> </event>
+                        <event id="pour_pea_0"> </event>
                         <event id="cup_present_1"> </event>
                         <event id="cup_present_0"> </event>
                         <event id="pea_0"> </event>
                     </events>
                     <events>
-                        <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
-                        <event id="cup_present_2"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="skip_0"> </event>
-                        <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="cancel_1"> </event>
-                        <event id="cup_present_2"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="pour_pea_0"> </event>
-                        <event id="no_cup_1"> </event>
                         <event id="no_cup_0"> </event>
-                        <event id="tomato_0"> </event>
-                        <event id="cup_present_1"> </event>
-                        <event id="cup_present_0"> </event>
-                        <event id="pea_0"> </event>
-                    </events>
-                    <events>
-                        <event id="skip_1"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="skip_0"> </event>
-                        <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="cup_present_2"> </event>
-                        <event id="tomato_0"> </event>
-                        <event id="cup_present_1"> </event>
-                        <event id="pea_0"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="pour_pea_0"> </event>
-                        <event id="no_cup_0"> </event>
-                    </events>
-                    <events>
-                        <event id="pour_chicken_0"> </event>
-                        <event id="skip_1"> </event>
-                        <event id="cup_present_0"> </event>
-                        <event id="chicken_0"> </event>
-                        <event id="no_cup_1"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="skip_0"> </event>
-                        <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
-                        <event id="pour_chicken_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="skip_1"> </event>
-                        <event id="cancel_1"> </event>
-                        <event id="cup_present_2"> </event>
-                        <event id="chicken_0"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="no_cup_1"> </event>
-                        <event id="no_cup_0"> </event>
-                        <event id="tomato_0"> </event>
-                        <event id="cup_present_0"> </event>
-                    </events>
-                    <events>
-                        <event id="cup_present_1"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="skip_0"> </event>
-                        <event id="skip_3"> </event>
-                        <event id="pour_chicken_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="skip_1"> </event>
-                        <event id="cancel_1"> </event>
-                        <event id="chicken_0"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="pour_pea_0"> </event>
-                        <event id="no_cup_1"> </event>
-                        <event id="no_cup_0"> </event>
-                        <event id="cup_present_1"> </event>
-                        <event id="cup_present_0"> </event>
-                        <event id="pea_0"> </event>
-                    </events>
-                    <events>
-                        <event id="cup_present_2"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="bad_luck_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="cancel_1"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="no_cup_1"> </event>
-                        <event id="no_cup_0"> </event>
-                    </events>
-                    <events>
-                        <event id="take_0"> </event>
                     </events>
                 </conflict>
                 <conflict>
@@ -369,17 +403,39 @@
                 </conflict>
                 <conflict>
                     <events>
+                        <event id="skip_0"> </event>
+                        <event id="pour_chicken_0"> </event>
+                        <event id="skip_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="cup_present_1"> </event>
+                        <event id="cup_present_0"> </event>
+                        <event id="pea_0"> </event>
+                        <event id="chicken_0"> </event>
+                        <event id="no_cup_2"> </event>
+                        <event id="no_cup_1"> </event>
+                        <event id="pour_pea_0"> </event>
+                    </events>
+                    <events>
+                        <event id="pour_tomato_0"> </event>
+                        <event id="skip_3"> </event>
+                        <event id="tomato_0"> </event>
+                        <event id="cup_present_2"> </event>
+                        <event id="no_cup_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
                         <event id="take_0"> </event>
                         <event id="skip_0"> </event>
                         <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
                         <event id="bad_luck_0"> </event>
+                        <event id="skip_3"> </event>
                         <event id="pour_chicken_0"> </event>
-                        <event id="cancel_0"> </event>
                         <event id="skip_1"> </event>
-                        <event id="ring_0"> </event>
-                        <event id="skip_2"> </event>
+                        <event id="cancel_0"> </event>
                         <event id="cup_present_2"> </event>
+                        <event id="skip_2"> </event>
+                        <event id="ring_0"> </event>
                         <event id="chicken_0"> </event>
                         <event id="pour_pea_0"> </event>
                         <event id="no_cup_1"> </event>
@@ -394,45 +450,36 @@
                 </conflict>
                 <conflict>
                     <events>
-                        <event id="pour_tomato_0"> </event>
-                        <event id="skip_3"> </event>
-                        <event id="pour_chicken_0"> </event>
+                        <event id="bad_luck_0"> </event>
                         <event id="cancel_0"> </event>
-                        <event id="skip_1"> </event>
                         <event id="cancel_1"> </event>
-                        <event id="cup_present_2"> </event>
-                        <event id="chicken_0"> </event>
                         <event id="no_cup_2"> </event>
                         <event id="no_cup_1"> </event>
                         <event id="no_cup_0"> </event>
-                        <event id="tomato_0"> </event>
-                        <event id="cup_present_1"> </event>
-                        <event id="cup_present_0"> </event>
                     </events>
                     <events>
-                        <event id="skip_0"> </event>
+                        <event id="take_0"> </event>
                     </events>
                 </conflict>
                 <conflict>
                     <events>
+                        <event id="skip_0"> </event>
                         <event id="pour_tomato_0"> </event>
                         <event id="skip_3"> </event>
-                        <event id="pour_chicken_0"> </event>
-                        <event id="cancel_0"> </event>
                         <event id="skip_1"> </event>
-                        <event id="tomato_0"> </event>
+                        <event id="cancel_0"> </event>
                         <event id="cup_present_2"> </event>
-                        <event id="cup_present_0"> </event>
-                        <event id="chicken_0"> </event>
+                        <event id="cancel_1"> </event>
+                        <event id="no_cup_2"> </event>
                         <event id="no_cup_1"> </event>
+                        <event id="pour_pea_0"> </event>
                         <event id="no_cup_0"> </event>
-                    </events>
-                    <events>
-                        <event id="skip_0"> </event>
+                        <event id="tomato_0"> </event>
                         <event id="cup_present_1"> </event>
                         <event id="pea_0"> </event>
-                        <event id="no_cup_2"> </event>
-                        <event id="pour_pea_0"> </event>
+                    </events>
+                    <events>
+                        <event id="cup_present_0"> </event>
                     </events>
                 </conflict>
                 <conflict>

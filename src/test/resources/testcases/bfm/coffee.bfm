@@ -176,22 +176,88 @@
                 <conflict>
                     <events>
                         <event id="pour_sugar_1"> </event>
-                        <event id="coffee_1"> </event>
+                        <event id="pour_sugar_2"> </event>
                         <event id="cappuccino_1"> </event>
                         <event id="coffee_0"> </event>
+                        <event id="sugar_0"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="tea_1"> </event>
+                        <event id="pour_sugar_0"> </event>
+                    </events>
+                    <events>
+                        <event id="coffee_1"> </event>
+                        <event id="tea_0"> </event>
+                        <event id="no_sugar_0"> </event>
+                        <event id="cappuccino_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_sugar_1"> </event>
+                        <event id="pour_sugar_2"> </event>
+                        <event id="cappuccino_1"> </event>
+                        <event id="coffee_1"> </event>
+                        <event id="coffee_0"> </event>
+                        <event id="sugar_0"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="tea_0"> </event>
+                        <event id="tea_1"> </event>
+                        <event id="pour_tea_0"> </event>
+                        <event id="pour_sugar_0"> </event>
+                    </events>
+                    <events>
+                        <event id="cappuccino_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_sugar_1"> </event>
+                        <event id="pour_sugar_2"> </event>
+                        <event id="cappuccino_1"> </event>
+                        <event id="coffee_1"> </event>
+                        <event id="coffee_0"> </event>
+                        <event id="sugar_0"> </event>
                         <event id="cancel_0"> </event>
                         <event id="cappuccino_0"> </event>
                         <event id="pour_milk_1"> </event>
-                        <event id="pour_milk_0"> </event>
                         <event id="pour_sugar_0"> </event>
-                        <event id="tea_0"> </event>
+                        <event id="pour_milk_0"> </event>
+                        <event id="tea_1"> </event>
                         <event id="pour_coffee_0"> </event>
+                        <event id="pour_coffee_1"> </event>
+                    </events>
+                    <events>
+                        <event id="tea_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="cancel_0"> </event>
+                        <event id="ring_0"> </event>
+                    </events>
+                    <events>
+                        <event id="skip_0"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_sugar_1"> </event>
+                        <event id="pour_sugar_2"> </event>
+                        <event id="cappuccino_1"> </event>
+                        <event id="coffee_1"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="pour_tea_0"> </event>
+                        <event id="cappuccino_0"> </event>
+                        <event id="pour_milk_1"> </event>
+                        <event id="pour_milk_0"> </event>
+                        <event id="tea_0"> </event>
+                        <event id="tea_1"> </event>
                         <event id="no_sugar_0"> </event>
                         <event id="pour_coffee_1"> </event>
                     </events>
                     <events>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="tea_1"> </event>
+                        <event id="coffee_0"> </event>
+                        <event id="pour_sugar_0"> </event>
                     </events>
                 </conflict>
                 <conflict>
@@ -218,53 +284,32 @@
                 <conflict>
                     <events>
                         <event id="pour_sugar_1"> </event>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="coffee_1"> </event>
                         <event id="cappuccino_1"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="pour_tea_0"> </event>
-                        <event id="cappuccino_0"> </event>
-                        <event id="pour_milk_1"> </event>
-                        <event id="pour_milk_0"> </event>
-                        <event id="tea_0"> </event>
-                        <event id="tea_1"> </event>
-                        <event id="no_sugar_0"> </event>
-                        <event id="pour_coffee_1"> </event>
-                    </events>
-                    <events>
-                        <event id="coffee_0"> </event>
-                        <event id="pour_sugar_0"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="pour_sugar_1"> </event>
-                        <event id="pour_sugar_2"> </event>
                         <event id="coffee_1"> </event>
-                        <event id="cappuccino_1"> </event>
                         <event id="coffee_0"> </event>
                         <event id="cancel_0"> </event>
-                        <event id="sugar_0"> </event>
-                        <event id="cappuccino_0"> </event>
-                        <event id="pour_milk_1"> </event>
-                        <event id="pour_milk_0"> </event>
-                        <event id="pour_sugar_0"> </event>
-                        <event id="tea_1"> </event>
                         <event id="pour_coffee_0"> </event>
+                        <event id="cappuccino_0"> </event>
+                        <event id="pour_milk_1"> </event>
+                        <event id="pour_milk_0"> </event>
+                        <event id="pour_sugar_0"> </event>
                         <event id="pour_coffee_1"> </event>
                     </events>
                     <events>
+                        <event id="pour_sugar_2"> </event>
                         <event id="tea_0"> </event>
+                        <event id="tea_1"> </event>
+                        <event id="pour_tea_0"> </event>
                     </events>
                 </conflict>
                 <conflict>
                     <events>
-                        <event id="pour_sugar_1"> </event>
                         <event id="take_0"> </event>
+                        <event id="pour_sugar_1"> </event>
                         <event id="skip_0"> </event>
                         <event id="pour_sugar_2"> </event>
-                        <event id="coffee_1"> </event>
                         <event id="cappuccino_1"> </event>
+                        <event id="coffee_1"> </event>
                         <event id="coffee_0"> </event>
                         <event id="sugar_0"> </event>
                         <event id="ring_0"> </event>
@@ -285,76 +330,11 @@
                 </conflict>
                 <conflict>
                     <events>
-                        <event id="pour_sugar_1"> </event>
-                        <event id="coffee_1"> </event>
-                        <event id="cappuccino_1"> </event>
-                        <event id="coffee_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="pour_coffee_0"> </event>
-                        <event id="cappuccino_0"> </event>
-                        <event id="pour_milk_1"> </event>
-                        <event id="pour_milk_0"> </event>
-                        <event id="pour_sugar_0"> </event>
-                        <event id="pour_coffee_1"> </event>
-                    </events>
-                    <events>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="tea_0"> </event>
-                        <event id="tea_1"> </event>
-                        <event id="pour_tea_0"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="pour_sugar_1"> </event>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="cappuccino_1"> </event>
-                        <event id="coffee_0"> </event>
-                        <event id="cancel_0"> </event>
-                        <event id="sugar_0"> </event>
-                        <event id="tea_1"> </event>
-                        <event id="pour_sugar_0"> </event>
-                    </events>
-                    <events>
-                        <event id="coffee_1"> </event>
-                        <event id="tea_0"> </event>
-                        <event id="no_sugar_0"> </event>
-                        <event id="cappuccino_0"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="cancel_0"> </event>
-                        <event id="ring_0"> </event>
-                    </events>
-                    <events>
-                        <event id="skip_0"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
                         <event id="pour_sugar_2"> </event>
                         <event id="coffee_1"> </event>
                         <event id="coffee_0"> </event>
-                        <event id="tea_0"> </event>
                         <event id="cancel_0"> </event>
-                        <event id="tea_1"> </event>
-                        <event id="pour_tea_0"> </event>
-                        <event id="pour_milk_0"> </event>
-                        <event id="pour_sugar_0"> </event>
-                        <event id="pour_coffee_1"> </event>
-                    </events>
-                    <events>
-                        <event id="pour_milk_1"> </event>
-                    </events>
-                </conflict>
-                <conflict>
-                    <events>
-                        <event id="pour_sugar_2"> </event>
-                        <event id="coffee_1"> </event>
-                        <event id="coffee_0"> </event>
                         <event id="tea_0"> </event>
-                        <event id="cancel_0"> </event>
                         <event id="tea_1"> </event>
                         <event id="pour_coffee_0"> </event>
                         <event id="pour_tea_0"> </event>
@@ -364,6 +344,24 @@
                     <events>
                         <event id="pour_milk_0"> </event>
                         <event id="pour_coffee_1"> </event>
+                    </events>
+                </conflict>
+                <conflict>
+                    <events>
+                        <event id="pour_sugar_2"> </event>
+                        <event id="cancel_0"> </event>
+                        <event id="tea_0"> </event>
+                        <event id="tea_1"> </event>
+                        <event id="pour_tea_0"> </event>
+                        <event id="pour_milk_0"> </event>
+                        <event id="pour_coffee_1"> </event>
+                    </events>
+                    <events>
+                        <event id="coffee_1"> </event>
+                        <event id="coffee_0"> </event>
+                        <event id="pour_coffee_0"> </event>
+                        <event id="pour_milk_1"> </event>
+                        <event id="pour_sugar_0"> </event>
                     </events>
                 </conflict>
                 <conflict>

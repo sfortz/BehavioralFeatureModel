@@ -26,7 +26,7 @@
             <transition action="take" target="state5" fexpression="VendingMachine"></transition>
         </state>
         <state id="state1">
-            <transition action="pour" target="state2" fexpression="Soda"></transition>
+            <transition action="pour_soda" target="state2" fexpression="Soda"></transition>
         </state>
         <state id="state4">
             <transition action="return" target="state5" fexpression="CancelPurchase"></transition>
