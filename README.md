@@ -51,9 +51,11 @@ facilitating interoperability within the SPL and behavioral modeling ecosystems 
 │   │   ├── java/              # Core Java sources
 │   │   │   └── uk/kcl/info/bfm/
 │   │   │       ├── *.java         # Core data structure classes and logic
+│   │   │       ├── compositions/  # Parallel compositions
 │   │   │       ├── exceptions/    # Exception definitions
+│   │   │       ├── translators/   # Translation algorithms
 │   │   │       ├── io/xml/        # XML read/write utilities
-│   │   │       ├── utils/         # Labeling & translation algorithms
+│   │   │       ├── utils/         # Labeling utilities & Pair data structure
 │   │   │       └── Main.java      # Main entry point
 │   │   └── resources/             # Example input models (.bfm, .fes, etc.). It comprises 
 │   │                              # the FTS used as a benchmark in our evaluation, as well as
@@ -78,6 +80,8 @@ The project is organized around two core packages:
 
 Since the data structures build on and extend concepts from [VIBeS](https://github.com/sfortz/vibes), we also include class 
 diagrams for two relevant [VIBeS](https://github.com/sfortz/vibes) modules to illustrate their integration and dependencies.
+
+> ⚠️ **The class diagrams are currently provided as supporting documentation only and may not yet fully reflect the latest version of the codebase. Some classes, relationships, or package structures may therefore slightly differ from the current implementation.**
 
 > Note: Only key classes and meaningful relationships are shown—those central to the design and behavior of the toolkit.
 
@@ -189,7 +193,7 @@ java -jar target/BehavioralFeatureModel-1.0-SNAPSHOT-jar-with-dependencies.jar
 
   * The full benchmark dataset used in the evaluation of the accompanying research paper (see [References](#-references))
 
-> ⚠️ While small examples complete in a few seconds, the full benchmark transformation took approximately **10 days** on a **2023 MacBook Pro M2** with **16 GB of unified memory**.
+<!-- > ⚠️ While small examples complete in a few seconds, the full benchmark transformation took approximately **10 days** on a **2023 MacBook Pro M2** with **16 GB of unified memory**. -->
 
 ---
 
