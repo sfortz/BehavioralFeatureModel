@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright 2025 Sophie Fortz
+  ~  *
+  ~  * Licensed under the Apache License, Version 2.0 (the "License");
+  ~  * you may not use this file except in compliance with the License.
+  ~  * You may obtain a copy of the License at
+  ~  *
+  ~  *     http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  * Unless required by applicable law or agreed to in writing, software
+  ~  * distributed under the License is distributed on an "AS IS" BASIS,
+  ~  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  * See the License for the specific language governing permissions and
+  ~  * limitations under the License.
+  ~  */
+  -->
+
 <fes>
     <events>
-        <event id="pay_0" action="pay" feature="VendingMachine" fexpression="!FreeDrinks"> </event>
-        <event id="change_0" action="change" feature="VendingMachine" fexpression="!FreeDrinks"> </event>
-        <event id="return_0" action="return" feature="VendingMachine" fexpression="CancelPurchase"> </event>
-        <event id="take_1" action="take" feature="VendingMachine" fexpression="(VendingMachine &amp;&amp; (Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
-        <event id="soda_0" action="soda" feature="VendingMachine" fexpression="Soda"> </event>
-        <event id="cancel_0" action="cancel" feature="VendingMachine" fexpression="CancelPurchase"> </event>
-        <event id="tea_0" action="tea" feature="VendingMachine" fexpression="Tea"> </event>
+        <event id="pay_0" action="pay" feature="Currency" fexpression="!FreeDrinks"> </event>
+        <event id="change_0" action="change" feature="Currency" fexpression="!FreeDrinks"> </event>
+        <event id="return_0" action="return" feature="CancelPurchase" fexpression="CancelPurchase"> </event>
+        <event id="soda_0" action="soda" feature="Soda" fexpression="Soda"> </event>
+        <event id="cancel_0" action="cancel" feature="CancelPurchase" fexpression="CancelPurchase"> </event>
+        <event id="tea_0" action="tea" feature="Tea" fexpression="Tea"> </event>
         <event id="take_0" action="take" feature="VendingMachine" fexpression="(VendingMachine &amp;&amp; (Tea || Soda))"> </event>
-        <event id="pour_tea_0" action="pour_tea" feature="VendingMachine" fexpression="Tea"> </event>
-        <event id="open_0" action="open" feature="VendingMachine" fexpression="((Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
-        <event id="free_0" action="free" feature="VendingMachine" fexpression="FreeDrinks"> </event>
-        <event id="pour_0" action="pour" feature="VendingMachine" fexpression="Soda"> </event>
-        <event id="close_0" action="close" feature="VendingMachine" fexpression="(VendingMachine &amp;&amp; (Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
+        <event id="take_1" action="take" feature="VendingMachine" fexpression="(VendingMachine &amp;&amp; (Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
+        <event id="pour_tea_0" action="pour_tea" feature="Tea" fexpression="Tea"> </event>
+        <event id="open_0" action="open" feature="Currency" fexpression="((Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
+        <event id="free_0" action="free" feature="FreeDrinks" fexpression="FreeDrinks"> </event>
+        <event id="pour_soda_0" action="pour_soda" feature="Soda" fexpression="Soda"> </event>
+        <event id="close_0" action="close" feature="Currency" fexpression="(VendingMachine &amp;&amp; (Tea || Soda) &amp;&amp; !FreeDrinks)"> </event>
     </events>
     <causalities>
         <causality target="change_0">
@@ -51,7 +69,7 @@
         </causality>
         <causality target="take_0">
             <bundle>
-                <event id="pour_0"> </event>
+                <event id="pour_soda_0"> </event>
                 <event id="pour_tea_0"> </event>
             </bundle>
         </causality>
@@ -62,11 +80,11 @@
         </causality>
         <causality target="open_0">
             <bundle>
-                <event id="pour_0"> </event>
+                <event id="pour_soda_0"> </event>
                 <event id="pour_tea_0"> </event>
             </bundle>
         </causality>
-        <causality target="pour_0">
+        <causality target="pour_soda_0">
             <bundle>
                 <event id="soda_0"> </event>
             </bundle>
@@ -104,7 +122,7 @@
         </conflict>
         <conflict>
             <events>
-                <event id="pour_0"> </event>
+                <event id="pour_soda_0"> </event>
                 <event id="soda_0"> </event>
                 <event id="cancel_0"> </event>
                 <event id="return_0"> </event>
@@ -117,7 +135,7 @@
         <conflict>
             <events>
                 <event id="take_0"> </event>
-                <event id="pour_0"> </event>
+                <event id="pour_soda_0"> </event>
                 <event id="soda_0"> </event>
                 <event id="tea_0"> </event>
                 <event id="take_1"> </event>
