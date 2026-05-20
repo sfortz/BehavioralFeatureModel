@@ -61,7 +61,7 @@ public class Main {
     private static final Map<String, BehavioralFeatureModel> bfmCache = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-/*
+
         LOG.info("convertBesToTs");
         convertBesToTs("robot");
 
@@ -78,7 +78,12 @@ public class Main {
         convertTsToBes("parallel");
 
         LOG.info("convertFtsToFes");
-        convertFtsToFes("robot", "robot");*/
+        convertFtsToFes("robot", "robot");
+
+        LOG.info("convertFtsToFes");
+        for (Map.Entry<String, String> entry : getSystems().entrySet()) {
+            convertFtsToFes(entry.getValue(), entry.getKey());
+        }
 
         LOG.info("convertFtsToBfm");
         for (Map.Entry<String, String> entry : getSystems().entrySet()) {
@@ -88,8 +93,10 @@ public class Main {
         List<String> svmSystems = List.of("coffee","soup","soda");
         List<String> minePumpSystems = List.of("controller_state", "controller", "methane", "pump", "water");
 
-        //generateCombinations("/vm/", svmSystems,0, new ArrayList<>());
-        //generateCombinations("/minepump/", minePumpSystems,0, new ArrayList<>());
+        generateCombinations("/vm/", svmSystems,0, new ArrayList<>());
+        ftsCache.clear();
+        bfmCache.clear(); //TODO: If you have some memory issues, improve memoization
+        generateCombinations("/minepump/", minePumpSystems,0, new ArrayList<>());
     }
 
     private static final Set<String> MANDATORY_COMPONENTS = Set.of("controller","controller_state","coffee","soup","soda");
@@ -356,7 +363,7 @@ public class Main {
         String outputPath = FES_OUTPUT_DIR + system + ".fes";
 
         convertAndSave(
-                fts, new FtsToFesConverter(fm, fts),
+                fts, new FtsToFesConverter<>(fm, fts),
                 (output, path) -> {
                     try {
                         XmlSaverUtility.save(output, path);
@@ -419,15 +426,15 @@ public class Main {
     private static <ModelType> void logModelSize(ModelType model) {
         switch (model) {
             case BehavioralFeatureModel bfm ->
-                    logBesStructure("BFM", bfm.getEventsCount(), bfm.getConflictsCount(), bfm.getMaxConflictSize(), bfm.getCausalitiesCount());
+                    logBesStructure("BFM", bfm.getEventsCount(), bfm.getConflictsCount(), bfm.getCausalitiesCount()); //  bfm.getMaxConflictSize()
             case FeaturedEventStructure<?> fes ->
-                    logBesStructure("FES", fes.getEventsCount(), fes.getConflictsCount(), fes.getMaxConflictSize(), fes.getCausalitiesCount());
+                    logBesStructure("FES", fes.getEventsCount(), fes.getConflictsCount(), fes.getCausalitiesCount()); //  fes.getMaxConflictSize(),
             case BundleEventStructure bes ->
-                    logBesStructure("BES", bes.getEventsCount(), bes.getConflictsCount(), bes.getMaxConflictSize(), bes.getCausalitiesCount());
+                    logBesStructure("BES", bes.getEventsCount(), bes.getConflictsCount(), bes.getCausalitiesCount()); //, bes.getMaxConflictSize()
             case FeaturedTransitionSystem fts ->
-                    logTsStructure("FTS", fts.getStatesCount(), fts.getTransitionsCount()); //fts.getActionsCount(),
+                    logTsStructure("FTS", fts.getActionsCount(), fts.getStatesCount(), fts.getTransitionsCount()); //
             case TransitionSystem ts ->
-                    logTsStructure("TS", ts.getStatesCount(), ts.getTransitionsCount()); // ts.getActionsCount(),
+                    logTsStructure("TS", ts.getActionsCount(), ts.getStatesCount(), ts.getTransitionsCount());
             case FeatureModel<?> fm -> {
                 LOG.info("[{}] - Features: {}, Constraints: {}",
                         "FM", fm.getFeatures().size(), fm.getConstraints().size());
@@ -437,16 +444,29 @@ public class Main {
         }
     }
 
-    private static void logTsStructure(String label, int states, int transitions) {
-        int total = states + transitions;
-        LOG.info("[{}] - States: {}, Transitions: {}, Total: {}",
-                label, states, transitions, total);
+
+    public static int log2(int n) {
+        // calculate log2 N indirectly using log() method and rounding up
+        return (int) Math.ceil((Math.log(n) / Math.log(2)));
     }
 
-    private static void logBesStructure(String label, int events, int conflicts, int maxConflictSize, int causalities) {
+
+
+    private static void logTsStructure(String label, int actions, int states, int transitions) {
+        int total = states + transitions;
+        int bitsPerTransition = 2 * log2(states) + log2(actions);
+        int totaltBits = bitsPerTransition * transitions; // log2(actions) +  log2(states) +
+        LOG.info("[{}] - States: {}, Transitions: {}, Total: {}, bits/transition: {}, total bits: {}",
+                label, states, transitions, total, bitsPerTransition, totaltBits);
+    }
+
+    private static void logBesStructure(String label, int events, int conflicts, int causalities) {
         int total = events + conflicts + causalities;
-        LOG.info("[{}] - Events: {}, Conflicts: {}, Max Conflict Size: {}, Causalities: {}, Total: {}",
-                label, events, conflicts, maxConflictSize, causalities, total);
+        int bitsPerConflict = 2*events;
+        int bitsPerCausality = events + log2(events);
+        int totaltBits = bitsPerConflict * conflicts + bitsPerCausality * causalities;
+        LOG.info("[{}] - Events: {}, Conflicts: {}, Causalities: {}, Total: {}, bits/conflict: {}, bits/causality: {}, total bits: {}",
+                label, events, conflicts, causalities, total, bitsPerConflict, bitsPerCausality, totaltBits);
     }
 
     public static Map<String, String> getSystems() {
