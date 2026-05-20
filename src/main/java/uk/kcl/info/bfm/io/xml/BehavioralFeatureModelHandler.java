@@ -28,14 +28,18 @@ import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.BehavioralFeature;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.BehavioralFeatureModelFactory;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.*;
 import java.util.*;
 
 public class BehavioralFeatureModelHandler implements XmlEventHandler {
-    public static final String BFM_TAG = "bfm";
 
+    private static final Logger LOG = LoggerFactory.getLogger(BehavioralFeatureModelHandler.class);
+
+    // ===== TAGS =====
+    public static final String BFM_TAG = "bfm";
     public static final String FEATURE_TAG = "feature";
     public static final String OPTIONAL_TAG = "optional";
     public static final String MANDATORY_TAG = "mandatory";
@@ -54,264 +58,188 @@ public class BehavioralFeatureModelHandler implements XmlEventHandler {
     public static final String CONFLICTS_TAG = "conflicts";
     public static final String CONFLICT_TAG = "conflict";
 
+    // ===== ATTRIBUTES =====
     public static final String NAMESPACE_ATTR = "namespace";
     public static final String NAME_ATTR = "name";
     public static final String ID_ATTR = "id";
+    public static final String ACTION_ATTR = "action";
     public static final String FEXPRESSION_ATTR = "fexpression";
     public static final String TARGET_ATTR = "target";
 
-    private static final Logger LOG = LoggerFactory.getLogger(BehavioralFeatureModelHandler.class);
+    // ===== CONTEXT =====
+    private enum Context {
+        EVENTS_DECLARATION,
+        BUNDLE,
+        CONFLICT
+    }
 
-    protected BehavioralFeatureModelFactory factory;
-    protected String charValue;
+    private final Stack<Context> contextStack = new Stack<>();
 
-    // Stack to track FM depth
+    // ===== MODEL =====
+    protected BehavioralFeatureModelFactory factory = new BehavioralFeatureModelFactory();
+
+    // ===== FEATURE STRUCTURE =====
     protected Stack<Group<BehavioralFeature>> groupStack = new Stack<>();
     protected Stack<BehavioralFeature> featureStack = new Stack<>();
-    protected BehavioralFeature rootFeature = null;
 
-    // Stack to track nested bundles
-    protected Stack<Set<String>> bundleStack = null;
+    // ===== CONSTRAINT STRUCTURES =====
+    protected Stack<Set<String>> bundleStack = new Stack<>();
+    protected Stack<Set<String>> conflictStack = new Stack<>();
     protected String currentCausalityTarget = null;
-    protected Stack<Set<String>> conflictStack = null;
 
-    public BehavioralFeatureModelHandler() {
-        this.factory = new BehavioralFeatureModelFactory();
-    }
+    protected String charValue;
 
+    // ===== API =====
     public BehavioralFeatureModel getBehavioralFeatureModel() {
-        return this.factory.build();
+        return factory.build();
     }
 
+    // ===== DOCUMENT =====
     public void handleStartDocument() {
-        LOG.trace("Starting document");
+        LOG.trace("Start document");
     }
 
     public void handleEndDocument() {
-        LOG.trace("Ending document");
+        LOG.trace("End document");
     }
 
+    // ===== START ELEMENT =====
     public void handleStartElement(StartElement element) throws XMLStreamException {
+
         String tag = element.getName().getLocalPart();
+
         switch (tag) {
-            case BFM_TAG:
-                handleStartBfmTag(element);
-                break;
-            case FEATURE_TAG:
-                handleStartFeatureTag(element);
-                break;
-            case EVENTS_TAG:
-                handleStartEventsTag();
-                break;
-            case EVENT_TAG:
-                handleStartEventTag(element);
-                break;
-            case OPTIONAL_TAG:
-                handleStartOptionalTag(element);
-                break;
-            case MANDATORY_TAG:
-                handleStartMandatoryTag(element);
-                break;
-            case OR_TAG:
-                handleStartOrTag(element);
-                break;
-            case ALTERNATIVE_TAG:
-                handleStartAlternativeTag(element);
-                break;
-            case FEATURE_CONSTRAINTS_TAG:
-                handleStartFConstraintsTag();
-                break;
-            case FEATURE_CONSTRAINT_TAG:
-                handleStartFConstraintTag(element);
-                break;
-            case EVENT_CONSTRAINTS_TAG:
-                handleStartEConstraintTag();
-                break;
-            case CAUSALITIES_TAG:
-                handleStartCausalitiesTag();
-                break;
-            case CAUSALITY_TAG:
-                handleStartCausalityTag(element);
-                break;
-            case BUNDLE_TAG:
-                handleStartBundleTag();
-                break;
-            case CONFLICTS_TAG:
-                handleStartConflictsTag();
-                break;
-            case CONFLICT_TAG:
-                handleStartConflictTag();
-                break;
-            default:
-                LOG.debug("Unknown element: {}", tag);
-        }
-    }
+            case BFM_TAG -> {
+                String namespace = element.getAttributeByName(QName.valueOf(NAMESPACE_ATTR)).getValue();
+                factory.setNamespace(namespace);
+            }
 
-    protected void handleStartBfmTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Starting BFM");
-        LOG.trace("Processing namespace");
-        String namespace = element.getAttributeByName(QName.valueOf(NAMESPACE_ATTR)).getValue();
-        factory.setNamespace(namespace);
-    }
+            case FEATURE_TAG -> {
+                String name = element.getAttributeByName(QName.valueOf(NAME_ATTR)).getValue();
+                BehavioralFeature f;
 
-    protected void handleStartOptionalTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing optional group");
-        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.OPTIONAL);
-        this.groupStack.push(currentGroup);
-    }
+                if (groupStack.isEmpty()) {
+                    f = factory.setRootFeature(name);
+                } else {
+                    f = factory.addFeature(groupStack.peek(), name);
+                }
 
-    protected void handleStartMandatoryTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing mandatory group");
-        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.MANDATORY);
-        this.groupStack.push(currentGroup);
-    }
+                featureStack.push(f);
+            }
 
-    protected void handleStartOrTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing or group");
-        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.OR);
-        this.groupStack.push(currentGroup);
-    }
+            case OPTIONAL_TAG -> groupStack.push(factory.addChild(featureStack.peek(), Group.GroupType.OPTIONAL));
+            case MANDATORY_TAG -> groupStack.push(factory.addChild(featureStack.peek(), Group.GroupType.MANDATORY));
+            case OR_TAG -> groupStack.push(factory.addChild(featureStack.peek(), Group.GroupType.OR));
+            case ALTERNATIVE_TAG -> groupStack.push(factory.addChild(featureStack.peek(), Group.GroupType.ALTERNATIVE));
 
-    protected void handleStartAlternativeTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing alternative group");
-        Group<BehavioralFeature> currentGroup = this.factory.addChild(this.featureStack.peek(), Group.GroupType.ALTERNATIVE);
-        this.groupStack.push(currentGroup);
-    }
+            case EVENTS_TAG -> {
+                if (!contextStack.isEmpty() && contextStack.peek() == Context.CONFLICT) {
+                    conflictStack.push(new HashSet<>());
+                } else {
+                    contextStack.push(Context.EVENTS_DECLARATION);
+                }
+            }
 
-    protected void handleStartFeatureTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing feature");
-        String featureName = element.getAttributeByName(QName.valueOf(NAME_ATTR)).getValue();
-        BehavioralFeature currentFeature;
-        if (this.groupStack.isEmpty()) {
-            currentFeature = this.factory.setRootFeature(featureName);
-            rootFeature = currentFeature;
-        } else {
-            currentFeature = this.factory.addFeature(this.groupStack.peek(), featureName);
-        }
+            case EVENT_TAG -> handleEvent(element);
 
-        this.featureStack.push(currentFeature);
-    }
+            case FEATURE_CONSTRAINT_TAG -> {
+                String expr = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR)).getValue();
+                try {
+                    FExpression fexpr = ParserUtil.getInstance().parse(expr);
+                    factory.addConstraint(featureStack.peek(), fexpr);
+                } catch (ParserException e) {
+                    throw new XMLStreamException("Error parsing fexpression: " + expr, e);
+                }
+            }
 
-    protected void handleStartFConstraintsTag() throws XMLStreamException {
-        LOG.trace("Starting Feature Constraints");
-    }
+            case CAUSALITY_TAG -> {
+                currentCausalityTarget = element.getAttributeByName(QName.valueOf(TARGET_ATTR)).getValue();
+            }
 
-    protected void handleStartFConstraintTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing Feature Expression");
-        String expr = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR)).getValue();
-        FExpression fexpr;
-        try {
-            fexpr = ParserUtil.getInstance().parse(expr);
-        } catch (ParserException e) {
-            LOG.error("Exception while parsing fexpression {}!", expr, e);
-            throw new XMLStreamException("Exception while parsing fexpression " + expr, e);
-        }
-        factory.addConstraint(featureStack.peek(), fexpr);
-    }
+            case BUNDLE_TAG -> {
+                contextStack.push(Context.BUNDLE);
+                bundleStack.push(new HashSet<>());
+            }
 
-    protected void handleStartEConstraintTag() throws XMLStreamException {
-        LOG.trace("Starting Event Constraints");
-    }
-
-    protected void handleStartConflictsTag() throws XMLStreamException {
-        LOG.trace("Starting Conflicts");
-    }
-
-    protected void handleStartCausalitiesTag() throws XMLStreamException {
-        LOG.trace("Starting Causalities");
-    }
-
-    protected void handleStartEventsTag() throws XMLStreamException {
-        LOG.trace("Starting Events");
-        if (conflictStack != null) {
-            conflictStack.push(new HashSet<>()); // Create new Conflict set
-        }
-    }
-
-    protected void handleStartEventTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing event");
-        String id = element.getAttributeByName(QName.valueOf(ID_ATTR)).getValue();
-        if (bundleStack != null) {
-            // If inside a bundle, add to the current bundle
-            bundleStack.peek().add(id);
-        } else if (conflictStack != null) {
-            // If inside a conflict, add to the current conflict
-            conflictStack.peek().add(id);
-        } else {
-            // Otherwise, it's a standalone event declaration
-            Attribute exprAtt = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR));
-            if (exprAtt != null) {
-                String expr = exprAtt.getValue();
-                factory.addEvent(featureStack.peek(), id, expr);
-            } else {
-                factory.addEvent(featureStack.peek(), id);
+            case CONFLICT_TAG -> {
+                contextStack.push(Context.CONFLICT);
+                conflictStack = new Stack<>();
             }
         }
     }
 
-    protected void handleStartCausalityTag(StartElement element) throws XMLStreamException {
-        LOG.trace("Processing causality");
-        currentCausalityTarget = element.getAttributeByName(QName.valueOf(TARGET_ATTR)).getValue();
-    }
+    // ===== EVENT HANDLING =====
+    private void handleEvent(StartElement element) throws XMLStreamException {
+        String id = element.getAttributeByName(QName.valueOf(ID_ATTR)).getValue();
 
-    protected void handleStartBundleTag() throws XMLStreamException {
-        LOG.trace("Processing bundle");
-        bundleStack = new Stack<>();
-        bundleStack.push(new HashSet<>()); // Create new bundle set
-    }
+        if (!contextStack.isEmpty() && contextStack.peek() == Context.BUNDLE) {
+            bundleStack.peek().add(id);
+            return;
+        }
 
-    protected void handleStartConflictTag() throws XMLStreamException {
-        LOG.trace("Processing conflict");
-        conflictStack = new Stack<>();
-    }
+        if (!contextStack.isEmpty() && contextStack.peek() == Context.CONFLICT) {
+            conflictStack.peek().add(id);
+            return;
+        }
 
-    public void handleEndElement(EndElement element) throws XMLStreamException {
-        String tag = element.getName().getLocalPart();
-        switch (tag) {
-            case FEATURE_TAG:
-                LOG.trace("Ending feature");
-                featureStack.pop();
-                break;
-            case MANDATORY_TAG, OPTIONAL_TAG, OR_TAG, ALTERNATIVE_TAG:
-                LOG.trace("Ending group");
-                groupStack.pop();
-                break;
-            case EVENT_TAG:
-                LOG.trace("Ending event");
-                break;
-            case EVENTS_TAG:
-                this.factory.updateAllEventFexpr();
-                break;
-            case CAUSALITY_TAG:
-                LOG.trace("Ending causality");
-                currentCausalityTarget = null;
-                break;
-            case BUNDLE_TAG:
-                LOG.trace("Ending bundle");
-                if (!bundleStack.isEmpty() && currentCausalityTarget != null) {
-                    factory.addCausality(featureStack.peek(), bundleStack.pop(), currentCausalityTarget);
-                }
-                break;
-            case CONFLICT_TAG:
-                LOG.trace("Ending conflict");
-                if (conflictStack.size() == 2) {
-                    Set<String> conflictSet1 = conflictStack.pop();
-                    Set<String> conflictSet2 = conflictStack.pop();
-                    factory.addConflicts(featureStack.peek(), conflictSet1, conflictSet2);
-                } else {
-                    LOG.warn("Invalid conflict definition!");
-                }
-                conflictStack = null;
-                break;
-            case CAUSALITIES_TAG:
-                bundleStack = null;
-                break;
-            case BFM_TAG:
-                LOG.trace("Ending behavioral feature model");
-                break;
+        // Declaration
+        Attribute actionAttr = element.getAttributeByName(QName.valueOf(ACTION_ATTR));
+        if (actionAttr == null) {
+            throw new XMLStreamException("Invalid event " + id + " declaration: null Action");
+        }
+
+        String action = actionAttr.getValue();
+        Attribute exprAttr = element.getAttributeByName(QName.valueOf(FEXPRESSION_ATTR));
+
+        if (exprAttr != null) {
+            factory.addEvent(featureStack.peek(), id, action, exprAttr.getValue());
+        } else {
+            factory.addEvent(featureStack.peek(), id, action);
         }
     }
 
+    // ===== END ELEMENT =====
+    public void handleEndElement(EndElement element) throws XMLStreamException {
+        String tag = element.getName().getLocalPart();
+
+        switch (tag) {
+
+            case FEATURE_TAG -> featureStack.pop();
+
+            case OPTIONAL_TAG, MANDATORY_TAG, OR_TAG, ALTERNATIVE_TAG -> groupStack.pop();
+
+            case EVENTS_TAG -> {
+                if (!contextStack.isEmpty() && contextStack.peek() == Context.EVENTS_DECLARATION) {
+                    contextStack.pop();
+                }
+            }
+
+            case CAUSALITY_TAG -> currentCausalityTarget = null;
+
+            case BUNDLE_TAG -> {
+                Set<String> bundle = bundleStack.pop();
+                contextStack.pop();
+                if (currentCausalityTarget != null) {
+                    factory.addCausality(featureStack.peek(), bundle, currentCausalityTarget);
+                }
+            }
+
+            case CONFLICT_TAG -> {
+                contextStack.pop();
+                if (conflictStack.size() == 2) {
+                    Set<String> s1 = conflictStack.pop();
+                    Set<String> s2 = conflictStack.pop();
+                    factory.addConflicts(featureStack.peek(), s1, s2);
+                } else {
+                    LOG.warn("Invalid conflict definition");
+                }
+            }
+
+            case BFM_TAG -> factory.updateAllEventFexpr();
+        }
+    }
+
+    // ===== CHARACTERS =====
     public void handleCharacters(Characters element) throws XMLStreamException {
         this.charValue = element.asCharacters().getData().trim();
     }

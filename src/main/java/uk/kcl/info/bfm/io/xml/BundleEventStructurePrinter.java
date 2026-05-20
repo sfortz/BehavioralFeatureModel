@@ -58,6 +58,7 @@ public class BundleEventStructurePrinter implements BundleEventStructureElementP
             LOG.trace("Printing event element");
             xtw.writeStartElement(EVENT_TAG);
             xtw.writeAttribute(ID_ATTR, event.getName());
+            xtw.writeAttribute(ACTION_ATTR, event.getAction());
             xtw.writeCharacters(" ");
             xtw.writeEndElement();
         }

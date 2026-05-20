@@ -37,7 +37,7 @@ public class SimpleBehavioralProduct implements BehavioralProduct {
     }
 
     @Override
-    public BundleEventStructure project(FeaturedEventStructure<?> fes, Collection<Feature<?>> features, Configuration product) {
+    public BundleEventStructure project(FeaturedEventStructure<?> fes, Collection<? extends Feature<?>> features, Configuration product) {
         BundleEventStructureFactory factory = new BundleEventStructureFactory();
 
         FExpression productFexpr = FExpression.trueValue();
@@ -60,7 +60,7 @@ public class SimpleBehavioralProduct implements BehavioralProduct {
                 if(!fes.getFExpression(e).and(productFexpr).applySimplification().isFalse()){ // pr |= 𝜈 (𝑒)
                     //Adding event
                     events.add(e);
-                    factory.addEvent(e.getName());
+                    factory.addEvent(e.getName(), e.getAction());
                 }
             }
         }

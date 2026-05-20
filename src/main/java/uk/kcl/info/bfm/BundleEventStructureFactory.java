@@ -35,16 +35,21 @@ public class BundleEventStructureFactory {
         this(new DefaultBundleEventStructure());
     }
 
-    public void addEvent(String name) {
-        this.bes.addEvent(name);
+    public void addEvent(String name, String action) {
+        this.bes.addEvent(name, action);
+    }
+
+    public void addEvent(Event event) {
+        this.bes.addEvent(event);
     }
 
     public void addCausality(Set<String> bundle, String target) {
 
-        Event trg = new Event(target);
+        //Event trg = new Event(target);
+        Event trg = this.bes.getEvent(target);
         Set<Event> bndl = new HashSet<>();
         for(String name: bundle) {
-            Event event = new Event(name);
+            Event event = this.bes.getEvent(name); //new Event(name);
             bndl.add(event);
         }
 
@@ -60,7 +65,7 @@ public class BundleEventStructureFactory {
     }
 
     public void addConflict(String event1, String event2) {
-        this.addConflict(new Event(event1), new Event(event2));
+        this.addConflict(this.bes.getEvent(event1), this.bes.getEvent(event2));
     }
 
     public void addConflict(Event event1, Event event2) {
@@ -93,10 +98,15 @@ public class BundleEventStructureFactory {
             if (o instanceof Event) {
                 e = (Event) o;
             } else if (o instanceof String) {
-                e = new Event((String) o);
+                e = allEvents.stream().filter(event -> event.getName().equals(o)).findAny().orElse(null);
+                if(e == null) {
+                    Preconditions.checkArgument(allEvents.contains(e),
+                            "All events of a conflict should belong to the bundle event structure!");
+                }
             } else {
                 throw new IllegalArgumentException(
-                        "Conflict collections must contain only Event or String elements.");
+                        //"Conflict collections must contain only Event or String elements.");
+                        "Conflict collections must contain only Event elements.");
             }
             Preconditions.checkArgument(allEvents.contains(e),
                     "All events of a conflict should belong to the bundle event structure!");

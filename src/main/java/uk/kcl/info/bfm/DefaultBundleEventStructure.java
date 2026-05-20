@@ -19,15 +19,17 @@
 package uk.kcl.info.bfm;
 
 import java.util.*;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 
-public class DefaultBundleEventStructure implements BundleEventStructure{
+public class DefaultBundleEventStructure implements BundleEventStructure {
 
     private final Map<String, Event> events;
     private final Set<CausalityRelation> allCausalities;
     private final ConflictSet allConflicts;
-    private final Table<Set<Event>, Event, CausalityRelation> causalities;
+    private final transient Table<Set<Event>, Event, CausalityRelation> causalities;
+    private final transient Map<String, List<Event>> actionToEvents = new HashMap<>();
 
     protected DefaultBundleEventStructure() {
         this.events = new HashMap<>();
@@ -36,8 +38,12 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         this.causalities = HashBasedTable.create();
     }
 
-    protected Event addEvent(String eventName) {
-        return this.events.computeIfAbsent(eventName, Event::new);
+    protected Event addEvent(String eventName, String actionName) {
+        return this.events.computeIfAbsent(eventName, k -> new Event(eventName, actionName));
+    }
+
+    protected Event addEvent(Event event) {
+        return this.events.put(event.getName(), event);
     }
 
     protected CausalityRelation addCausality(Set<Event> bundle, Event target) {
@@ -64,7 +70,24 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
         return addCausality(causality.getBundle(), causality.getTarget());
     }
 
-    protected ConflictSet getConflictSet(){
+    @Override
+    public Iterator<String> actions() {
+        return this.events.values().stream().map(Event::getAction).distinct().iterator();
+    }
+
+    @Override
+    public Map<String, List<Event>> getActionEventMapping() {
+
+        if (actionToEvents.isEmpty()) {
+            for (Event e : this.events.values()) {
+                String action = e.getAction();
+                actionToEvents.computeIfAbsent(action, k -> new ArrayList<>()).add(e);
+            }
+        }
+        return actionToEvents;
+    }
+
+    protected ConflictSet getConflictSet() {
         return this.allConflicts;
     }
 
@@ -83,6 +106,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     @Override
     public List<Event> getAllEvents() {
         return this.events.values().stream().toList();
+    }
+
+    @Override
+    public List<String> getAllActions() {
+        return this.events.values().stream().map(Event::getAction).distinct().toList();
     }
 
     @Override
@@ -110,8 +138,8 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
         Set<CausalityRelation> causalities = new HashSet<>();
 
-        for(CausalityRelation causality: this.allCausalities){
-            if(causality.getBundle().contains(event)){
+        for (CausalityRelation causality : this.allCausalities) {
+            if (causality.getBundle().contains(event)) {
                 causalities.add(causality);
             }
         }
@@ -124,8 +152,8 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
 
         Set<CausalityRelation> causalities = new HashSet<>();
 
-        for(CausalityRelation causality: this.allCausalities){
-            if(causality.getBundle().contains(event)){
+        for (CausalityRelation causality : this.allCausalities) {
+            if (causality.getBundle().contains(event)) {
                 causalities.add(causality);
             }
         }
@@ -152,8 +180,8 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     public Set<Event> getInitialEvents() {
 
         Set<Event> events = new HashSet<>();
-        for(Event event: this.events.values()){
-            if(!this.causalities.containsColumn(event)){
+        for (Event event : this.events.values()) {
+            if (!this.causalities.containsColumn(event)) {
                 events.add(event);
             }
         }
@@ -238,12 +266,11 @@ public class DefaultBundleEventStructure implements BundleEventStructure{
     }
 
     @Override
-    public boolean areInConflict(Event var1, Event var2){
+    public boolean areInConflict(Event var1, Event var2) {
         return this.allConflicts.areInConflict(var1, var2);
     }
 
-    protected Set<Set<Event>> getAllBundles(Event var1){
+    protected Set<Set<Event>> getAllBundles(Event var1) {
         return this.causalities.column(var1).keySet();
     }
-
 }

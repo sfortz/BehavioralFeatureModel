@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts>
+    <start>state0</start>
+    <states>
+        <state id="state0">
+            <transition action="pumpStart" target="state1" fexpression="true"></transition>
+        </state>
+        <state id="state2"></state>
+        <state id="state1">
+            <transition action="pumpStop" target="state2" fexpression="true"></transition>
+        </state>
+    </states>
+</fts>

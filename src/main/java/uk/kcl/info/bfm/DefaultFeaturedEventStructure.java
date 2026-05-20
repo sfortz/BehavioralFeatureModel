@@ -38,7 +38,7 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
 
     private final FeatureModel<F> fm;
 
-    private Map<Set<Event>, FExpression> configFexpressions;
+    private transient Map<Set<Event>, FExpression> configFexpressions;
 
     public DefaultFeaturedEventStructure(FeatureModel<F> fm) {
         super();
@@ -253,4 +253,5 @@ public class DefaultFeaturedEventStructure<F extends Feature<F>>  extends Defaul
 
         return allFExps;
     }
+
 }

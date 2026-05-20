@@ -1,0 +1,26 @@
+digraph G {
+rankdir=LR;
+state0[ label = "s0", style=filled, color=green ];
+state1 [ label = "s3" ];
+state1 -> state2 [ label=" pour_soda/Soda " ];
+state3 [ label = "s4" ];
+state3 -> state2 [ label=" pour_tea_soda/Tea " ];
+state4 [ label = "s5" ];
+state4 -> state5 [ label=" return/CancelPurchase " ];
+state2 [ label = "s6" ];
+state2 -> state6 [ label=" open/!FreeDrinks " ];
+state2 -> state5 [ label=" take_soda/VendingMachine " ];
+state5 [ label = "s7" ];
+state6 [ label = "s8" ];
+state6 -> state7 [ label=" take_soda/VendingMachine " ];
+state7 [ label = "s9" ];
+state7 -> state5 [ label=" close/!FreeDrinks " ];
+state0 -> state8 [ label=" pay/!FreeDrinks " ];
+state0 -> state9 [ label=" free/FreeDrinks " ];
+state9 [ label = "s1" ];
+state9 -> state1 [ label=" soda/Soda " ];
+state9 -> state3 [ label=" tea_soda/Tea " ];
+state9 -> state4 [ label=" cancel_soda/CancelPurchase " ];
+state8 [ label = "s2" ];
+state8 -> state9 [ label=" change/!FreeDrinks " ];
+}

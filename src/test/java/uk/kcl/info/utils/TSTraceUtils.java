@@ -18,17 +18,15 @@
 
 package uk.kcl.info.utils;
 
-import be.vibes.fexpression.configuration.Configuration;
-import be.vibes.solver.FeatureModel;
-import be.vibes.solver.exception.ConstraintSolvingException;
 import be.vibes.ts.*;
 import be.vibes.ts.exception.TransitionSystenExecutionException;
-import be.vibes.ts.exception.UnresolvedFExpression;
 import be.vibes.ts.execution.TransitionSystemExecutor;
 
 import java.util.*;
 
 public class TSTraceUtils {
+
+    private static final long SEED = 42; //System.currentTimeMillis();
 
     /**
      * Generates all possible execution traces of the given Transition System.
@@ -37,70 +35,97 @@ public class TSTraceUtils {
      */
     public static Set<List<String>> getAllTsTraces(TransitionSystem ts) throws TransitionSystenExecutionException {
         Set<List<String>> traces = new HashSet<>();
-        TransitionSystemExecutor executor = new TransitionSystemExecutor(ts);
-        Set<String> visited = new HashSet<>();
-        exploreTsTraces(ts, executor, new ArrayList<>(), traces, visited);
+        //TransitionSystemExecutor executor = new TransitionSystemExecutor(ts);
+        //Set<String> visited = new HashSet<>();
+        State initial = ts.getInitialState();
+        explore(ts, initial, new ArrayList<>(), traces, new HashSet<>());
+        //exploreTsTraces(ts, executor, new ArrayList<>(), traces, visited);
         return traces;
     }
 
     /**
      * Recursively explores the transition system to generate all execution traces.
      */
-    private static void exploreTsTraces(TransitionSystem ts, TransitionSystemExecutor executor, List<String> currentTrace,
-                                 Set<List<String>> traces, Set<String> visited) throws TransitionSystenExecutionException {
+    private static void explore(TransitionSystem ts, State current, List<String> currentTrace, Set<List<String>> traces, Set<State> visited) {
+
         // Save current trace
         traces.add(new ArrayList<>(currentTrace));
 
-        // Use trace + enabled actions as a pseudo-state identifier
-        Set<String> enabled = new HashSet<>();
-        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
-            Action action = it.next();
-            if (executor.canExecute(action)) {
-                enabled.add(action.getName());
-            }
+        if (!visited.add(current)) return;
+
+        Iterator<Transition> it = ts.getOutgoing(current);
+
+        while (it.hasNext()) {
+            Transition t = it.next();
+            Action action = t.getAction();
+            State target = t.getTarget();
+
+            currentTrace.add(action.getName());
+
+            explore(ts, target, currentTrace, traces, visited);
+
+            currentTrace.removeLast();
         }
 
-        String traceKey = String.join("→", currentTrace) + "::" + String.join(",", new TreeSet<>(enabled));
-        // Prevent revisiting same trace
-        if (!visited.add(traceKey)) return;
-
-        for (String actionName : enabled) {
-            // Clone executor by replaying current trace
-            TransitionSystemExecutor clonedExecutor = new TransitionSystemExecutor(ts);
-            for (String act : currentTrace) {
-                clonedExecutor.execute(act);
-            }
-
-            // Execute current action
-            clonedExecutor.execute(actionName);
-
-            // Build new trace
-            List<String> newTrace = new ArrayList<>(currentTrace);
-            newTrace.add(actionName);
-
-            exploreTsTraces(ts, clonedExecutor, newTrace, traces, visited);
-        }
+        visited.remove(current); // allow other paths
     }
 
-    /**
-     * Generates all possible execution traces (for all products) of the given Featured Transition System.
-     * @param fm the feature model
-     * @param fts the featured transition system
-     * @return a set of traces, each trace being a list of action names
-     */
-    public static Map<Configuration, Set<List<String>>> getAllFtsTraces(FeatureModel<?> fm, FeaturedTransitionSystem fts) throws ConstraintSolvingException, UnresolvedFExpression, TransitionSystenExecutionException {
+    public static Set<List<String>> getRandomTraces(TransitionSystem ts, int maxTraces, int maxAttempts) throws TransitionSystenExecutionException {
 
-        Projection proj = SimpleProjection.getInstance();
-        Map<Configuration, Set<List<String>>> tracesMap = new HashMap<>();
-        Iterator<Configuration> it = fm.getSolutions();
+        Set<List<String>> traces = new HashSet<>();
+        Random rand = new Random(SEED);
 
-        while(it.hasNext()){
-            Configuration product = it.next();
-            TransitionSystem ts = proj.project(fts, product);
-            tracesMap.put(product, getAllTsTraces(ts));
+        TransitionSystemExecutor executor = new TransitionSystemExecutor(ts);
+        List<Action> allActions = actionsOf(ts);
+
+        maxAttempts = maxTraces * maxAttempts; // avoid infinite loops if many deadlocks
+        int attempts = 0; // Required for small systems, with few different traces
+
+        while ((traces.size() < maxTraces) && attempts < maxAttempts) {
+            List<String> trace = getRandomTrace(executor, allActions, rand); // , maxDepth, maxAttempts // required if cyclic FTS allowed
+            //if (!(trace == null)) { // required if cyclic FTS allowed
+            traces.add(trace);
+            attempts++;
         }
 
-        return tracesMap;
+        return traces;
+    }
+
+    protected static List<String> getRandomTrace(TransitionSystemExecutor executor, List<Action> allActions, Random random) throws TransitionSystenExecutionException {
+
+        executor.reset();
+        List<String> trace = new ArrayList<>();
+
+        List<Action> enabled = getEnabledActions(executor, allActions);
+
+        while(!enabled.isEmpty()){ //while(trace.size() < maxDepth) // required if cyclic FTS allowed
+            // pick one action randomly
+            Action chosen = enabled.get(random.nextInt(enabled.size()));
+            executor.execute(chosen);
+            trace.add(chosen.getName());
+            enabled = getEnabledActions(executor, allActions);
+        }
+
+        return trace;
+    }
+
+    private static List<Action> getEnabledActions(TransitionSystemExecutor executor, List<Action> allActions) throws TransitionSystenExecutionException {
+        // collect executable actions at this point
+        List<Action> enabled = new ArrayList<>();
+        for (Action a : allActions) {
+            if (executor.canExecute(a)) {
+                enabled.add(a);
+            }
+        }
+        return enabled;
+    }
+
+    public static List<Action> actionsOf(TransitionSystem ts) {
+        List<Action> actions = new ArrayList<>();
+        for (Iterator<Action> it = ts.actions(); it.hasNext(); ) {
+            actions.add(it.next());
+        }
+        return actions;
     }
 
 }

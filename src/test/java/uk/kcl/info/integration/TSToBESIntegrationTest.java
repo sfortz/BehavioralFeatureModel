@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.execution.BundleEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.TsToBesConverter;
+import uk.kcl.info.bfm.translators.TsToBesConverter;
 
 import java.io.File;
 import java.util.*;
@@ -37,10 +37,10 @@ import java.util.*;
 public class TSToBESIntegrationTest {
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
-    private static final String TS_IN_PATH = BASE_PATH + "ts/xml/";
+    private static final String TS_IN_PATH = BASE_PATH + "ts/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot-linear.ts", "parallel.ts"})
+    @ValueSource(strings = {"robot.ts", "parallel.ts"})
     public void testTStoBESConversion(String tsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException {
 
         // Load TS
@@ -52,7 +52,7 @@ public class TSToBESIntegrationTest {
 
         // Execute TS and BES
         Set<List<String>> tsTraces = getAllTsTraces(ts);
-        Set<List<String>> besTraces = new BundleEventStructureExecutor(bes).getAllTraces();
+        Set<List<String>> besTraces = new BundleEventStructureExecutor(bes).getAllActionTraces();
 
         assertEquals(tsTraces, besTraces, "The TS and BES traces should be equivalent");
     }

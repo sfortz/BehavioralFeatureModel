@@ -30,11 +30,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import static uk.kcl.info.bfm.io.xml.BehavioralFeatureModelHandler.*;
-import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.CONFLICTS_TAG;
-import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.CONFLICT_TAG;
-import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.EVENTS_TAG;
-import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.EVENT_TAG;
-import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.ID_ATTR;
+import static uk.kcl.info.bfm.io.xml.BundleEventStructureHandler.ACTION_ATTR;
 
 public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElementPrinter{
     private static final Logger LOG = LoggerFactory.getLogger(BehavioralFeatureModelPrinter.class);
@@ -113,6 +109,7 @@ public class BehavioralFeatureModelPrinter implements BehavioralFeatureModelElem
                 LOG.trace("Printing event element");
                 xtw.writeStartElement(EVENT_TAG);
                 xtw.writeAttribute(ID_ATTR, event.getName());
+                xtw.writeAttribute(ACTION_ATTR, event.getAction());
                 FExpression fexpr = this.bfm.getFExpression(event); // getFExpression(event);
                 if(fexpr != null && !fexpr.equals(FExpression.trueValue())){
                     xtw.writeAttribute(FEXPRESSION_ATTR, fexpr.applySimplification().toCnf().toString());

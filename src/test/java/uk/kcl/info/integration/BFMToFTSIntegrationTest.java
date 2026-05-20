@@ -29,15 +29,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.BfmToFmConverter;
-import uk.kcl.info.utils.translators.BfmToFtsConverter;
+import uk.kcl.info.bfm.translators.BfmToFmConverter;
+import uk.kcl.info.bfm.translators.BfmToFtsConverter;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.FTSTraceUtils.getAllFtsTraces;
 
 public class BFMToFTSIntegrationTest {
 
@@ -60,14 +60,9 @@ public class BFMToFTSIntegrationTest {
         FeaturedTransitionSystem fts = converter.convert();
 
         // Execute both BFM and FTS
-        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllTraces();
+        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllActionTraces();
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
 
         assertEquals(bfmTraces, ftsTraces, "The BFM and FTS traces should be equivalent");
     }
-
-    /*  TODO: Linear is Buggy since renaming implies moving events to their parents (e.g., liDet should be in root as it is
-             associated to lidet && mapping)
-     */
-
 }

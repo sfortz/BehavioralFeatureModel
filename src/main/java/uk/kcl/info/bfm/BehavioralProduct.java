@@ -26,5 +26,5 @@ import java.util.Collection;
 
 public interface BehavioralProduct {
 
-    BundleEventStructure project(FeaturedEventStructure<?> var1, Collection<Feature<?>> var2, Configuration var3) throws UnresolvedFExpression;
+    BundleEventStructure project(FeaturedEventStructure<?> var1, Collection<? extends Feature<?>> var2, Configuration var3) throws UnresolvedFExpression;
 }

@@ -1,0 +1,8 @@
+digraph G {
+rankdir=LR;
+state0[ label = "s0", style=filled, color=green ];
+state0 -> state1 [ label=" methaneRise/true " ];
+state1 [ label = "s1" ];
+state1 -> state2 [ label=" methaneLower/true " ];
+state2 [ label = "s2" ];
+}

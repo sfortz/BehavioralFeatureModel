@@ -54,41 +54,41 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
         return addFeature(feature, group, name);
     }
 
-    public void addEvent(BehavioralFeature feat, String event) {
-        addEvent(feat.getFeatureName(), event, FExpression.trueValue());
+    public void addEvent(BehavioralFeature feat, String event, String action) {
+        addEvent(feat.getFeatureName(), event, action, FExpression.trueValue());
     }
 
-    public void addEvent(BehavioralFeature feat, String event, FExpression fexpr) {
-        addEvent(feat.getFeatureName(), event, fexpr);
+    public void addEvent(BehavioralFeature feat, String event, String action, FExpression fexpr) {
+        addEvent(feat.getFeatureName(), event, action, fexpr);
     }
 
-    public void addEvent(BehavioralFeature feat, String event, String fexprStr) {
-        addEvent(feat.getFeatureName(), event, fexprStr);
+    public void addEvent(BehavioralFeature feat, String event, String action, String fexprStr) {
+        addEvent(feat.getFeatureName(), event, action, fexprStr);
     }
 
-    public void addEvent(String featName, String event) {
-        addEvent(featName, event, FExpression.trueValue());
+    public void addEvent(String featName, String event, String action) {
+        addEvent(featName, event, action, FExpression.trueValue());
     }
 
-    public void addEvent(String featName, String event, String fexprStr) {
+    public void addEvent(String featName, String event, String action, String fexprStr) {
 
         BehavioralFeature feature = getFeature(featName);
         if (feature == null) {
             throw new BehavioralFeatureModelDefinitionException("Events should always be associated to one feature of the BFM.");
         }
 
-        Event ev = feature.addEvent(event, FExpression.trueValue());
+        Event ev = feature.addEvent(event, action, FExpression.trueValue());
         featureMap.put(ev, feature);
         eventFexprMap.put(ev, fexprStr);
     }
 
-    public void addEvent(String featName, String event, FExpression fexpr) {
+    public void addEvent(String featName, String event, String action, FExpression fexpr) {
         BehavioralFeature feature = getFeature(featName);
         if (feature == null) {
             throw new BehavioralFeatureModelDefinitionException("Events should always be associated to one feature of the BFM.");
         }
 
-        Event ev = feature.addEvent(event, fexpr);
+        Event ev = feature.addEvent(event, action, fexpr.applySimplification().toCnf());
         featureMap.put(ev, feature);
     }
 
@@ -119,14 +119,12 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
 
     public void addCausality(String featName, Set<String> bundle, String target) {
 
-        Event trg = new Event(target);
-        Set<Event> bndl = new HashSet<>();
-        for(String name: bundle) {
-            Event event = new Event(name);
-            bndl.add(event);
+        BehavioralFeature feature = this.getFeature(featName);
+        if(feature != null){
+            this.addCausality(feature, bundle, target);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Causalities should always be associated to one feature of the BFM.");
         }
-
-        this.addCausality(featName,bndl,trg);
     }
 
     public void addCausality(String featName, Set<Event> bundle, Event target) {
@@ -150,10 +148,12 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
 
     public void addCausality(BehavioralFeature feat, Set<String> bundle, String target) {
 
-        Event trg = new Event(target);
+        //Event trg = new Event(target);
+        Event trg = feat.getEvent(target);
         Set<Event> bndl = new HashSet<>();
         for(String name: bundle) {
-            Event event = new Event(name);
+            //Event event = new Event(name);
+            Event event = feat.getEvent(name);
             bndl.add(event);
         }
 
@@ -180,11 +180,16 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
     }
 
     public void addConflict(String featName, String event1, String event2) {
-        this.addConflict(featName, new Event(event1), new Event(event2));
+        BehavioralFeature feature = this.getFeature(featName);
+        if(feature != null){
+            this.addConflict(feature, event1, event2);
+        } else {
+            throw new BehavioralFeatureModelDefinitionException("Conflicts should always be associated to one feature of the BFM.");
+        }
     }
 
     public void addConflict(BehavioralFeature feat, String event1, String event2) {
-        this.addConflict(feat, new Event(event1), new Event(event2));
+        this.addConflict(feat, feat.getEvent(event1), feat.getEvent(event2));
     }
 
     public void addConflict(String featName, Event event1, Event event2) {
@@ -282,10 +287,15 @@ public class BehavioralFeatureModelFactory extends XMLModelFactory<BehavioralFea
             if (o instanceof Event) {
                 e = (Event) o;
             } else if (o instanceof String) {
-                e = new Event((String) o);
+                e = allEvents.stream().filter(event -> event.getName().equals(o)).findAny().orElse(null);
+                if(e == null) {
+                    Preconditions.checkArgument(allEvents.contains(e),
+                            "All events of a conflict should belong to the BFM!");
+                }
             } else {
                 throw new IllegalArgumentException(
-                        "Conflict collections must contain only Event or String elements.");
+                        //"Conflict collections must contain only Event or String elements.");
+                        "Conflict collections must contain only Event elements.");
             }
             Preconditions.checkArgument(allEvents.contains(e),
                     "All events of a conflict should belong to the BFM!");

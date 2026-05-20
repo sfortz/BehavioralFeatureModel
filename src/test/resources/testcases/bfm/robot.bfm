@@ -3,12 +3,12 @@
 <bfm namespace="CleaningRobot">
 	<feature name="Robot">
 		<events>
-			<event id="charge"/>
+			<event id="charge" action="charge"/>
 		</events>
 		<optional>
 			<feature name="Mapping">
 				<events>
-					<event id="map" fexpression="mapping"/>
+					<event id="map" action="map" fexpression="mapping"/>
 				</events>
 			</feature>
 		</optional>
@@ -18,12 +18,12 @@
 				<alternative>
 					<feature name="Lidar">
 						<events>
-							<event id="liDet" fexpression="lidar"/>
+							<event id="liDet" action="liDet" fexpression="lidar"/>
 						</events>
 					</feature>
 					<feature name="Camera">
 						<events>
-							<event id="caDet" fexpression="camera"/>
+							<event id="caDet" action="caDet" fexpression="camera"/>
 						</events>
 					</feature>
 				</alternative>
@@ -33,10 +33,11 @@
 		<mandatory>
 			<feature name="Cleaning">
 				<events>
-					<event id="move"/>
-					<event id="goAround"/>
-					<event id="clean"/>
+					<event id="move" action="move"/>
+					<event id="goAround"  action="goAround"/>
+					<event id="clean" action="clean"/>
 				</events>
+
 				<event_constraints>
 					<causalities>
 						<causality target="clean">

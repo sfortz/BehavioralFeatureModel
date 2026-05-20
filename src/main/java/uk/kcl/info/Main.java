@@ -19,8 +19,7 @@
 package uk.kcl.info;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 import be.vibes.solver.FeatureModel;
@@ -33,11 +32,12 @@ import be.vibes.ts.io.dot.FeaturedTransitionSystemDotHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.kcl.info.bfm.*;
-import uk.kcl.info.bfm.exceptions.BehavioralFeatureModelDefinitionException;
+import uk.kcl.info.bfm.compositions.BFMParallelComposer;
+import uk.kcl.info.bfm.compositions.FTSParallelComposer;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
-import uk.kcl.info.utils.translators.*;
+import uk.kcl.info.bfm.translators.*;
 
 public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
@@ -57,34 +57,220 @@ public class Main {
     private static final String FES_OUTPUT_DIR = FES_DIR + "output/";
     private static final String BES_OUTPUT_DIR = BES_DIR + "output/";
 
-    public static void main(String[] args) throws IOException, TransitionSystemDefinitionException, BehavioralFeatureModelDefinitionException, BundleEventStructureDefinitionException {
+    private static final Map<String, FeaturedTransitionSystem> ftsCache = new HashMap<>();
+    private static final Map<String, BehavioralFeatureModel> bfmCache = new HashMap<>();
+
+    public static void main(String[] args) throws Exception {
 
         LOG.info("convertBesToTs");
         convertBesToTs("robot");
-        //convertBesToTs("robot-linear");
 
         LOG.info("convertFesToFts");
         convertFesToFts("robot", "robot");
-        //convertFesToFts("robot", "robot-linear");
 
         LOG.info("convertBfmToFm");
         convertBfmToFm("robot");
         LOG.info("convertBfmToFts");
         convertBfmToFts("robot");
-        //convertBfmToFts("robot-linear");
 
         LOG.info("convertTsToBes");
-        convertTsToBes("robot-linear");
+        convertTsToBes("robot");
         convertTsToBes("parallel");
 
         LOG.info("convertFtsToFes");
-        convertFtsToFes("robot", "robot-linear");
+        convertFtsToFes("robot", "robot");
+
+        LOG.info("convertFtsToFes");
+        for (Map.Entry<String, String> entry : getSystems().entrySet()) {
+            convertFtsToFes(entry.getValue(), entry.getKey());
+        }
 
         LOG.info("convertFtsToBfm");
         for (Map.Entry<String, String> entry : getSystems().entrySet()) {
             convertFtsToBfm(entry.getValue(), entry.getKey());
         }
+
+        List<String> svmSystems = List.of("coffee","soup","soda");
+        List<String> minePumpSystems = List.of("controller_state", "controller", "methane", "pump", "water");
+
+        generateCombinations("/vm/", svmSystems,0, new ArrayList<>());
+        ftsCache.clear();
+        bfmCache.clear(); //TODO: If you have some memory issues, improve memoization
+        generateCombinations("/minepump/", minePumpSystems,0, new ArrayList<>());
     }
+
+    private static final Set<String> MANDATORY_COMPONENTS = Set.of("controller","controller_state","coffee","soup","soda");
+
+    private static final Set<Set<String>> FORBIDDEN_COMBINATIONS = Set.of(
+            Set.of("controller", "controller_state")
+    );
+
+    private static boolean isValidCombination(List<String> combo) {
+        Set<String> comboSet = new HashSet<>(combo);
+
+        return MANDATORY_COMPONENTS.stream().anyMatch(comboSet::contains)
+                && FORBIDDEN_COMBINATIONS.stream().noneMatch(comboSet::containsAll);
+    }
+
+    private static void generateCombinations(String sub_dir, List<String> systems, int start, List<String> current) throws Exception {
+
+        if (current.size() >= 2 && isValidCombination(current)) {
+            //runOldEvaluation(sub_dir, new ArrayList<>(current));
+            runEvaluation(sub_dir, new ArrayList<>(current));
+        }
+
+        for (int i = start; i < systems.size(); i++) {
+            current.add(systems.get(i));
+            generateCombinations(sub_dir, systems, i + 1, current);
+            current.removeLast();
+        }
+    }
+
+    public static void runEvaluation(String sub_dir, List<String> systems) throws Exception {
+
+        List<String> sorted = new ArrayList<>(systems);
+        Collections.sort(sorted);
+        String systemName = String.join("_", sorted);
+
+        LOG.info("************ Processing system: {} in Sync Mode ************", systemName);
+        FeaturedTransitionSystem ftsSync = getOrComputeFts(sub_dir, sorted, true);
+        BehavioralFeatureModel bfmSync = getOrComputeBfm(sub_dir, sorted, true);
+        logSummary(ftsSync, bfmSync);
+
+        LOG.info("************ Processing system: {} in Interleaving Mode ************", systemName);
+        FeaturedTransitionSystem ftsAsync = getOrComputeFts(sub_dir, sorted, false);
+        BehavioralFeatureModel bfmAsync = getOrComputeBfm(sub_dir, sorted, false);
+        logSummary(ftsAsync, bfmAsync);
+    }
+
+    private static FeaturedTransitionSystem getOrComputeFts(String subDir, List<String> systems, boolean sync) throws TransitionSystemDefinitionException, IOException {
+
+        String name = String.join("_", systems);
+        String key = name + "_" + sync;
+
+        if (ftsCache.containsKey(key)) {
+            return ftsCache.get(key);
+        }
+
+        String path = FTS_OUTPUT_DIR + subDir + name + sync + ".fts";
+
+        FeaturedTransitionSystem result;
+
+        if (systems.size() == 1) {
+            result = loadFts(subDir + systems.getFirst());
+        } else {
+            // Split: (A,B,C,D) -> (A,B,C) + D
+            List<String> prefix = new ArrayList<>(systems.subList(0, systems.size() - 1));
+            String last = systems.getLast();
+
+            FeaturedTransitionSystem left = getOrComputeFts(subDir, prefix, sync);
+            FeaturedTransitionSystem right = loadFts(subDir + last);
+
+            result = new FTSParallelComposer().compose(left, right, sync);
+        }
+
+        ensureParentDirExists(path);
+        XmlSaverUtility.save(result, path);
+        ftsCache.put(key, result);
+
+        return result;
+    }
+
+    private static BehavioralFeatureModel getOrComputeBfm(String subDir, List<String> systems, boolean sync) {
+
+        String name = String.join("_", systems);
+        String key = name + "_" + sync;
+
+        if (bfmCache.containsKey(key)) {
+            return bfmCache.get(key);
+        }
+
+        String path = BFM_OUTPUT_DIR + subDir + name + sync + ".bfm";
+
+        BehavioralFeatureModel result;
+
+        if (systems.size() == 1) {
+            result = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + subDir + systems.getFirst() + ".bfm"));
+        } else {
+            // Split: (A,B,C,D) -> (A,B,C) + D
+            List<String> prefix = new ArrayList<>(systems.subList(0, systems.size() - 1));
+            String last = systems.getLast();
+
+            BehavioralFeatureModel left = getOrComputeBfm(subDir, prefix, sync);
+            BehavioralFeatureModel right = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + subDir + last + ".bfm"));
+
+            try {
+                result = new BFMParallelComposer().compose(left, right, sync);
+            } catch (Exception e) {
+                LOG.warn("Compose failed for {} (sync={}), retrying without cache", name, sync, e);
+                bfmCache.remove(key); // important: invalidate current node only
+                BehavioralFeatureModel freshLeft = getOrComputeBfm(subDir, new ArrayList<>(prefix), sync);
+                BehavioralFeatureModel freshRight = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + subDir + last + ".bfm"));
+                result = new BFMParallelComposer().compose(freshLeft, freshRight, sync);
+            }
+        }
+
+        ensureParentDirExists(path);
+        XmlSaverUtility.save(result, path);
+        bfmCache.put(key, result);
+
+        return result;
+    }
+
+
+    public static void runOldEvaluation(String sub_dir, List<String> systems) throws IOException, TransitionSystemDefinitionException {
+
+        List<String> sorted = new ArrayList<>(systems);
+        Collections.sort(sorted);
+        String systemName = String.join("_", sorted);
+
+        List<FeaturedTransitionSystem> ftsList = new ArrayList<>();
+        List<BehavioralFeatureModel> bfmList = new ArrayList<>();
+
+        for(String system: systems){
+            ftsList.add(loadFts(sub_dir + system));
+            bfmList.add(XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_OUTPUT_DIR + sub_dir +  system + ".bfm")));
+        }
+
+        LOG.info("************ Processing system: {} ************", systemName);
+
+        // Compose
+        evaluateComposition(sub_dir, systemName, ftsList, bfmList, true);
+        evaluateComposition(sub_dir, systemName, ftsList, bfmList, false);
+    }
+
+    private static void evaluateComposition(String sub_dir, String systemName, List<FeaturedTransitionSystem> ftsList, List<BehavioralFeatureModel> bfmList, boolean sync) throws TransitionSystemDefinitionException {
+
+        Iterator<FeaturedTransitionSystem> ftsQueue = ftsList.iterator();
+        Iterator<BehavioralFeatureModel> bfmQueue = bfmList.iterator();
+        FTSParallelComposer ftsComposer = new FTSParallelComposer();
+        FeaturedTransitionSystem ftsResult = ftsQueue.next();
+
+        while (ftsQueue.hasNext()) {
+            ftsResult = ftsComposer.compose(ftsResult, ftsQueue.next(), sync);
+        }
+
+        BFMParallelComposer bfmComposer = new BFMParallelComposer();
+        BehavioralFeatureModel bfmResult = bfmQueue.next();
+
+        while (bfmQueue.hasNext()) {
+            bfmResult = bfmComposer.compose(bfmResult, bfmQueue.next(), sync);
+        }
+
+        logSummary(ftsResult, bfmResult);
+
+        // Save output
+        String filename = systemName + "_" + sync;
+        String ftsOutputPath = FTS_OUTPUT_DIR + sub_dir + filename + ".fts";
+        //String ftsOutputPath = FTS_OUTPUT_DIR + sub_dir + systemName + "_" + sync + ".fts";
+        ensureParentDirExists(ftsOutputPath);
+        XmlSaverUtility.save(ftsResult, ftsOutputPath);
+        String bfmOutputPath = BFM_OUTPUT_DIR + sub_dir + filename + ".bfm";
+        //String bfmOutputPath = BFM_OUTPUT_DIR + sub_dir + systemName + "_" + sync + ".bfm";
+        ensureParentDirExists(bfmOutputPath);
+        XmlSaverUtility.save(bfmResult, bfmOutputPath);
+    }
+
 
     public static void convertBfmToFm(String system) {
         BehavioralFeatureModel bfm = XmlLoaderUtility.loadBehavioralFeatureModel(new File(BFM_DIR + system + ".bfm"));
@@ -177,7 +363,7 @@ public class Main {
         String outputPath = FES_OUTPUT_DIR + system + ".fes";
 
         convertAndSave(
-                fts, new FtsToFesConverter(fm, fts),
+                fts, new FtsToFesConverter<>(fm, fts),
                 (output, path) -> {
                     try {
                         XmlSaverUtility.save(output, path);
@@ -225,6 +411,12 @@ public class Main {
         }
     }
 
+    private static <In, Out> void logSummary(In input, Out output) {
+        logModelSize(input);
+        logModelSize(output);
+        LOG.info("\n");
+    }
+    
     private static <In, Out> void logSummary(In input, Out output, double executionTime) {
         logModelSize(input);
         logModelSize(output);
@@ -234,13 +426,13 @@ public class Main {
     private static <ModelType> void logModelSize(ModelType model) {
         switch (model) {
             case BehavioralFeatureModel bfm ->
-                    logBesStructure("BFM", bfm.getEventsCount(), bfm.getConflictsCount(), bfm.getMaxConflictSize(), bfm.getCausalitiesCount());
+                    logBesStructure("BFM", bfm.getEventsCount(), bfm.getConflictsCount(), bfm.getCausalitiesCount()); //  bfm.getMaxConflictSize()
             case FeaturedEventStructure<?> fes ->
-                    logBesStructure("FES", fes.getEventsCount(), fes.getConflictsCount(), fes.getMaxConflictSize(), fes.getCausalitiesCount());
+                    logBesStructure("FES", fes.getEventsCount(), fes.getConflictsCount(), fes.getCausalitiesCount()); //  fes.getMaxConflictSize(),
             case BundleEventStructure bes ->
-                    logBesStructure("BES", bes.getEventsCount(), bes.getConflictsCount(), bes.getMaxConflictSize(), bes.getCausalitiesCount());
+                    logBesStructure("BES", bes.getEventsCount(), bes.getConflictsCount(), bes.getCausalitiesCount()); //, bes.getMaxConflictSize()
             case FeaturedTransitionSystem fts ->
-                    logTsStructure("FTS", fts.getActionsCount(), fts.getStatesCount(), fts.getTransitionsCount());
+                    logTsStructure("FTS", fts.getActionsCount(), fts.getStatesCount(), fts.getTransitionsCount()); //
             case TransitionSystem ts ->
                     logTsStructure("TS", ts.getActionsCount(), ts.getStatesCount(), ts.getTransitionsCount());
             case FeatureModel<?> fm -> {
@@ -252,38 +444,44 @@ public class Main {
         }
     }
 
-    private static void logTsStructure(String label, int actions, int states, int transitions) {
-        int total = actions + states + transitions;
-        LOG.info("[{}] - Actions: {}, States: {}, Transitions: {}, Total: {}",
-                label, actions, states, transitions, total);
+
+    public static int log2(int n) {
+        // calculate log2 N indirectly using log() method and rounding up
+        return (int) Math.ceil((Math.log(n) / Math.log(2)));
     }
 
-    private static void logBesStructure(String label, int events, int conflicts, int maxConflictSize, int causalities) {
+
+
+    private static void logTsStructure(String label, int actions, int states, int transitions) {
+        int total = states + transitions;
+        int bitsPerTransition = 2 * log2(states) + log2(actions);
+        int totaltBits = bitsPerTransition * transitions; // log2(actions) +  log2(states) +
+        LOG.info("[{}] - States: {}, Transitions: {}, Total: {}, bits/transition: {}, total bits: {}",
+                label, states, transitions, total, bitsPerTransition, totaltBits);
+    }
+
+    private static void logBesStructure(String label, int events, int conflicts, int causalities) {
         int total = events + conflicts + causalities;
-        LOG.info("[{}] - Events: {}, Conflicts: {}, Max Conflict Size: {}, Causalities: {}, Total: {}",
-                label, events, conflicts, maxConflictSize, causalities, total);
+        int bitsPerConflict = 2*events;
+        int bitsPerCausality = events + log2(events);
+        int totaltBits = bitsPerConflict * conflicts + bitsPerCausality * causalities;
+        LOG.info("[{}] - Events: {}, Conflicts: {}, Causalities: {}, Total: {}, bits/conflict: {}, bits/causality: {}, total bits: {}",
+                label, events, conflicts, causalities, total, bitsPerConflict, bitsPerCausality, totaltBits);
     }
 
     public static Map<String, String> getSystems() {
-        Map<String, String> systems = new HashMap<>();
+        Map<String, String> systems = new LinkedHashMap<>();
 
         systems.put("cpterminal", "cpterminal");
-        systems.put("robot-linear", "robot");
+        systems.put("robot", "robot");
         systems.put("/vm/coffee", "coffee");
         systems.put("/vm/soup", "soup");
         systems.put("/vm/soda", "soda");
-        systems.put("/vm/coffeesoda_synchro", "coffeesoda");
-        systems.put("/vm/coffeesoup_synchro", "coffeesoup");
-        systems.put("/vm/sodasoup_synchro", "sodasoup");
-        systems.put("/vm/coffeesoup", "coffeesoup");
-        systems.put("/vm/sodasoup", "sodasoup");
-        systems.put("/vm/coffeesoda", "coffeesoda");
-        systems.put("/vm/svm_synchro", "svm");
-        systems.put("/vm/svm", "svm");
 
-        String minepumpPath = "minepump/";
+        String minepumpPath = "/minepump/";
+
         File minepumpDir = new File(FTS_DIR + minepumpPath);
-        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith(".dot"));
+        File[] ftsFiles = minepumpDir.listFiles((d, name) -> name.endsWith(".fts"));
 
         if (ftsFiles == null) {
             String msg = "Directory not found or IO error: " + minepumpDir;

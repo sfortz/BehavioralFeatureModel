@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fts>
+    <start>state0</start>
+    <states>
+        <state id="state0">
+            <transition action="waterRise" target="state2" fexpression="true"></transition>
+            <transition action="pumpRunning" target="state3" fexpression="true"></transition>
+        </state>
+        <state id="state2">
+            <transition action="pumpRunning" target="state1" fexpression="true"></transition>
+        </state>
+        <state id="state1"></state>
+        <state id="state3">
+            <transition action="waterRise" target="state1" fexpression="true"></transition>
+        </state>
+    </states>
+</fts>

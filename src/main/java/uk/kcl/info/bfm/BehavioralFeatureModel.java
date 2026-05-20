@@ -35,9 +35,11 @@ import java.util.stream.Collectors;
 
 public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> implements FeaturedEventStructure<BehavioralFeature> {
 
-    private final Table<Set<Event>, Event, CausalityRelation> causalityTable;
+    private transient final Table<Set<Event>, Event, CausalityRelation> causalityTable;
 
-    private Map<Set<Event>, FExpression> configFexpressions;
+    private transient Map<Set<Event>, FExpression> configFexpressions;
+
+    private final transient Map<String, List<Event>> actionToEvents = new HashMap<>();
 
     protected BehavioralFeatureModel() {
         super();
@@ -99,6 +101,11 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     }
 
     @Override
+    public Iterator<String> actions() {
+        return this.getRootFeature().recursiveActions().iterator();
+    }
+
+    @Override
     public BehavioralFeature getFeature(Event event){
         Preconditions.checkNotNull(event, "Event may not be null!");
         return getRecursiveFeature(this.getRootFeature(), event);
@@ -118,10 +125,12 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
 
     @Override
     public Event getEvent(String name) {
-        Event ev = new Event(name);
-        if (this.getRootFeature().getAllRecursiveEvents().contains(ev)){
-            return ev;
-        } else {return null;}
+        for (Event ev : this.getRootFeature().getAllRecursiveEvents()) {
+            if (ev.getName().equals(name)) {
+                return ev;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -138,6 +147,11 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     @Override
     public List<Event> getAllEvents() {
         return this.getRootFeature().getAllRecursiveEvents().stream().toList();
+    }
+
+    @Override
+    public List<String> getAllActions() {
+        return this.getRootFeature().recursiveActions().toList();
     }
 
     @Override
@@ -167,6 +181,18 @@ public class BehavioralFeatureModel extends FeatureModel<BehavioralFeature> impl
     @Override
     public Iterator<CausalityRelation> causalities() {
         return this.causalityTable.values().iterator();
+    }
+
+    @Override
+    public Map<String, List<Event>> getActionEventMapping() {
+
+        if (actionToEvents.isEmpty()) {
+            for (Event e : this.getAllEvents()) {
+                String action = e.getAction();
+                actionToEvents.computeIfAbsent(action, k -> new ArrayList<>()).add(e);
+            }
+        }
+        return actionToEvents;
     }
 
     @Override

@@ -1,0 +1,38 @@
+digraph G {
+rankdir=LR;
+state0[ label = "s0", style=filled, color=green ];
+state1 [ label = "s3" ];
+state1 -> state2 [ label=" skip_soup/(!Ringtone || !Cup) " ];
+state1 -> state2 [ label=" cup_present/Cup " ];
+state1 -> state3 [ label=" no_cup/Cup " ];
+state4 [ label = "s4" ];
+state4 -> state3 [ label=" no_cup/Cup " ];
+state4 -> state5 [ label=" skip_soup/(!Ringtone || !Cup) " ];
+state4 -> state5 [ label=" cup_present/Cup " ];
+state6 [ label = "s11" ];
+state6 -> state7 [ label=" take_soup/VendingMachine " ];
+state6 -> state7 [ label=" bad_luck/!Cup " ];
+state7 [ label = "s5" ];
+state3 [ label = "s6" ];
+state3 -> state7 [ label=" cancel_soup/CancelPurchase " ];
+state8 [ label = "s10" ];
+state8 -> state6 [ label=" ring_soup/Ringtone " ];
+state8 -> state6 [ label=" skip_soup/(!Ringtone || !Cup) " ];
+state9 [ label = "s7" ];
+state9 -> state8 [ label=" pour_pea/PeaSoup " ];
+state2 [ label = "s8" ];
+state2 -> state8 [ label=" pour_chicken/ChickenSoup " ];
+state5 [ label = "s9" ];
+state5 -> state8 [ label=" pour_tomato/TomatoSoup " ];
+state0 -> state10 [ label=" insert_euro_soup/Euro " ];
+state0 -> state10 [ label=" insert_dollar_soup/Dollar " ];
+state10 [ label = "s1" ];
+state10 -> state7 [ label=" cancel_soup/CancelPurchase " ];
+state10 -> state1 [ label=" chicken/ChickenSoup " ];
+state10 -> state11 [ label=" pea/PeaSoup " ];
+state10 -> state4 [ label=" tomato/TomatoSoup " ];
+state11 [ label = "s2" ];
+state11 -> state9 [ label=" skip_soup/(!Ringtone || !Cup) " ];
+state11 -> state9 [ label=" cup_present/Cup " ];
+state11 -> state3 [ label=" no_cup/Cup " ];
+}

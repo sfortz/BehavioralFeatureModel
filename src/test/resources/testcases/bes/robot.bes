@@ -2,13 +2,13 @@
 <bes xmlns:bes="http://www.unamur.be/xml/ts/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<events>
-		<event id="map"/>
-		<event id="liDet"/>
-		<event id="caDet"/>
-		<event id="move"/>
-		<event id="goAround"/>
-		<event id="clean"/>
-		<event id="charge"/>
+		<event id="map" action="map"/>
+		<event id="liDet" action="liDet"/>
+		<event id="caDet" action="caDet"/>
+		<event id="move" action="move"/>
+		<event id="goAround" action="goAround"/>
+		<event id="clean" action="clean"/>
+		<event id="charge" action="charge"/>
 	</events>
 
 	<causalities>

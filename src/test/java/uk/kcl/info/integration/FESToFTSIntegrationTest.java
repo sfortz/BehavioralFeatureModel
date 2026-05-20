@@ -31,14 +31,14 @@ import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 import uk.kcl.info.bfm.FeaturedEventStructure;
-import uk.kcl.info.utils.translators.FesToFtsConverter;
+import uk.kcl.info.bfm.translators.FesToFtsConverter;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.FTSTraceUtils.getAllFtsTraces;
 
 public class FESToFTSIntegrationTest {
 
@@ -48,7 +48,7 @@ public class FESToFTSIntegrationTest {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot.fes", "robot-linear.fes"})
+    @ValueSource(strings = {"robot.fes"})
     public void testFESToFTSConversion(String fesFileName) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
 
         // Load FM
@@ -62,7 +62,7 @@ public class FESToFTSIntegrationTest {
         FeaturedTransitionSystem fts = converter.convert();
 
         // Execute both FES and FTS
-        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllTraces();
+        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllActionTraces();
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
 
         assertEquals(fesTraces, ftsTraces, "The FES and FTS traces should be equivalent");

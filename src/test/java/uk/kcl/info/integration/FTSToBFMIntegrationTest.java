@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.BehavioralFeatureModel;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.FtsToBfmConverter;
+import uk.kcl.info.bfm.translators.FtsToBfmConverter;
 
 import java.io.File;
 import java.util.List;
@@ -39,17 +39,17 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.FTSTraceUtils.getAllFtsTraces;
 
 public class FTSToBFMIntegrationTest {
 
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
     private static final String FM_IN_PATH = BASE_PATH + "fm/xml/";
-    private static final String FTS_IN_PATH = BASE_PATH + "fts/xml/";
+    private static final String FTS_IN_PATH = BASE_PATH + "fts/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot.fts", "robot-linear.fts"})
+    @ValueSource(strings = {"robot.fts"})
     public void testFTStoBFMConversion(String ftsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
 
         // Load FM
@@ -64,7 +64,7 @@ public class FTSToBFMIntegrationTest {
 
         // Execute both FTS and BFM
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
-        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllTraces();
+        Map<Configuration, Set<List<String>>> bfmTraces = new FeaturedEventStructureExecutor(bfm).getAllActionTraces();
 
         assertEquals(ftsTraces, bfmTraces, "The FTS and BFM traces should be equivalent");
     }

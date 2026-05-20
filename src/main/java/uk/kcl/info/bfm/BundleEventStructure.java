@@ -18,17 +18,25 @@
 
 package uk.kcl.info.bfm;
 
+import be.vibes.ts.Action;
+
 import java.util.*;
 
 public interface BundleEventStructure {
+
+    Iterator<String> actions();
 
     Iterator<Event> events();
 
     List<Event> getAllEvents();
 
+    List<String> getAllActions();
+
     Event getEvent(String var1);
 
     Iterator<CausalityRelation> causalities();
+
+    Map<String, List<Event>> getActionEventMapping();
 
     ConflictSet getConflictSetCopy();
 

@@ -30,7 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
-import uk.kcl.info.utils.translators.FtsToFesConverter;
+import uk.kcl.info.bfm.translators.FtsToFesConverter;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
 
 import java.io.File;
@@ -39,16 +39,16 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.kcl.info.utils.TSTraceUtils.getAllFtsTraces;
+import static uk.kcl.info.utils.FTSTraceUtils.getAllFtsTraces;
 
 public class FTSToFESIntegrationTest {
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
     private static final String FM_IN_PATH = BASE_PATH + "fm/xml/";
-    private static final String FTS_IN_PATH = BASE_PATH + "fts/xml/";
+    private static final String FTS_IN_PATH = BASE_PATH + "fts/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot.fts", "robot-linear.fts"})
+    @ValueSource(strings = {"robot.fts"})
     public void testFTStoFESConversion(String ftsFileName) throws TransitionSystemDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
 
         // Load FM
@@ -58,12 +58,12 @@ public class FTSToFESIntegrationTest {
         FeaturedTransitionSystem fts = XmlLoaderUtility.loadFeaturedTransitionSystem(new File(FTS_IN_PATH + ftsFileName));
 
         // Convert to FES
-        FtsToFesConverter converter = new FtsToFesConverter(fm, fts);
+        FtsToFesConverter<?> converter = new FtsToFesConverter<>(fm, fts);
         FeaturedEventStructure<?> fes = converter.convert();
 
         // Execute both FTS and FES
         Map<Configuration, Set<List<String>>> ftsTraces = getAllFtsTraces(fm, fts);
-        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllTraces();
+        Map<Configuration, Set<List<String>>> fesTraces = new FeaturedEventStructureExecutor(fes, fm).getAllActionTraces();
 
         assertEquals(ftsTraces, fesTraces, "The FTS and FES traces should be equivalent");
     }

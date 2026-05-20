@@ -42,6 +42,7 @@ public class BundleEventStructureHandler implements XmlEventHandler {
     public static final String CONFLICT_TAG = "conflict";
 
     public static final String ID_ATTR = "id";
+    public static final String ACTION_ATTR = "action";
     public static final String TARGET_ATTR = "target";
 
     private static final Logger LOG = LoggerFactory.getLogger(BundleEventStructureHandler.class);
@@ -132,7 +133,8 @@ public class BundleEventStructureHandler implements XmlEventHandler {
             conflictStack.peek().add(id);
         } else {
             // Otherwise, it's a standalone event declaration
-            factory.addEvent(id);
+            String action = element.getAttributeByName(QName.valueOf(ACTION_ATTR)).getValue();
+            factory.addEvent(id, action);
         }
     }
 

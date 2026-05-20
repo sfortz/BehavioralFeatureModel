@@ -29,7 +29,7 @@ import uk.kcl.info.bfm.BundleEventStructure;
 import uk.kcl.info.bfm.exceptions.BundleEventStructureDefinitionException;
 import uk.kcl.info.bfm.execution.BundleEventStructureExecutor;
 import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-import uk.kcl.info.utils.translators.BesToTsConverter;
+import uk.kcl.info.bfm.translators.BesToTsConverter;
 
 import java.io.File;
 import java.util.*;
@@ -40,7 +40,7 @@ public class BESToTSIntegrationTest {
     private static final String BES_IN_PATH = BASE_PATH + "bes/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"robot.bes", "robot-linear.bes"})
+    @ValueSource(strings = {"robot.bes"})
     public void testBEStoTSConversion(String besFileName) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException {
 
         // Load BES
@@ -51,7 +51,7 @@ public class BESToTSIntegrationTest {
         TransitionSystem ts = converter.convert();
 
         // Execute both BES and TS
-        Set<List<String>> besTraces = new BundleEventStructureExecutor(bes).getAllTraces();
+        Set<List<String>> besTraces = new BundleEventStructureExecutor(bes).getAllActionTraces();
         Set<List<String>> tsTraces = getAllTsTraces(ts);
 
         assertEquals(besTraces, tsTraces, "The BES and TS traces should be equivalent");

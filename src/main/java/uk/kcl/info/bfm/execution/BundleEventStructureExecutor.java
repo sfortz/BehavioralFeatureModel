@@ -18,12 +18,7 @@
 
 package uk.kcl.info.bfm.execution;
 
-import uk.kcl.info.bfm.BundleEventStructure;
-import uk.kcl.info.bfm.CausalityRelation;
-import uk.kcl.info.bfm.Event;
-import uk.kcl.info.bfm.io.xml.XmlLoaderUtility;
-
-import java.io.File;
+import uk.kcl.info.bfm.*;
 import java.util.*;
 
 public class BundleEventStructureExecutor {
@@ -34,17 +29,80 @@ public class BundleEventStructureExecutor {
         this.bes = bes;
     }
 
+    public boolean canExecute(List<Event> trace) {
+        return canExecute(trace, 0, new HashSet<>());
+    }
+
+    private boolean canExecute(List<Event> trace, int index, Set<Event> executed) {
+
+        // --- success ---
+        if (index == trace.size()) {
+            return true;
+        }
+
+        String action = trace.get(index).getAction();
+
+        List<Event> candidates = bes.getActionEventMapping().get(action);
+        if (candidates == null || candidates.isEmpty()) {
+            return false;
+        }
+
+        // --- try all matching events ---
+        for (Event candidate : candidates) {
+
+            // skip already executed
+            if (executed.contains(candidate)) continue;
+
+            // conflict check
+            if (isInConflictWithExecuted(bes, candidate, executed)) continue;
+
+            // causality check
+            if (!areAllCausalPredecessorsExecuted(bes, candidate, executed)) continue;
+
+            // --- choose ---
+            executed.add(candidate);
+
+            if (canExecute(trace, index + 1, executed)) {
+                return true;
+            }
+
+            // --- undo ---
+            executed.remove(candidate);
+        }
+
+        // no candidate worked
+        return false;
+    }
+
+
+    /**
+     * Return all traces as sequences of action names.
+     * This method should explore the BES configurations respecting causality and conflict.
+     */
+    public Set<List<String>> getAllActionTraces() {
+        Set<List<Event>> eventTraces = new HashSet<>();
+        Set<List<String>> actionTraces = new HashSet<>();
+        exploreConfigurations(new ArrayList<>(), new HashSet<>(), eventTraces);
+
+        for (List<Event> eventTrace : eventTraces) {
+            List<String> actionTrace = eventTrace.stream().map(Event::getAction).toList();
+            actionTraces.add(actionTrace);
+        }
+
+        return actionTraces;
+    }
+
     /**
      * Return all traces as sequences of event names.
      * This method should explore the BES configurations respecting causality and conflict.
      */
-    public Set<List<String>> getAllTraces() {
-        Set<List<String>> traces = new HashSet<>();
+    public Set<List<Event>> getAllEventTraces() {
+        Set<List<Event>> traces = new HashSet<>();
         exploreConfigurations(new ArrayList<>(), new HashSet<>(), traces);
         return traces;
     }
 
-    private void exploreConfigurations(List<String> currentTrace, Set<Event> executed, Set<List<String>> traces) {
+    private void exploreConfigurations(List<Event> currentTrace, Set<Event> executed, Set<List<Event>> traces) {
         // Add current trace to traces
         traces.add(new ArrayList<>(currentTrace));
 
@@ -52,37 +110,97 @@ public class BundleEventStructureExecutor {
         for (Event event : bes.getAllEvents()) {
             if (executed.contains(event)) continue;
 
-            // Check causality: all causal predecessors executed
-            if (!areAllCausalPredecessorsExecuted(event, executed)) continue;
-
             // Check conflicts: event not in conflict with executed events
-            if (isInConflictWithExecuted(event, executed)) continue;
+            if (isInConflictWithExecuted(bes, event, executed)) continue;
+
+            // Check causality: all causal predecessors executed
+            if (!areAllCausalPredecessorsExecuted(bes, event, executed)) continue;
 
             // Execute this event next
-            List<String> newTrace = new ArrayList<>(currentTrace);
-            newTrace.add(event.getName());
+            List<Event> newTrace = new ArrayList<>(currentTrace);
+            newTrace.add(event);
             Set<Event> newExecuted = new HashSet<>(executed);
             newExecuted.add(event);
             exploreConfigurations(newTrace, newExecuted, traces);
         }
     }
 
-    private boolean areAllCausalPredecessorsExecuted(Event event, Set<Event> executed) {
-        Iterator<CausalityRelation> causals = bes.getAllCausalitiesOfEvent(event);
-        while (causals.hasNext()) {
-            CausalityRelation cr = causals.next();
-            // For this bundle to be satisfied, at least one event in the bundle must be executed
-            boolean bundleSatisfied = cr.getBundle().stream().anyMatch(executed::contains);
-            if (!bundleSatisfied) return false; // If any bundle is unsatisfied, event cannot execute
+    public Set<List<String>> getRandomActionTraces(int maxTraces, int maxAttempts) {
+        Set<List<Event>> eventTraces = getRandomEventTraces(maxTraces, maxAttempts);
+        Set<List<String>> actionTraces = new HashSet<>();
+
+        for (List<Event> trace : eventTraces) {
+            List<String> actions = trace.stream().map(Event::getAction).toList();
+            actionTraces.add(actions);
         }
-        return true; // All bundles satisfied
+
+        return actionTraces;
     }
 
-    private boolean isInConflictWithExecuted(Event event, Set<Event> executed) {
+    public Set<List<Event>> getRandomEventTraces(int maxTraces, int maxAttempts) {
+        Set<List<Event>> traces = new HashSet<>();
+        Random random = new Random();
+
+        int attempts = 0;
+        maxAttempts = maxTraces * maxAttempts; // avoid infinite loops if duplicates
+
+        while (traces.size() < maxTraces && attempts < maxAttempts) {
+            traces.add(generateRandomEventTrace(random));
+            attempts++;
+        }
+
+        return traces;
+    }
+
+    private List<Event> generateRandomEventTrace(Random random) {
+        List<Event> trace = new ArrayList<>();
+        Set<Event> executed = new HashSet<>();
+
+        while (true) {
+            List<Event> enabled = getEnabledEvents(bes, executed);
+
+            if (enabled.isEmpty()) break;
+
+            Event chosen = enabled.get(random.nextInt(enabled.size()));
+            trace.add(chosen);
+            executed.add(chosen);
+        }
+
+        return trace;
+    }
+
+    protected static List<Event> getEnabledEvents(BundleEventStructure bes, Set<Event> executed) {
+        List<Event> enabled = new ArrayList<>();
+
+        for (Event event : bes.getAllEvents()) {
+            if (executed.contains(event)) continue;
+            if (isInConflictWithExecuted(bes, event, executed)) continue;
+            if (!areAllCausalPredecessorsExecuted(bes, event, executed)) continue;
+
+            enabled.add(event);
+        }
+
+        return enabled;
+    }
+
+    protected static boolean isInConflictWithExecuted(BundleEventStructure bes, Event event, Set<Event> executed) {
         for (Event executedEvent : executed) {
             if (bes.areInConflict(event, executedEvent)) return true;
         }
         return false;
     }
 
+    protected static boolean areAllCausalPredecessorsExecuted(BundleEventStructure bes, Event event, Set<Event> executed) {
+        Iterator<CausalityRelation> causals = bes.getAllCausalitiesOfEvent(event);
+
+        while (causals.hasNext()) {
+            CausalityRelation cr = causals.next();
+
+            // For this bundle to be satisfied, at least one event in the bundle must be executed
+            boolean bundleSatisfied = cr.getBundle().stream().anyMatch(executed::contains);
+            if (!bundleSatisfied) return false; // If any bundle is unsatisfied, event cannot execute
+        }
+
+        return true; // All bundles satisfied
+    }
 }

@@ -28,18 +28,18 @@ public class FeaturedEventStructureFactory extends BundleEventStructureFactory{
     }
 
     @Override
-    public void addEvent(String event) {
+    public void addEvent(String name, String action){
         throw new UnsupportedOperationException("FES doesn't allow to add an event if not associated with a feature.");
     }
 
-    public void addEvent(String event, Feature<?> feature) {
-        this.addEvent(event, feature, FExpression.trueValue());
+    public void addEvent(String event, String action, Feature<?> feature) {
+        this.addEvent(event, action, feature, FExpression.trueValue());
     }
 
-    public void addEvent(String event, Feature<?> feature, FExpression fexpr) {
+    public void addEvent(String event, String action, Feature<?> feature, FExpression fexpr) {
         DefaultFeaturedEventStructure<?> fes = (DefaultFeaturedEventStructure<?>) this.bes;
-        Event ev = fes.addEvent(event);
-        fes.addFeature(ev,feature,fexpr);
+        Event ev = fes.addEvent(event, action);
+        fes.addFeature(ev,feature,fexpr.applySimplification().toCnf());
     }
 
     public FeaturedEventStructure<?> build() {
