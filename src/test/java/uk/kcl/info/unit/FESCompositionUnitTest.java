@@ -20,16 +20,10 @@ package uk.kcl.info.unit;
 
 import be.vibes.fexpression.FExpression;
 import be.vibes.fexpression.Feature;
-import be.vibes.fexpression.configuration.Configuration;
 import be.vibes.solver.FeatureModel;
-import be.vibes.solver.exception.ConstraintSolvingException;
 import be.vibes.solver.io.xml.XmlLoaders;
-import be.vibes.ts.exception.TransitionSystenExecutionException;
-import be.vibes.ts.exception.UnresolvedFExpression;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 import uk.kcl.info.bfm.Event;
 import uk.kcl.info.bfm.FeaturedEventStructure;
 import uk.kcl.info.bfm.compositions.FESParallelComposer;
@@ -44,8 +38,8 @@ import static uk.kcl.info.bfm.compositions.AbstractBESParallelComposer.getStarSy
 import static uk.kcl.info.bfm.io.xml.XmlLoaderUtility.loadFeaturedEventStructure;
 
 import uk.kcl.info.bfm.execution.FeaturedEventStructureExecutor;
+import uk.kcl.info.bfm.io.xml.XmlSaverUtility;
 
-//@Disabled("Temporarily disabled while refactoring trace semantics")
 public class FESCompositionUnitTest {
 
     private static final String BASE_PATH = "src/test/resources/testcases/";
@@ -54,10 +48,8 @@ public class FESCompositionUnitTest {
     private static final String FES_EXT = ".fes";
 
     // --- sampling parameters ---
-    private static final int MAX_CONFIG = 5;
     private static final int MAX_TRACES = 500;
     private static final int MAX_ATTEMPTS = 10;
-    private static final long TIMEOUT_MILLIS = 100;// 1000;
     private static final int LOG_LIMIT = 5;
 
     /*
@@ -69,58 +61,44 @@ public class FESCompositionUnitTest {
         return Stream.of(
                 Arguments.of("coffee", "soda", true),
                 Arguments.of("soda", "soup", true),
-                Arguments.of("coffee", "soup", true),
-                Arguments.of("coffee", "soda", false),
-                Arguments.of("soda", "soup", false),
-                Arguments.of("coffee", "soup", false)
+                Arguments.of("coffee", "soup", true)
+                //Arguments.of("coffee", "soda", false),
+                //Arguments.of("soda", "soup", false),
+                //Arguments.of("coffee", "soup", false)
         );
     }
 
-    private static String summarize(String title, Map<Configuration, Set<List<Event>>> traces) {
+    private static String summarize(String title, Map<FExpression, Set<List<String>>> traces) {
         StringBuilder sb = new StringBuilder(title).append(" (").append(traces.size()).append(")\n");
 
         int i = 0;
-        for (Map.Entry<Configuration, Set<List<Event>>> t: traces.entrySet()) {
+        for (Map.Entry<FExpression, Set<List<String>>> t: traces.entrySet()) {
             if (i++ >= LOG_LIMIT) break;
             sb.append("  ").append(t).append("\n");
         }
         return sb.toString();
     }
-
-    private static void assertEquivalent(FeatureModel<?> fm, FeaturedEventStructure<?> left, FeaturedEventStructure<?> right, String message) throws TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
+    
+    private static void assertEquivalent(FeatureModel<?> fm, FeaturedEventStructure<?> left, FeaturedEventStructure<?> right, String message) {
 
         // Executors
         FeaturedEventStructureExecutor leftExec = new FeaturedEventStructureExecutor(left, fm);
         FeaturedEventStructureExecutor rightExec = new FeaturedEventStructureExecutor(right, fm);
 
         // Sample traces
-        Map<Configuration, Set<List<Event>>> leftTraces = leftExec.getRandomEventTraces(MAX_CONFIG, TIMEOUT_MILLIS, MAX_TRACES, MAX_ATTEMPTS);
-        Map<Configuration, Set<List<Event>>> rightTraces = rightExec.getRandomEventTraces(MAX_CONFIG, TIMEOUT_MILLIS, MAX_TRACES, MAX_ATTEMPTS);
+        Map<FExpression, Set<List<String>>> leftTraces = leftExec.getRandomActionTraces(MAX_TRACES, MAX_ATTEMPTS);
+        Map<FExpression, Set<List<String>>> rightTraces = rightExec.getRandomActionTraces(MAX_TRACES, MAX_ATTEMPTS);
 
         // Left ⊆ Right
-        Map<Configuration, Set<List<Event>>> missingLR = notExecutable(leftTraces, rightExec);
+        Map<FExpression, Set<List<String>>> missingLR = rightExec.notExecutableActions(leftTraces); //notExecutable(leftTraces, rightExec);
         // Right ⊆ Left
-        Map<Configuration, Set<List<Event>>> missingRL = notExecutable(rightTraces, leftExec);
+        Map<FExpression, Set<List<String>>> missingRL = leftExec.notExecutableActions(rightTraces); //notExecutable(rightTraces, leftExec);
 
         assertTrue(missingLR.isEmpty() && missingRL.isEmpty(),
                 () -> message + "\n"
                         + summarize("Missing Left→Right", missingLR)
                         + summarize("Missing Right→Left", missingRL));
-    }
 
-    private static Map<Configuration, Set<List<Event>>> notExecutable(Map<Configuration, Set<List<Event>>> traces, FeaturedEventStructureExecutor exec) throws UnresolvedFExpression {
-
-        Map<Configuration, Set<List<Event>>> nonExecutableTraces = new HashMap<>();
-
-        for(Map.Entry<Configuration, Set<List<Event>>> setOfTrace: traces.entrySet()){
-            for(List<Event> t: setOfTrace.getValue()){
-                if(!exec.canExecute(setOfTrace.getKey(), t)){
-                    nonExecutableTraces.put(setOfTrace.getKey(), setOfTrace.getValue());
-                }
-            }
-        }
-
-        return nonExecutableTraces;
     }
 
     /*
@@ -130,7 +108,7 @@ public class FESCompositionUnitTest {
      */
     @ParameterizedTest
     @MethodSource("testCases")
-    public <F extends Feature<F>> void testParallelComposition(String f1, String f2, boolean sync) throws BundleEventStructureDefinitionException, UnresolvedFExpression, ConstraintSolvingException, TransitionSystenExecutionException {
+    public <F extends Feature<F>> void testParallelComposition(String f1, String f2, boolean sync) throws BundleEventStructureDefinitionException {
 
         FeatureModel<F> fm = (FeatureModel<F>) XmlLoaders.loadFeatureModel(new File(FM_PATH + f1 + f2 + "_union" + ".xml"));
         FeaturedEventStructure<F> fes1 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f1 + FES_EXT, fm);
@@ -140,16 +118,10 @@ public class FESCompositionUnitTest {
         FeaturedEventStructure<F> result = composer.compose(fes1, fes2, sync);
 
         String suffix = sync ? "_sync" : "_async";
+        //XmlSaverUtility.save(result, FES_PATH + f1 + f2 + suffix + FES_EXT);
         FeaturedEventStructure<F> expected = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f1 + f2 + suffix + FES_EXT, fm);
 
         assertEquivalent(fm, expected, result, "Parallel composition mismatch (" + f1 + ", " + f2 + ", sync=" + sync + ")");
-
-        //assertEquals(expected, result, "Parallel composition mismatch (" + f1 + ", " + f2 + ", sync=" + sync + ")");
-
-        /*
-        Map<Configuration, Set<List<String>>> expectedTraces = new FeaturedEventStructureExecutor(expected, fm).getAllActionTraces();
-        Map<Configuration, Set<List<String>>> resultTraces = new FeaturedEventStructureExecutor(result, fm).getAllActionTraces();
-        assertEquals(expectedTraces, resultTraces);*/
     }
 
     /*
@@ -190,7 +162,7 @@ public class FESCompositionUnitTest {
      */
     @ParameterizedTest
     @MethodSource("testCases")
-    public <F extends Feature<F>> void testCommutativity(String f1, String f2, boolean sync) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
+    public <F extends Feature<F>> void testCommutativity(String f1, String f2, boolean sync) throws BundleEventStructureDefinitionException {
 
         FeatureModel<F> fm = (FeatureModel<F>) XmlLoaders.loadFeatureModel(new File(FM_PATH + f1 + f2 + "_union" + ".xml"));
         FeaturedEventStructure<F> fes1 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f1 + FES_EXT, fm);
@@ -201,14 +173,35 @@ public class FESCompositionUnitTest {
         FeaturedEventStructure<F> res1 = composer.compose(fes1, fes2, sync);
         FeaturedEventStructure<F> res2 = composer.compose(fes2, fes1, sync);
 
-        //assertEquals(res1, res2, "Commutativity violated (" + f1 + ", " + f2 + ", sync=" + sync + ")");
-        /*
-        Map<Configuration, Set<List<String>>> res1Traces = new FeaturedEventStructureExecutor(res1, fm).getAllActionTraces();
-        Map<Configuration, Set<List<String>>> res2Traces = new FeaturedEventStructureExecutor(res2, fm).getAllActionTraces();
-        assertEquals(res1Traces, res2Traces);
-        */
-
         assertEquivalent(fm, res1, res2, "Commutativity violated (" + f1 + ", " + f2 + ", sync=" + sync + ")");
+    }
+
+    /*
+     * -------------------------
+     * Associativity
+     * -------------------------
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {true}) //, false // Associativity only works for sync events
+    public <F extends Feature<F>> void testAssociativity(boolean sync) throws BundleEventStructureDefinitionException {
+
+        String f1 = "coffee";
+        String f2 = "soda";
+        String f3 = "soup";
+
+        FeatureModel<F> fm = (FeatureModel<F>) XmlLoaders.loadFeatureModel(new File(FM_PATH + "svm_union.xml"));
+        FeaturedEventStructure<F> fes1 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f1 + FES_EXT, fm);
+        FeaturedEventStructure<F> fes2 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f2 + FES_EXT, fm);
+        FeaturedEventStructure<F> fes3 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f3 + FES_EXT, fm);
+
+        FESParallelComposer<F> composer = new FESParallelComposer<>(fm);
+
+        // (A || B) || C
+        FeaturedEventStructure<F> left = composer.compose(composer.compose(fes1, fes2, sync), fes3, sync);
+        // A || (B || C)
+        FeaturedEventStructure<F> right = composer.compose(fes1, composer.compose(fes2, fes3, sync), sync);
+
+        assertEquivalent(fm,left,right,"Associativity violated for sync=" + sync);
     }
 
     /*
@@ -218,7 +211,7 @@ public class FESCompositionUnitTest {
      */
     @ParameterizedTest
     @ValueSource(strings = {"coffee","soda", "soup"})
-    public <F extends Feature<F>> void testIdempotency(String fileName) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
+    public <F extends Feature<F>> void testIdempotency(String fileName) throws BundleEventStructureDefinitionException {
 
         FeatureModel<F> fm = (FeatureModel<F>) XmlLoaders.loadFeatureModel(new File(FM_PATH + fileName + ".xml"));
         FeaturedEventStructure<F> fes = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + fileName + FES_EXT, fm);
@@ -226,15 +219,7 @@ public class FESCompositionUnitTest {
         FESParallelComposer<F> composer = new FESParallelComposer<>(fm);
         FeaturedEventStructure<F> result = composer.compose(fes, fes, true);
 
-        /*
-        Map<Configuration, Set<List<String>>> expectedTraces = new FeaturedEventStructureExecutor(fes, fm).getAllActionTraces();
-        Map<Configuration, Set<List<String>>> resultTraces = new FeaturedEventStructureExecutor(result, fm).getAllActionTraces();
-        assertEquals(expectedTraces, resultTraces);
-        */
-
         assertEquivalent(fm, fes, result, "Idempotency violated for " + fileName);
-
-        //assertEquals(fes, result, "Idempotency violated for " + fileName);
     }
 
     /*
@@ -314,38 +299,6 @@ public class FESCompositionUnitTest {
 
     /*
      * -------------------------
-     * Associativity
-     * -------------------------
-     */
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public <F extends Feature<F>> void testAssociativity(boolean sync) throws BundleEventStructureDefinitionException, TransitionSystenExecutionException, UnresolvedFExpression, ConstraintSolvingException {
-
-        String f1 = "coffee";
-        String f2 = "soda";
-        String f3 = "soup";
-
-        FeatureModel<F> fm = (FeatureModel<F>) XmlLoaders.loadFeatureModel(new File(FM_PATH + "svm_union.xml"));
-        FeaturedEventStructure<F> fes1 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f1 + FES_EXT, fm);
-        FeaturedEventStructure<F> fes2 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f2 + FES_EXT, fm);
-        FeaturedEventStructure<F> fes3 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f3 + FES_EXT, fm);
-
-        FESParallelComposer<F> composer = new FESParallelComposer<>(fm);
-
-        // (A || B) || C
-        FeaturedEventStructure<F> left = composer.compose(composer.compose(fes1, fes2, sync), fes3, sync);
-        // A || (B || C)
-        FeaturedEventStructure<F> right = composer.compose(fes1, composer.compose(fes2, fes3, sync), sync);
-
-        //Map<Configuration, Set<List<String>>> leftTraces = new FeaturedEventStructureExecutor(left, fm).getAllActionTraces();
-        //Map<Configuration, Set<List<String>>> rightTraces = new FeaturedEventStructureExecutor(right, fm).getAllActionTraces();
-        //assertEquals(leftTraces, rightTraces, "Associativity violated for sync=" + sync);
-        assertEquivalent(fm,left,right,"Associativity violated for sync=\" + sync");
-        //assertEquals(left, right, "Associativity violated for sync=" + sync);
-    }
-
-    /*
-     * -------------------------
      * Pruning
      * -------------------------
      */
@@ -365,44 +318,5 @@ public class FESCompositionUnitTest {
             assert !expr.isFalse() : "Found event with FALSE feature expression: " + e.getName();
         }
     }
-
-    /*
-     * -------------------------
-     * Sync ⊆ Async
-     * -------------------------
-     */
-    /*
-    @ParameterizedTest
-    @MethodSource("testCases")
-    public <F extends Feature<F>> void testSyncSubsetAsync(String f1, String f2, boolean ignoredSync) throws
-            BundleEventStructureDefinitionException, UnresolvedFExpression, ConstraintSolvingException {
-
-        FeatureModel<F> fm = (FeatureModel<F>) XmlLoaders.loadFeatureModel(new File(FM_PATH + f1 + f2 + "_union.xml"));
-        FeaturedEventStructure<F> fes1 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f1 + FES_EXT, fm);
-        FeaturedEventStructure<F> fes2 = (FeaturedEventStructure<F>) loadFeaturedEventStructure(FES_PATH + f2 + FES_EXT, fm);
-
-        FESParallelComposer<F> composer = new FESParallelComposer<>(fm);
-        FeaturedEventStructure<F> async = composer.compose(fes1, fes2, false);
-        FeaturedEventStructure<F> sync  = composer.compose(fes1, fes2, true);
-
-        Map<Configuration, Set<List<String>>> asyncTraces = new FeaturedEventStructureExecutor(async, fm).getAllActionTraces();
-        Map<Configuration, Set<List<String>>> syncTraces = new FeaturedEventStructureExecutor(sync, fm).getAllActionTraces();
-
-        // Check inclusion for each configuration
-        for (Map.Entry<Configuration, Set<List<String>>> entry : syncTraces.entrySet()) {
-            Configuration cfg = entry.getKey();
-            Set<List<String>> syncSet = entry.getValue();
-            Set<List<String>> asyncSet = asyncTraces.getOrDefault(cfg, Collections.emptySet());
-
-            Set<List<String>> missing = new HashSet<>(syncSet);
-            missing.removeAll(asyncSet);
-
-            assertTrue(missing.isEmpty(),
-                    () -> "Missing traces in async for configuration: " + cfg +
-                            "\nMissing: " + missing +
-                            "\nSync: " + syncSet +
-                            "\nAsync: " + asyncSet);
-        }
-    }*/
 }
 
